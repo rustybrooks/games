@@ -6,7 +6,8 @@
   "dependencies": {
     "@types/node": "latest",
     "express": "latest",
-    "@types/express": "latest"
+    "@types/express": "latest",
+    "@rustybrooks/pgexplorer": "latest"
   },
   "devDependencies": {
     "ts-node": "latest",
