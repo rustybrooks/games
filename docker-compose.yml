@@ -1,0 +1,37 @@
+version: '2'
+
+services:
+  api:
+    build:
+      context: ./src/api
+      dockerfile: Dockerfile
+    container_name: games-api
+    ports:
+      - 5000:5000
+    volumes:
+      - ./src/:/srv/src/
+    entrypoint: /srv/src/api/entrypoint.sh
+
+  ui:
+    build:
+      context: ./src/ui
+      dockerfile: Dockerfile
+    container_name: games-ui
+    ports:
+      - 3000:3000
+    volumes:
+      - ./src/:/srv/src/
+    entrypoint: /srv/src/ui/entrypoint.sh
+
+  postgres:
+    image: postgres:10.6
+    container_name: postgres
+    environment:
+      - POSTGRES_DB=games
+      - POSTGRES_USER=wombat
+      - POSTGRES_PASSWORD=1wombat2
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data/pgdata
+    ports:
+      - 5434:5432
