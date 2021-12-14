@@ -66,9 +66,12 @@ const Wordle = ({ classes }: { classes: { [id: string]: any } }) => {
         }
       });
     } else if (word.length < 5 && button.length === 1) {
-      word += buttonx;
-      guesses.splice(gridIdx, 1, word);
-      setGuesses([...guesses]);
+      const myre = /[a-z]/;
+      if (myre.test(button)) {
+        word += buttonx;
+        guesses.splice(gridIdx, 1, word);
+        setGuesses([...guesses]);
+      }
     }
   };
 
