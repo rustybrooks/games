@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { withStyles, makeStyles } from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
 
 import Keyboard from 'react-simple-keyboard';
 import 'react-simple-keyboard/build/css/index.css';
@@ -47,7 +47,7 @@ const Wordle = ({ classes }: { classes: { [id: string]: any } }) => {
   const onKeyPress = (button: string) => {
     const buttonx = button.toLowerCase();
     let word = guesses[gridIdx];
-    // console.log(guesses, gridIdx, word, button);
+    console.log(guesses, gridIdx, word, button);
 
     if (buttonx === '{bksp}' || buttonx === 'backspace') {
       guesses[gridIdx] = word.slice(0, word.length - 1);
@@ -60,7 +60,14 @@ const Wordle = ({ classes }: { classes: { [id: string]: any } }) => {
         },
         body: JSON.stringify({ guess: word }),
       }).then(r => {
-        r.json().then(x => console.log(x));
+        if (r.status === 200) {
+          r.json().then(x => {
+            console.log(x);
+            results.splice(gridIdx, 1, x);
+            setResults([...results]);
+            setGridIdx(gridIdx + 1);
+          });
+        }
       });
     } else if (word.length < 5) {
       word += buttonx;
@@ -78,8 +85,25 @@ const Wordle = ({ classes }: { classes: { [id: string]: any } }) => {
               <tr key={y}>
                 {[0, 1, 2, 3, 4].map(x => {
                   const g = guesses[y][x] || '';
+                  const r = results[y][x];
+                  let cn = 'cell';
+                  if (r) {
+                    switch (r) {
+                      case '+':
+                        cn = 'rightCell';
+                        break;
+                      case '-':
+                        cn = 'sortaCell';
+                        break;
+                      case ' ':
+                        cn = 'wrongCell';
+                        break;
+                      default:
+                        cn = 'cell';
+                    }
+                  }
                   return (
-                    <td key={x} className={classes.cell}>
+                    <td key={x} className={classes[cn]}>
                       {g.toUpperCase()}
                     </td>
                   );

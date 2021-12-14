@@ -14,19 +14,12 @@ app.use(cors(corsOptions));
 app.options("*", cors()); // include before other routes
 app.listen(port, "0.0.0.0");
 
-interface LocationWithTimezone {
-  location: string;
-  timezoneName: string;
-  timezoneAbbr: string;
-  utcOffset: number;
-}
-
 const wordleCheck = (
   request: Request,
   response: Response,
   next: NextFunction
 ) => {
-  const expected = "boobs";
+  const expected = "masse";
 
   let guess = "";
 
