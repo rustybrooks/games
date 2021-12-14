@@ -23,15 +23,11 @@ const wordleCheck = (
 
   let guess = "";
 
-  console.log(request.body, request.params);
   if (request.body && request.body.guess) {
-    console.log("body");
     guess = request.body.guess;
   } else if (request.query && request.query.guess) {
-    console.log("params");
     guess = request.query.guess.toString();
   }
-  console.log(guess);
 
   if (!guess) {
     response.status(400).json({
@@ -45,10 +41,23 @@ const wordleCheck = (
     });
   }
 
+  const expectedCounts = expected.split('').reduce((prev, current) => {
+    prev[current] = (prev[current] || 0) + 1;
+    return prev;
+  }, {});
+  const guessCounts = guess.split('').reduce((prev, current, i) => {
+    if (expected[i] == current) {
+      prev[current] = (prev[current] || 0) + 1;
+    }
+    return prev;
+  }, {});
   const out = guess.split("").map((l, i) => {
-    if (l == expected[i]) {
+    if (l !== expected[i]) {
+      guessCounts[l] += 1;
+    }
+    if (l === expected[i]) {
       return "+";
-    } else if (expected.includes(l)) {
+    } else if (expected.includes(l) && guessCounts[l] <= expectedCounts[l]) {
       return "-";
     } else {
       return " ";

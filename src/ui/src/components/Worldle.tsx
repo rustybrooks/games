@@ -38,15 +38,14 @@ const genUrl = (fn: string) => `http://localhost:5000/wordle/${fn}`;
 const Wordle = ({ classes }: { classes: { [id: string]: any } }) => {
   const [results, setResults] = React.useState(['', '', '', '', '', '']);
   const [guesses, setGuesses] = React.useState(['', '', '', '', '', '']);
-  const [gridIdx, setGridIdx] = React.useState(0);
+  const gridIdx = React.useRef(0);
 
   const onKeyPress = (button: string) => {
     const buttonx = button.toLowerCase();
-    let word = guesses[gridIdx];
-    console.log(guesses, gridIdx, word, button);
+    let word = guesses[gridIdx.current];
 
     if (buttonx === '{bksp}' || buttonx === 'backspace') {
-      guesses[gridIdx] = word.slice(0, word.length - 1);
+      guesses[gridIdx.current] = word.slice(0, word.length - 1);
       setGuesses([...guesses]);
     } else if (buttonx === '{enter}' || buttonx === 'enter') {
       fetch(genUrl('check'), {
@@ -58,10 +57,9 @@ const Wordle = ({ classes }: { classes: { [id: string]: any } }) => {
       }).then(r => {
         if (r.status === 200) {
           r.json().then(x => {
-            console.log(x);
-            results.splice(gridIdx, 1, x);
+            results.splice(gridIdx.current, 1, x);
             setResults([...results]);
-            setGridIdx(gridIdx + 1);
+            gridIdx.current += 1;
           });
         }
       });
@@ -69,17 +67,19 @@ const Wordle = ({ classes }: { classes: { [id: string]: any } }) => {
       const myre = /[a-z]/;
       if (myre.test(button)) {
         word += buttonx;
-        guesses.splice(gridIdx, 1, word);
+        guesses.splice(gridIdx.current, 1, word);
         setGuesses([...guesses]);
       }
     }
   };
 
-  React.useEffect(() => {
-    document.addEventListener('keydown', event => onKeyPress(event.key), false);
-  }, [gridIdx]);
+  const onKeyPress2 = (button: string) => {
+    onKeyPress(button);
+  };
 
-  console.log('grid idx', gridIdx);
+  React.useEffect(() => {
+    document.addEventListener('keydown', event => onKeyPress2(event.key), false);
+  }, []);
 
   return (
     <div style={{ height: '100%', display: 'flex', justifyContent: 'center' }}>
