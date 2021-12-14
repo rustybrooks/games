@@ -67,5 +67,4 @@ const wordleCheck = (
   response.status(200).json(out.join(""));
 };
 
-// app.get("/wordle/check", wordleCheck);
 app.all("/wordle/check", wordleCheck);

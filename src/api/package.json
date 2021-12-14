@@ -4,17 +4,26 @@
   "description": "games",
   "main": "index.js",
   "dependencies": {
-    "@types/node": "latest",
     "express": "latest",
-    "@types/express": "latest",
     "@rustybrooks/pgexplorer": "latest",
-    "cors": "latest"
+    "cors": "latest",
+    "sprintf-js": "latest"
   },
   "devDependencies": {
     "ts-node": "latest",
     "typescript": "latest",
     "nodemon": "latest",
-    "@types/cors": "latest"
+    "@types/express": "latest",
+    "@types/node": "latest",
+    "@types/cors": "latest",
+    "@types/sprintf-js": "latest",
+    "prettier": "^2.5.1",
+    "@typescript-eslint/eslint-plugin": "latest",
+    "eslint": "latest",
+    "eslint-config-airbnb": "latest",
+    "eslint-config-airbnb-base": "latest",
+    "eslint-config-airbnb-typescript": "latest",
+    "eslint-plugin-airbnb-base": "latest"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
