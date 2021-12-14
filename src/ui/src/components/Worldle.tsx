@@ -40,10 +40,6 @@ const Wordle = ({ classes }: { classes: { [id: string]: any } }) => {
   const [guesses, setGuesses] = React.useState(['', '', '', '', '', '']);
   const [gridIdx, setGridIdx] = React.useState(0);
 
-  React.useEffect(() => {
-    document.addEventListener('keydown', event => onKeyPress(event.key), false);
-  }, []);
-
   const onKeyPress = (button: string) => {
     const buttonx = button.toLowerCase();
     let word = guesses[gridIdx];
@@ -75,6 +71,12 @@ const Wordle = ({ classes }: { classes: { [id: string]: any } }) => {
       setGuesses([...guesses]);
     }
   };
+
+  React.useEffect(() => {
+    document.addEventListener('keydown', event => onKeyPress(event.key), false);
+  }, [gridIdx]);
+
+  console.log('grid idx', gridIdx);
 
   return (
     <div style={{ height: '100%', display: 'flex', justifyContent: 'center' }}>
