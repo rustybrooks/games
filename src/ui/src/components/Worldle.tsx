@@ -28,6 +28,10 @@ const style = () => {
   return x;
 };
 
+const genUrl = (fn: string) => {
+  return `http://localhost:5000/wordle/${fn}`;
+};
+
 const Wordle = ({ classes }: { classes: { [id: string]: any } }) => {
   const init_grid = (): string[] => {
     const igrid = [];
@@ -37,14 +41,38 @@ const Wordle = ({ classes }: { classes: { [id: string]: any } }) => {
     return igrid;
   };
 
-  let [grid, setGrid] = React.useState(() => init_grid());
+  let [grid, setGrid] = React.useState(['', '', '', '', '', '']);
+  let [gridIdx, setGridIdx] = React.useState(0);
 
   React.useEffect(() => {
     document.addEventListener('keydown', event => onKeyPress(event.key), false);
   }, []);
 
   const onKeyPress = (button: string) => {
-    console.log('Button pressed', button);
+    const buttonx = button.toLowerCase();
+    let word = grid[gridIdx];
+    console.log(grid, gridIdx, word, button);
+
+    if (buttonx === '{bksp}' || buttonx === 'backspace') {
+      grid[gridIdx] = word.slice(0, word.length - 1);
+    } else if (buttonx === '{enter}' || buttonx === 'enter') {
+      fetch(genUrl('check'), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ guess: word }),
+      }).then(r => {
+        r.json().then(x => console.log(x));
+      });
+    } else {
+      if (word.length < 5) {
+        word += buttonx;
+        grid.splice(gridIdx, 1, word);
+        console.log(grid);
+        setGrid(grid);
+      }
+    }
   };
 
   return (

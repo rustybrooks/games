@@ -7,7 +7,8 @@
     "@types/node": "latest",
     "express": "latest",
     "@types/express": "latest",
-    "@rustybrooks/pgexplorer": "latest"
+    "@rustybrooks/pgexplorer": "latest",
+    "cors": "latest"
   },
   "devDependencies": {
     "ts-node": "latest",
