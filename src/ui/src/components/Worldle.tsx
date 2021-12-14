@@ -5,13 +5,18 @@ import Keyboard from 'react-simple-keyboard';
 import 'react-simple-keyboard/build/css/index.css';
 
 const style = () => {
-  let x: any = {
+  const x: any = {
     cell: {
       width: '3rem',
       height: '3rem',
       background: 'white',
       padding: '5px',
       border: '2px solid #ccc',
+      textAlign: 'center',
+      verticalAlign: 'middle',
+      fontFamily: 'Arial, sans-serif',
+      fontWeight: 'bold',
+      fontSize: '30px',
     },
 
     table: {
@@ -28,21 +33,12 @@ const style = () => {
   return x;
 };
 
-const genUrl = (fn: string) => {
-  return `http://localhost:5000/wordle/${fn}`;
-};
+const genUrl = (fn: string) => `http://localhost:5000/wordle/${fn}`;
 
 const Wordle = ({ classes }: { classes: { [id: string]: any } }) => {
-  const init_grid = (): string[] => {
-    const igrid = [];
-    for (let y = 0; y < 6; y++) {
-      igrid.push('');
-    }
-    return igrid;
-  };
-
-  let [grid, setGrid] = React.useState(['', '', '', '', '', '']);
-  let [gridIdx, setGridIdx] = React.useState(0);
+  const [results, setResults] = React.useState(['', '', '', '', '', '']);
+  const [guesses, setGuesses] = React.useState(['', '', '', '', '', '']);
+  const [gridIdx, setGridIdx] = React.useState(0);
 
   React.useEffect(() => {
     document.addEventListener('keydown', event => onKeyPress(event.key), false);
@@ -50,11 +46,12 @@ const Wordle = ({ classes }: { classes: { [id: string]: any } }) => {
 
   const onKeyPress = (button: string) => {
     const buttonx = button.toLowerCase();
-    let word = grid[gridIdx];
-    console.log(grid, gridIdx, word, button);
+    let word = guesses[gridIdx];
+    // console.log(guesses, gridIdx, word, button);
 
     if (buttonx === '{bksp}' || buttonx === 'backspace') {
-      grid[gridIdx] = word.slice(0, word.length - 1);
+      guesses[gridIdx] = word.slice(0, word.length - 1);
+      setGuesses([...guesses]);
     } else if (buttonx === '{enter}' || buttonx === 'enter') {
       fetch(genUrl('check'), {
         method: 'POST',
@@ -65,13 +62,10 @@ const Wordle = ({ classes }: { classes: { [id: string]: any } }) => {
       }).then(r => {
         r.json().then(x => console.log(x));
       });
-    } else {
-      if (word.length < 5) {
-        word += buttonx;
-        grid.splice(gridIdx, 1, word);
-        console.log(grid);
-        setGrid(grid);
-      }
+    } else if (word.length < 5) {
+      word += buttonx;
+      guesses.splice(gridIdx, 1, word);
+      setGuesses([...guesses]);
     }
   };
 
@@ -80,20 +74,18 @@ const Wordle = ({ classes }: { classes: { [id: string]: any } }) => {
       <div style={{ width: 500, padding: 20 }}>
         <table className={classes.table} style={{ margin: '0 auto' }}>
           <tbody>
-            {[0, 1, 2, 3, 4].map(y => {
-              return (
-                <tr key={y}>
-                  {[0, 1, 2, 3, 4, 5].map(x => {
-                    const g = grid[y][x] || '';
-                    return (
-                      <td key={x} className={classes.cell}>
-                        {g}
-                      </td>
-                    );
-                  })}
-                </tr>
-              );
-            })}
+            {[0, 1, 2, 3, 4, 5].map(y => (
+              <tr key={y}>
+                {[0, 1, 2, 3, 4].map(x => {
+                  const g = guesses[y][x] || '';
+                  return (
+                    <td key={x} className={classes.cell}>
+                      {g.toUpperCase()}
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
           </tbody>
         </table>
         <div style={{ width: 500 }}>
