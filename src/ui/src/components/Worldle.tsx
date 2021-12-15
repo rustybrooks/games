@@ -35,7 +35,7 @@ const style = () => {
 
 const genUrl = (fn: string) => `http://localhost:5000/wordle/${fn}`;
 
-const Wordle = ({ classes }: { classes: { [id: string]: any } }) => {
+const WordleX = ({ classes }: { classes: { [id: string]: any } }) => {
   const [results, setResults] = React.useState(['', '', '', '', '', '']);
   const [guesses, setGuesses] = React.useState(['', '', '', '', '', '']);
   const gridIdx = React.useRef(0);
@@ -135,4 +135,4 @@ const Wordle = ({ classes }: { classes: { [id: string]: any } }) => {
   );
 };
 
-export default withStyles(style)(Wordle);
+export const Wordle = withStyles(style)(WordleX);

@@ -60,29 +60,23 @@ export class Migration {
     this.logs = [];
   }
 
-  log(logs: string[], msg: string, args: any[] = null) {
+  static log(logs: string[], msg: string, args: any[] = null) {
     const formatted = sprintf(msg, ...(args || []));
     logs.push(formatted);
     console.log(formatted);
   }
 
-  async migrate(SQL: pgexplorer.sql.SQLBase, dryRun = false, initial = false, applyVersions: number[] = null) {
+  static async migrate(SQL: pgexplorer.sql.SQLBase, dryRun = false, initial = false, applyVersions: number[] = null) {
     const logs: string[] = [];
 
     await SQL.execute(`
-        create table if not exists migrations
-        (
-            migration_id
-            serial
-            primary
-            key,
-            migration_datetime
-            timestamp,
-            version_pre
-            int,
-            version_post
-            int
-        )`);
+        create table if not exists migrations (
+            migration_id serial primary key,
+            migration_datetime timestamp,
+            version_pre int,
+            version_post int
+        )
+    `);
 
     const res = await SQL.selectOne('select max(versionPost) as version from migrations');
     const { version } = res;
@@ -97,7 +91,7 @@ export class Migration {
     let versionPost = version;
 
     for (const v of todo) {
-      this.log(logs, 'Running migration %d: %s', [v, Migration.registry[v].message]);
+      Migration.log(logs, 'Running migration %d: %s', [v, Migration.registry[v].message]);
       for (const statement of Migration.registry[v].statements) {
         statement.execute(SQL, dryRun, logs);
       }
