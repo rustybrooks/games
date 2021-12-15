@@ -9,7 +9,7 @@ services:
     ports:
       - 5000:5000
     volumes:
-      - ./src/:/srv/src/
+      - ./src/api/src:/srv/src/api/src
     entrypoint: /srv/src/api/entrypoint.sh
 
   games-ui:
@@ -20,7 +20,7 @@ services:
     ports:
       - 3000:3000
     volumes:
-      - ./src/:/srv/src/
+      - ./src/ui/src:/srv/src/ui/src
     entrypoint: /srv/src/ui/entrypoint.sh
 
   postgres:

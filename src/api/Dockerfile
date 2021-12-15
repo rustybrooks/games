@@ -12,7 +12,10 @@ RUN apt-get -y update \
 
 RUN echo sup
 
+COPY package*.json /srv/src/api/
+# RUN npm install
+
 COPY . /srv/src/api
 
-# RUN cd /srv/src/api && npm install
+
 

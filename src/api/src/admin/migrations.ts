@@ -102,7 +102,7 @@ export class Migration {
     }
 
     if (todo.length && !dryRun) {
-      SQL.insert('migrations', {
+      await SQL.insert('migrations', {
         migration_datetime: 'datetime.datetime.utcnow()',
         versionPre: version,
         versionPost,

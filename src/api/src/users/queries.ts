@@ -11,7 +11,7 @@ export function user({ username = null }: { username?: string }) {
     bindvars.push(username);
   }
 
-  return SQL.select_0or1(`select * from users ${SQL.whereClause(where)}`, bindvars);
+  return SQL.selectZeroOrOne(`select * from users ${SQL.whereClause(where)}`, bindvars);
 }
 
 export async function addUser({
