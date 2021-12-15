@@ -10,10 +10,8 @@ RUN apt-get -y update \
  && curl -sL https://deb.nodesource.com/setup_16.x | bash - \
  && apt-get install -y nodejs
 
-RUN echo sup
-
 COPY package*.json /srv/src/api/
-# RUN npm install
+RUN npm install
 
 COPY . /srv/src/api
 

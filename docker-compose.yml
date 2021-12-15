@@ -35,3 +35,5 @@ services:
       - ./data/postgres:/var/lib/postgresql/data/pgdata
     ports:
       - 5434:5432
+    # uncomment to see all queries
+    # command: ["postgres", "-c", "log_statement=all"]

@@ -4,19 +4,19 @@
   "description": "games",
   "main": "./src/index.js",
   "dependencies": {
-    "@rustybrooks/pgexplorer": "^1.0.11",
+    "@rustybrooks/pgexplorer": "^1.0.19",
+    "bcrypt": "latest",
     "cors": "latest",
     "express": "latest",
-    "sprintf-js": "latest",
-    "bcrypt": "latest"
+    "sprintf-js": "latest"
   },
   "devDependencies": {
+    "@types/bcrypt": "latest",
     "@types/cors": "latest",
     "@types/express": "latest",
     "@types/node": "latest",
     "@types/sprintf-js": "latest",
     "@typescript-eslint/eslint-plugin": "latest",
-    "@types/bcrypt": "latest",
     "eslint": "latest",
     "eslint-config-airbnb": "latest",
     "eslint-config-airbnb-base": "latest",

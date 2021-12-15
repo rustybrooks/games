@@ -1,5 +1,6 @@
 import { Request } from 'express';
 
 export function getParams(request: Request) {
-  return { ...request.params, ...request.body };
+  console.log(request.query, request.body);
+  return { ...request.query, ...request.body };
 }
