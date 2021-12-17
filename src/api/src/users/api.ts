@@ -47,7 +47,7 @@ const signup = (request: Request, response: Response, next: NextFunction) => {
     return next(new exceptions.HttpBadRequest('Email required'));
   }
   queries.addUser({ username, password, email });
-  return response.status(200).json({ status: 'ok' });
+  return response.status(200).json(queries.generateToken(username));
 };
 
 const login = async (request: Request, response: Response, next: NextFunction) => {
@@ -56,7 +56,7 @@ const login = async (request: Request, response: Response, next: NextFunction) =
   if (username && password) {
     const user = queries.user({ username });
     if (await queries.checkPassword(password, user.password)) {
-      return response.status(200).json({ token: queries.generateToken(user.username) });
+      return response.status(200).json(queries.generateToken(user.username));
     }
   }
 

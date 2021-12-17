@@ -7,15 +7,16 @@
     "@rustybrooks/pgexplorer": "^1.0.19",
     "bcrypt": "latest",
     "cors": "latest",
+    "eslint-plugin-react-hooks": "^4.3.0",
     "express": "latest",
     "jsonwebtoken": "^8.5.1",
     "sprintf-js": "latest"
   },
   "devDependencies": {
-    "@types/jsonwebtoken": "latest",
     "@types/bcrypt": "latest",
     "@types/cors": "latest",
     "@types/express": "latest",
+    "@types/jsonwebtoken": "latest",
     "@types/node": "latest",
     "@types/sprintf-js": "latest",
     "@typescript-eslint/eslint-plugin": "latest",

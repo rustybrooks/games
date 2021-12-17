@@ -33,7 +33,7 @@ const style = () => {
   return x;
 };
 
-const genUrl = (fn: string) => `http://localhost:5000/wordle/${fn}`;
+const genUrl = (fn: string) => `${process.env.API_URL}/wordle/${fn}`;
 
 const WordleX = ({ classes }: { classes: { [id: string]: any } }) => {
   const [results, setResults] = React.useState(['', '', '', '', '', '']);
