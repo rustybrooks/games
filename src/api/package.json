@@ -8,9 +8,11 @@
     "bcrypt": "latest",
     "cors": "latest",
     "express": "latest",
+    "jsonwebtoken": "^8.5.1",
     "sprintf-js": "latest"
   },
   "devDependencies": {
+    "@types/jsonwebtoken": "latest",
     "@types/bcrypt": "latest",
     "@types/cors": "latest",
     "@types/express": "latest",

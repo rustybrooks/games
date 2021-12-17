@@ -11,3 +11,21 @@ export class HttpException extends Error {
     this.message = message;
   }
 }
+
+export class HttpForbidden extends HttpException {
+  constructor(message = 'forbidden') {
+    super(403, message);
+  }
+}
+
+export class HttpBadRequest extends HttpException {
+  constructor(message = 'bad request') {
+    super(400, message);
+  }
+}
+
+export class HttpNotFound extends HttpException {
+  constructor(message = 'not found') {
+    super(404, message);
+  }
+}

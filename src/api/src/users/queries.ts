@@ -1,5 +1,6 @@
 import * as crypto from 'crypto';
 import * as bcrypt from 'bcrypt';
+import * as jwt from 'jsonwebtoken';
 import { SQL } from '../db';
 
 const saltRounds = 12;
@@ -25,14 +26,14 @@ export async function addUser({
   username,
   password,
   email,
-  is_admin,
-  api_key,
+  is_admin = false,
+  api_key = null,
 }: {
   username: string;
   password: string;
   email: string;
-  is_admin: boolean;
-  api_key: string;
+  is_admin?: boolean;
+  api_key?: string;
 }) {
   const idata = {
     username,
@@ -62,4 +63,10 @@ export async function deleteUser({ username }: { username: string }) {
 
 export async function checkPassword(password: string, bcryptedPassword: string) {
   return bcrypt.compare(password, bcryptedPassword);
+}
+
+export function generateToken(username: string) {
+  return jwt.sign({ username }, process.env.TOKEN_KEY, {
+    expiresIn: '7d',
+  });
 }
