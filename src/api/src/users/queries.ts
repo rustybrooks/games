@@ -4,7 +4,7 @@ import { SQL } from '../db';
 
 const saltRounds = 12;
 
-export function user({ username = null }: { username?: string }) {
+export function user({ username = null, apiKey = null }: { username?: string; apiKey?: string }) {
   const where = [];
   const bindvars = [];
 
@@ -13,7 +13,12 @@ export function user({ username = null }: { username?: string }) {
     bindvars.push(username);
   }
 
-  return SQL.selectZeroOrOne(`select * from users ${SQL.whereClause(where)}`, bindvars);
+  if (apiKey) {
+    where.push('api_key=$1');
+    bindvars.push(apiKey);
+  }
+  const query = `select * from users ${SQL.whereClause(where)}`;
+  return SQL.selectZeroOrOne(query, bindvars);
 }
 
 export async function addUser({

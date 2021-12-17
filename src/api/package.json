@@ -29,7 +29,8 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "serve": "nodemon src/app.ts"
+    "serve": "nodemon src/app.ts",
+    "migrate": "./node_modules/.bin/ts-node ./scripts/migrate.ts"
   },
   "author": "",
   "license": "MIT",

@@ -10,7 +10,10 @@ services:
       - 5000:5000
     volumes:
       - ./src/api/src:/srv/src/api/src
+      - ./src/api/scripts:/srv/src/api/scripts
     entrypoint: /srv/src/api/entrypoint.sh
+    env_file:
+      - ./src/api/env.local
 
   games-ui:
     build:

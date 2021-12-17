@@ -1,10 +1,34 @@
-import express, { Request, Response } from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import * as users from './users/api';
 import * as admin from './admin/api';
 
 const app = express();
 const port = 5000;
+
+const beforeRequest = async (req: Request, res: Response, next: NextFunction) => {
+  res.locals.user = await users.isLoggedIn(req);
+  console.log('set req.user to', res.locals.user);
+  res.setHeader('X-LOGGED-IN', res.locals.user ? '1' : '0');
+  next();
+};
+
+app.use(beforeRequest);
+
+/*
+@app.before_request
+def before_request():
+    request.user = login.is_logged_in(request, None, request.args)
+
+@app.after_request
+def cleanup(response):
+    try:
+        queries.SQL.cleanup_conn(dump_log=False)
+    except Exception as e:
+        logger.warn("after (path=%r): cleanup failed: %r", request.full_path, e)
+
+    return response
+ */
 
 const corsOptions = {
   origin: 'http://localhost:3000',
@@ -69,3 +93,4 @@ const wordleCheck = (request: Request, response: Response) => {
 
 app.all('/wordle/check', wordleCheck);
 app.use('/admin', admin.router);
+app.use('/user', users.router);
