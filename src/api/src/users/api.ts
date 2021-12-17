@@ -1,6 +1,7 @@
-import express, { Request, Response } from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import { getParams } from '../utils';
 import * as queries from './queries';
+import { HttpException, HaltException } from '../exceptions';
 
 export const router = express.Router();
 
@@ -17,9 +18,10 @@ export const isLoggedIn = async (request: Request) => {
   return null;
 };
 
-export const requireLogin = (response: Response) => {
+export const requireLogin = (response: Response, next: NextFunction) => {
   if (response.locals.user === null) {
-    response.status(403).json({ detail: 'unauthorized' });
+    next(new HttpException(403, '{detail: "unauthorized"}'));
+    throw new HaltException('halt'); // prevent further execution?
   }
 };
 
@@ -35,9 +37,9 @@ const changePassword = (request: Request, response: Response) => {
   const { new_password } = getParams(request);
 };
 
-const user = (request: Request, response: Response) => {
-  requireLogin(response);
-  console.log('user = ', response.locals.user);
+const user = (request: Request, response: Response, next: NextFunction) => {
+  console.log('user start');
+  requireLogin(response, next);
 
   response.status(200).json({
     username: response.locals.user.username,
@@ -97,14 +99,5 @@ app_class_proxy(app, "", "api/projects", projects.ProjectsApi())
 app_class_proxy(app, "", "api/tools", tools.ToolsApi())
 app_class_proxy(app, "", "api/pcb", pcb.PCBApi())
 app_class_proxy(app, "", "api/framework", FrameworkApi())
-
-------
-
-import jwt
-import logging
-
-from . import queries
-
-logger = logging.getLogger(__name__)
 
 */

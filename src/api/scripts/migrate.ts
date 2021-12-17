@@ -18,11 +18,26 @@ initial.addStatement(`
       api_key char(64) not null
     )
  `);
-
-initial.addStatement('create index users_user_id on users(user_id)');
 initial.addStatement('create index users_username on users(username)');
 initial.addStatement('create index users_email on users(email)');
 initial.addStatement('create index users_api_key on users(api_key)');
+
+initial.addStatement(`
+    create table leagues(
+        league_id serial primary key,
+        league_name varchar(200),
+        created timestamp
+    )
+`);
+initial.addStatement('create index leagues_league_name on leagues(league_name)');
+
+initial.addStatement(`
+    create table league_members(
+        league_member_id serial primary key,
+        user_id bigint references users(user_id),
+        league_id bigint references leagues(league_id)
+    )
+`);
 
 const bootstrapAdmin = async () => {
   const user = await users.user({ username: 'rbrooks' });

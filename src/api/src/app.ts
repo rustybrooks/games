@@ -1,5 +1,6 @@
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
+import { HttpException, HaltException } from './exceptions';
 import * as users from './users/api';
 import * as admin from './admin/api';
 
@@ -13,22 +14,20 @@ const beforeRequest = async (req: Request, res: Response, next: NextFunction) =>
   next();
 };
 
-app.use(beforeRequest);
+function errorMiddleware(error: HttpException, request: Request, response: Response, next: NextFunction) {
+  const status = error.status || 500;
+  const message = error.message || 'Something went wrong';
+  response.status(status).send({
+    status,
+    message,
+  });
+}
 
-/*
-@app.before_request
-def before_request():
-    request.user = login.is_logged_in(request, None, request.args)
-
-@app.after_request
-def cleanup(response):
-    try:
-        queries.SQL.cleanup_conn(dump_log=False)
-    except Exception as e:
-        logger.warn("after (path=%r): cleanup failed: %r", request.full_path, e)
-
-    return response
- */
+function defaulterrorMiddleware(error: Error, request: Request, response: Response, next: NextFunction) {
+  if (!(error instanceof HaltException)) {
+    console.log('my dumb error ware', error);
+  }
+}
 
 const corsOptions = {
   origin: 'http://localhost:3000',
@@ -36,6 +35,8 @@ const corsOptions = {
 };
 
 app.use(express.json());
+app.use(beforeRequest);
+
 app.use(cors(corsOptions));
 app.options('*', cors()); // include before other routes
 app.listen(port, '0.0.0.0');
@@ -94,3 +95,7 @@ const wordleCheck = (request: Request, response: Response) => {
 app.all('/wordle/check', wordleCheck);
 app.use('/admin', admin.router);
 app.use('/user', users.router);
+
+// must go last
+app.use(errorMiddleware);
+app.use(defaulterrorMiddleware);
