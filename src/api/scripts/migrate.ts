@@ -15,12 +15,9 @@ initial.addStatement(`
       email varchar(200) not null unique,
       username varchar(50) not null unique,
       is_admin bool default false not null,
-      api_key char(64) not null
+      api_key char(64) not null unique
     )
  `);
-initial.addStatement('create index users_username on lower(users(username))');
-initial.addStatement('create index users_email on lower(users(email))');
-initial.addStatement('create index users_api_key on lower(users(api_key))');
 
 initial.addStatement(`
     create table leagues(

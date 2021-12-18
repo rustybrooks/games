@@ -75,6 +75,7 @@ function LoginX({ classes, updateUser }: { classes: any; updateUser: any }) {
 
   const doSignup = async () => {
     const result = await fetch(genUrl('signup'), {
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
@@ -90,6 +91,7 @@ function LoginX({ classes, updateUser }: { classes: any; updateUser: any }) {
     } else {
       setErrors({});
       localStorage.setItem('api-key', await result.json());
+      closeDrawer();
     }
   };
 
@@ -115,7 +117,7 @@ function LoginX({ classes, updateUser }: { classes: any; updateUser: any }) {
           <material.FormControl className={classes.formControl}>
             <material.TextField
               error={Boolean(errors.email)}
-              helperText={errors.username}
+              helperText={errors.email}
               id="semail"
               label="Email"
               onChange={event => setEmail(event.target.value)}

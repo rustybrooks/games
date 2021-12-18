@@ -35,23 +35,33 @@ export const requireLogin = (response: Response, next: NextFunction) => {
 
 const signup = async (request: Request, response: Response, next: NextFunction) => {
   const { username, email, password, password2 } = getParams(request);
+  const errors: { [id: string]: string } = {};
   if (username.length < 4) {
-    return next(new exceptions.HttpBadRequest('Username must be at least 4 characters'));
+    errors.username = 'Username must be at least 4 characters';
   }
 
   if (password !== password2) {
-    return next(new exceptions.HttpBadRequest('Passwords do not match'));
+    errors.password2 = 'Passwords do not match';
   }
 
   if (password.length < 8) {
-    return next(new exceptions.HttpBadRequest('Passwords must be at least 8 characters'));
+    errors.password = 'Password must be at least 8 characters';
   }
 
   if (!email) {
-    return next(new exceptions.HttpBadRequest('Email required'));
+    errors.email = 'Email required';
   }
-  await queries.addUser({ username, password, email });
-  return response.status(200).json(queries.generateToken(username));
+
+  if (Object.keys(errors).length) {
+    return response.status(400).json({ details: errors });
+  }
+
+  try {
+    await queries.addUser({ username, password, email });
+    return response.status(200).json(queries.generateToken(username));
+  } catch (e) {
+    return response.status(400).json({ details: { username: 'Failed to create user' } });
+  }
 };
 
 const login = async (request: Request, response: Response, next: NextFunction) => {
