@@ -4,6 +4,8 @@ import { withStyles } from '@material-ui/core/styles';
 import Keyboard from 'react-simple-keyboard';
 import 'react-simple-keyboard/build/css/index.css';
 
+import * as constants from '../constants';
+
 const style = () => {
   const x: any = {
     cell: {
@@ -33,7 +35,7 @@ const style = () => {
   return x;
 };
 
-const genUrl = (fn: string) => `${process.env.API_URL}/wordle/${fn}`;
+const genUrl = (fn = '') => `${constants.BASE_URL}/wordle/${fn}`;
 
 const WordleX = ({ classes }: { classes: { [id: string]: any } }) => {
   const [results, setResults] = React.useState(['', '', '', '', '', '']);

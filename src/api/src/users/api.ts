@@ -3,6 +3,7 @@ import * as jwt from 'jsonwebtoken';
 import { getParams } from '../utils';
 import * as queries from './queries';
 import * as exceptions from '../exceptions';
+import { HttpException } from '../exceptions';
 
 export const router = express.Router();
 
@@ -34,6 +35,10 @@ export const requireLogin = (response: Response, next: NextFunction) => {
 
 const signup = async (request: Request, response: Response, next: NextFunction) => {
   const { username, email, password, password2 } = getParams(request);
+  if (username.length < 4) {
+    return next(new exceptions.HttpBadRequest('Username must be at least 4 characters'));
+  }
+
   if (password !== password2) {
     return next(new exceptions.HttpBadRequest('Passwords do not match'));
   }
@@ -74,7 +79,6 @@ const user = (request: Request, response: Response, next: NextFunction) => {
 
   response.status(200).json({
     username: response.locals.user.username,
-    user_id: response.locals.user.user_id,
   });
 };
 

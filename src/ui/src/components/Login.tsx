@@ -6,7 +6,7 @@ import { withStore, useGetAndSet } from 'react-context-hook';
 import * as material from '@material-ui/core';
 import * as constants from '../constants';
 
-const style = () => {
+const style = (theme: any) => {
   const x: any = {
     root: {
       maxWidth: 600,
@@ -15,35 +15,41 @@ const style = () => {
     },
 
     formControl: {
-      // margin: theme.spacing(1),
+      margin: theme.spacing(1),
       minWidth: 120,
     },
 
     button: {
-      // margin: theme.spacing(1),
+      margin: theme.spacing(1),
     },
   };
   return x;
 };
 
-const genUrl = (fn: string) => `${constants.BASE_URL}/user/${fn}`;
+const genUrl = (fn = '') => `${constants.BASE_URL}/user/${fn}`;
 
-function LoginX({ classes }: { classes: any }) {
+function LoginX({ classes, updateUser }: { classes: any; updateUser: any }) {
   const [tab, setTab] = React.useState('login');
   const [username, setUsername] = React.useState('');
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [password2, setPassword2] = React.useState('');
   const [errors, setErrors]: [{ username?: string; email?: string; password?: string; password2?: string }, any] = React.useState({});
-  const [loginWidget, setLoginWidget]: [any, any] = useGetAndSet('login-widget');
+
+  const [loginOpen, setLoginOpen] = useGetAndSet('login-open');
 
   const handleTabChange = (event: any, newTab: any) => {
     setTab(newTab);
   };
 
-  const doCancel = () => {
-    loginWidget.closeDrawer();
-  };
+  function closeDrawer() {
+    console.log('closing drawer');
+    setLoginOpen(false);
+  }
+
+  function doCancel() {
+    closeDrawer();
+  }
 
   const doLogin = async () => {
     const result = await fetch(genUrl('login'), {
@@ -62,8 +68,8 @@ function LoginX({ classes }: { classes: any }) {
     } else {
       setErrors({});
       localStorage.setItem('api-key', await result.json());
-      loginWidget.closeDrawer();
-      loginWidget.updateUser();
+      closeDrawer();
+      updateUser();
     }
   };
 
@@ -84,8 +90,6 @@ function LoginX({ classes }: { classes: any }) {
     } else {
       setErrors({});
       localStorage.setItem('api-key', await result.json());
-      // store.get('login-widget').closeDrawer();
-      // store.get('login-widget').updateUser();
     }
   };
 
@@ -184,4 +188,4 @@ function LoginX({ classes }: { classes: any }) {
   );
 }
 
-export const Login = withStyles(style)(withStore(LoginX));
+export const Login = withStyles(style)(LoginX);

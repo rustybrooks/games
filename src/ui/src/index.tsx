@@ -1,12 +1,12 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-
 import { withStore, useGetAndSet } from 'react-context-hook';
 
 import { withStyles } from '@material-ui/core/styles';
 import * as material from '@material-ui/core';
-// import { withRouter } from 'react-router'
+
+import * as constants from './constants';
 
 import { Wordle } from './components/Worldle';
 import { Login } from './components/Login';
@@ -29,31 +29,21 @@ const styles = {
   },
 };
 
+const genUrl = (fn = '') => `${constants.BASE_URL}/user/${fn}`;
+
 const NavBarX = ({ classes, history }: any) => {
-  const [loginOpen, setLoginOpen] = React.useState(false);
-  const [user, setUser]: [{ username: string }, any] = useGetAndSet('user');
+  const [loginOpen, setLoginOpen] = useGetAndSet('login-open', false);
   const [loginWidget, setLoginWidget] = useGetAndSet('login-widget');
+  const [user, setUser]: [{ username: string }, any] = useGetAndSet('user');
 
-  async function updateUser() {
-    /*
-    const fw = store.get('frameworks');
-    if (fw === null || fw === undefined) return;
+  console.log('loginopen!', loginOpen);
 
-    const data = await fw.UserApi.user();
-    if (data.status === 403) {
-      store.set('user', null);
-    } else {
-      store.set('user', data);
-    }
-     */
+  function openDrawer() {
+    setLoginOpen(true);
   }
 
   function closeDrawer() {
     setLoginOpen(false);
-  }
-
-  function openDrawer() {
-    setLoginOpen(true);
   }
 
   function logout() {
@@ -62,11 +52,28 @@ const NavBarX = ({ classes, history }: any) => {
     history.push('/');
   }
 
+  async function updateUser() {
+    const data = await fetch(genUrl(), {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-API-KEY': localStorage.getItem('api-key'),
+      },
+    });
+    console.log('updateUser', data);
+    if (data.status === 403) {
+      setUser(null);
+    } else {
+      setUser(await data.json());
+    }
+  }
+
   React.useEffect(() => {
     setLoginWidget(this);
     updateUser();
-  });
+  }, []);
 
+  console.log('user =', user);
   return (
     <div className={classes.root}>
       <material.AppBar position="static">
@@ -87,21 +94,32 @@ const NavBarX = ({ classes, history }: any) => {
           )}
         </material.Toolbar>
       </material.AppBar>
-      <material.Drawer anchor="right" open={loginOpen} onClose={closeDrawer}>
+      <material.Drawer anchor="left" open={loginOpen} onClose={closeDrawer}>
         <div role="presentation">
-          <Login />
+          <Login updateUser={updateUser} />
         </div>
       </material.Drawer>
     </div>
   );
 };
 
-const initialValue = {
-  midiCallbackMap: {},
-  midiInputs: {},
+const initialValue: { [id: string]: any } = {
+  'login-widget': null,
+  'login-open': false,
+  user: null,
 };
 
-const NavBar = withStore(withStyles(styles)(NavBarX), initialValue);
+const storeConfig = {
+  listener: (state: any, key: string, prevValue: any, nextValue: any) => {
+    console.log(`the key "${key}" changed in the store`);
+    console.log('the old value is', prevValue);
+    console.log('the current value is', nextValue);
+    console.log('the state is', state);
+  },
+  logging: process.env.NODE_ENV !== 'production',
+};
+
+const NavBar = withStore(withStyles(styles)(NavBarX), initialValue, storeConfig);
 
 ReactDOM.render(
   <BrowserRouter>
