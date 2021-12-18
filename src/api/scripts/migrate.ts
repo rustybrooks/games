@@ -1,4 +1,4 @@
-#!/usr/bin/env ts-node
+#!/srv/src/api/node_modules/.bin/ts-node
 
 import * as pgexplorer from '@rustybrooks/pgexplorer';
 import { migrations } from '@rustybrooks/pgexplorer';
@@ -6,7 +6,7 @@ import { migrations } from '@rustybrooks/pgexplorer';
 import * as users from '../src/users/queries';
 
 const initial = new migrations.Migration(1, 'initial version');
-['users'].forEach(t => initial.addStatement(`drop table if exists ${t}`));
+['guesses', 'answers', 'league_members', 'leagues', 'users'].forEach(t => initial.addStatement(`drop table if exists ${t}`));
 
 initial.addStatement(`
     create table users(
@@ -39,12 +39,12 @@ initial.addStatement(`
 `);
 
 initial.addStatement(`
-    create table answer(
+    create table answers(
         answer_id serial primary key,
         league_id bigint not null references leagues(league_id),
         answer varchar(10) not null,
         created timestamp not null default now(),
-        active_after not null timestamp,
+        active_after timestamp not null,
         active_before timestamp
     )
 `);
@@ -53,7 +53,7 @@ initial.addStatement(`
     create table guesses(
         guess_id serial primary key,
         user_id bigint not null references users(user_id),
-        league_id bigint not null references leagues(league_id),
+        answer_id bigint not null references answers(answer_id),
         guess varchar(10) not null,
         correct_placement smallint not null,
         correct_letter smallint not null,
@@ -84,4 +84,4 @@ const migrate = async ({ apply, isInitial }: { apply: number[]; isInitial: boole
   await bootstrapAdmin();
 };
 
-migrate({ apply: [], isInitial: false }).then(() => process.exit(0));
+migrate({ apply: [], isInitial: true }).then(() => process.exit(0));
