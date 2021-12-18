@@ -4,7 +4,7 @@
   "description": "games",
   "main": "./src/index.js",
   "dependencies": {
-    "@rustybrooks/pgexplorer": "^1.0.19",
+    "@rustybrooks/pgexplorer": "^1.0.25",
     "bcrypt": "latest",
     "cors": "latest",
     "eslint-plugin-react-hooks": "^4.3.0",

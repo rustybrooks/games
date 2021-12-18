@@ -9,7 +9,6 @@ const port = 5000;
 
 const beforeRequest = async (req: Request, res: Response, next: NextFunction) => {
   res.locals.user = await users.isLoggedIn(req);
-  console.log('set req.user to', res.locals.user);
   res.setHeader('X-LOGGED-IN', res.locals.user ? '1' : '0');
   next();
 };

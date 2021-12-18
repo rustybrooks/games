@@ -4,13 +4,14 @@ import { withStyles } from '@material-ui/core/styles';
 import { withStore, useGetAndSet } from 'react-context-hook';
 
 import * as material from '@material-ui/core';
+import * as constants from '../constants';
 
 const style = () => {
   const x: any = {
     root: {
       maxWidth: 600,
       minWidth: 400,
-      float: 'right',
+      float: 'left',
     },
 
     formControl: {
@@ -25,7 +26,7 @@ const style = () => {
   return x;
 };
 
-const genUrl = (fn: string) => `${process.env.API_URL}/user/${fn}`;
+const genUrl = (fn: string) => `${constants.BASE_URL}/user/${fn}`;
 
 function LoginX({ classes }: { classes: any }) {
   const [tab, setTab] = React.useState('login');

@@ -11,14 +11,13 @@ export const isLoggedIn = async (request: Request) => {
   if (apiKey) {
     try {
       const { username } = jwt.verify(apiKey, process.env.TOKEN_KEY) as { username: string };
-      return queries.user({ username });
+      return await queries.user({ username });
     } catch (e) {
       console.log('failed to decode jwt token');
     }
 
     try {
-      const user = await queries.user({ apiKey });
-      return user;
+      return await queries.user({ apiKey });
     } catch (e) {
       console.log('failed to look up user by api key');
     }
@@ -33,7 +32,7 @@ export const requireLogin = (response: Response, next: NextFunction) => {
   }
 };
 
-const signup = (request: Request, response: Response, next: NextFunction) => {
+const signup = async (request: Request, response: Response, next: NextFunction) => {
   const { username, email, password, password2 } = getParams(request);
   if (password !== password2) {
     return next(new exceptions.HttpBadRequest('Passwords do not match'));
@@ -46,7 +45,7 @@ const signup = (request: Request, response: Response, next: NextFunction) => {
   if (!email) {
     return next(new exceptions.HttpBadRequest('Email required'));
   }
-  queries.addUser({ username, password, email });
+  await queries.addUser({ username, password, email });
   return response.status(200).json(queries.generateToken(username));
 };
 
@@ -54,7 +53,7 @@ const login = async (request: Request, response: Response, next: NextFunction) =
   const { username, password } = getParams(request);
 
   if (username && password) {
-    const user = queries.user({ username });
+    const user = await queries.user({ username });
     if (await queries.checkPassword(password, user.password)) {
       return response.status(200).json(queries.generateToken(user.username));
     }
@@ -63,10 +62,10 @@ const login = async (request: Request, response: Response, next: NextFunction) =
   return next(new exceptions.HttpForbidden());
 };
 
-const changePassword = (request: Request, response: Response, next: NextFunction) => {
+const changePassword = async (request: Request, response: Response, next: NextFunction) => {
   requireLogin(response, next);
   const { new_password } = getParams(request);
-  queries.updateUser({ user_id: response.locals.user.user_id, password: new_password });
+  await queries.updateUser({ user_id: response.locals.user.user_id, password: new_password });
 };
 
 const user = (request: Request, response: Response, next: NextFunction) => {

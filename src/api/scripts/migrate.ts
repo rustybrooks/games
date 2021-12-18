@@ -18,9 +18,9 @@ initial.addStatement(`
       api_key char(64) not null
     )
  `);
-initial.addStatement('create index users_username on users(username)');
-initial.addStatement('create index users_email on users(email)');
-initial.addStatement('create index users_api_key on users(api_key)');
+initial.addStatement('create index users_username on lower(users(username))');
+initial.addStatement('create index users_email on lower(users(email))');
+initial.addStatement('create index users_api_key on lower(users(api_key))');
 
 initial.addStatement(`
     create table leagues(

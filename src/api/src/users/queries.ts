@@ -5,20 +5,22 @@ import { SQL } from '../db';
 
 const saltRounds = 12;
 
-export function user({ username = null, apiKey = null }: { username?: string; apiKey?: string }) {
+export async function user({ username = null, apiKey = null }: { username?: string; apiKey?: string }) {
   const where = [];
   const bindvars = [];
 
   if (username) {
-    where.push('username=$1');
-    bindvars.push(username);
+    where.push('lower(username)=$1');
+    bindvars.push(username.toLowerCase());
   }
 
   if (apiKey) {
-    where.push('api_key=$1');
-    bindvars.push(apiKey);
+    where.push('lower(api_key)=$1');
+    bindvars.push(apiKey.toLowerCase());
   }
   const query = `select * from users ${SQL.whereClause(where)}`;
+  // const query = 'select * from users';
+  console.log(query, bindvars, await SQL.select(query, bindvars));
   return SQL.selectZeroOrOne(query, bindvars);
 }
 
