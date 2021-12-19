@@ -1,4 +1,6 @@
 import express, { Request, Response, NextFunction } from 'express';
+
+import * as utils from './utils';
 // import { getParams } from '../utils';
 // import * as queries from './queries';
 // import * as exceptions from '../exceptions';
@@ -28,30 +30,7 @@ const wordleCheck = (request: Request, response: Response) => {
     });
   }
 
-  const expectedCounts = expected.split('').reduce((prev: { [id: string]: number }, current) => {
-    const prev2 = { ...prev };
-    prev2[current] = (prev2[current] || 0) + 1;
-    return prev2;
-  }, {});
-  const guessCounts = guess.split('').reduce((prev: { [id: string]: number }, current, i) => {
-    const prev2 = { ...prev };
-    if (expected[i] === current) {
-      prev2[current] = (prev2[current] || 0) + 1;
-    }
-    return prev2;
-  }, {});
-  const out = guess.split('').map((l, i) => {
-    if (l !== expected[i]) {
-      guessCounts[l] += 1;
-    }
-    if (l === expected[i]) {
-      return '+';
-    }
-    if (expected.includes(l) && guessCounts[l] <= expectedCounts[l]) {
-      return '-';
-    }
-    return ' ';
-  });
-
-  response.status(200).json(out.join(''));
+  response.status(200).json(utils.evaluateGuess(expected, guess).join(''));
 };
+
+router.all('/check', wordleCheck);

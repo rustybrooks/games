@@ -11,10 +11,12 @@
     "express": "latest",
     "jsonwebtoken": "^8.5.1",
     "sprintf-js": "latest",
-    "moment": "latest",
     "node-cron": "latest"
   },
   "devDependencies": {
+    "jest": "latest",
+    "@jest/types": "latest",
+    "@types/jest": "latest",
     "@types/bcrypt": "latest",
     "@types/cors": "latest",
     "@types/express": "latest",
@@ -31,16 +33,29 @@
     "nodemon": "latest",
     "prettier": "^2.5.1",
     "ts-node": "latest",
+    "ts-jest": "latest",
     "typescript": "latest"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "serve": "nodemon src/app.ts",
-    "migrate": "./node_modules/.bin/ts-node ./scripts/migrate.ts"
+    "test": "./node_modules/.bin/jest",    "serve": "nodemon src/app.ts",
+    "migrate": "./node_modules/.bin/ts-node ./scripts/migrate.ts",
+    "test:watch": "jest --watch",
+    "test:cov": "jest --coverage",
+    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand"
   },
   "author": "",
   "license": "MIT",
   "engines": {
     "node": ">= 14.0.0"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "transform": {
+      "node_modules/variables/.+\\.(j|t)sx?$": "ts-jest"
+    },
+    "transformIgnorePatterns": [
+      "node_modules/(?!variables/.*)"
+    ]
   }
 }

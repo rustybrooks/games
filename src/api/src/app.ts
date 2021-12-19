@@ -45,7 +45,7 @@ app.use(cors(corsOptions));
 app.options('*', cors()); // include before other routes
 app.listen(port, '0.0.0.0');
 
-app.all('/games/wordle', wordle.router);
+app.use('/games/wordle', wordle.router);
 app.use('/admin', admin.router);
 app.use('/user', users.router);
 
