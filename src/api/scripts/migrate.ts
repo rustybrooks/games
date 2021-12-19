@@ -6,7 +6,9 @@ import { migrations } from '@rustybrooks/pgexplorer';
 import * as users from '../src/users/queries';
 
 const initial = new migrations.Migration(1, 'initial version');
-['guesses', 'answers', 'league_members', 'leagues', 'users'].forEach(t => initial.addStatement(`drop table if exists ${t}`));
+['guesses', 'answers', 'league_series', 'league_members', 'leagues', 'users'].forEach(t =>
+  initial.addStatement(`drop table if exists ${t}`),
+);
 
 initial.addStatement(`
     create table users(
@@ -22,30 +24,46 @@ initial.addStatement(`
 initial.addStatement(`
     create table leagues(
         league_id serial primary key,
+        league_slug varchar(200) not null,
         league_name varchar(200) not null, 
-        created timestamp not null default now(),
-        rules json
+        created timestamp with time zone not null default now(),
+        series_cron_interval varchar(100),
+        answer_cron_interval varchar(100),
+        letters smallint default 5,
+        time_to_live_hours int default 24*60
     )
 `);
 initial.addStatement('create index leagues_league_name on leagues(league_name)');
+
+initial.addStatement(`
+    create table league_series(
+        league_series_id serial primary key,
+        league_id bigint not null references leagues(league_id),
+        start_time timestamp with time zone not null,
+        end_time timestamp with time zone not null
+    )
+`);
+initial.addStatement(`
+create unique index league_series_u on league_series(league_id, start_time, end_time) 
+`);
 
 initial.addStatement(`
     create table league_members(
         league_member_id serial primary key,
         user_id bigint not null references users(user_id),
         league_id bigint not null references leagues(league_id),
-        added timestamp not null default now()
+        added timestamp with time zone not null default now()
     )
 `);
 
 initial.addStatement(`
     create table answers(
         answer_id serial primary key,
-        league_id bigint not null references leagues(league_id),
+        league_series_id bigint not null references league_series(league_series_id),
         answer varchar(10) not null,
-        created timestamp not null default now(),
-        active_after timestamp not null,
-        active_before timestamp
+        created timestamp with time zone not null default now(),
+        active_after timestamp with time zone not null,
+        active_before timestamp with time zone
     )
 `);
 
@@ -55,10 +73,21 @@ initial.addStatement(`
         user_id bigint not null references users(user_id),
         answer_id bigint not null references answers(answer_id),
         guess varchar(10) not null,
-        correct_placement smallint not null,
-        correct_letter smallint not null,
-        created timestamp not null default now()               
+        correct_placement smallint not null default 0,
+        correct_letters smallint not null default 0,
+        correct boolean not null default false,
+        created timestamp with time zone not null default now()               
     )
+`);
+
+initial.addStatement(`
+    insert into leagues(league_name, league_slug, series_cron_interval, answer_cron_interval, letters, time_to_live_hours) 
+    values('Daily Play / Weekly Series / 5 letters', 'daily_weekly_5', '0 0 0 * * *', '0 0 0 * * 0', 5, 24)
+`);
+
+initial.addStatement(`
+    insert into leagues(league_name, league_slug, series_cron_interval, answer_cron_interval, letters, time_to_live_hours) 
+    values('Every 6h Play / Weekly Series / 5 letters', 'every_6h_weekly_5', '0 0 0-23/6 * * *', '0 0 0 * * 0', 5, 24)
 `);
 
 const bootstrapAdmin = async () => {

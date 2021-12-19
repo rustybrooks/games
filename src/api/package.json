@@ -10,7 +10,9 @@
     "eslint-plugin-react-hooks": "^4.3.0",
     "express": "latest",
     "jsonwebtoken": "^8.5.1",
-    "sprintf-js": "latest"
+    "sprintf-js": "latest",
+    "moment": "latest",
+    "node-cron": "latest"
   },
   "devDependencies": {
     "@types/bcrypt": "latest",
@@ -20,6 +22,7 @@
     "@types/node": "latest",
     "@types/sprintf-js": "latest",
     "@typescript-eslint/eslint-plugin": "latest",
+    "@types/node-cron": "latest",
     "eslint": "latest",
     "eslint-config-airbnb": "latest",
     "eslint-config-airbnb-base": "latest",
