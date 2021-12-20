@@ -1,3 +1,7 @@
+import * as fs from 'fs';
+
+const words: { [id: number]: string[] } = {};
+
 export function evaluateGuess(expected: string, guess: string) {
   const expectedCounts = expected.split('').reduce((prev: { [id: string]: number }, current) => {
     const prev2 = { ...prev };
@@ -23,4 +27,21 @@ export function evaluateGuess(expected: string, guess: string) {
     }
     return ' ';
   });
+}
+
+export function wordList(length: number) {
+  if (!(length in words)) {
+    console.log('Loading words of length', length);
+    words[length] = fs
+      .readFileSync('../../data/scrabble.txt', 'utf8')
+      .split('\n')
+      .filter(w => w.length === length);
+  }
+
+  return words[length];
+}
+
+export function randomWord(length: number) {
+  const wl = wordList(length);
+  return wl[Math.floor(Math.random() * wl.length)];
 }

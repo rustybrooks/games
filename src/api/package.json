@@ -37,7 +37,8 @@
     "typescript": "latest"
   },
   "scripts": {
-    "test": "./node_modules/.bin/jest",    "serve": "nodemon src/app.ts",
+    "test": "./node_modules/.bin/jest --config ./src/jest.config.ts",
+    "serve": "nodemon src/app.ts",
     "migrate": "./node_modules/.bin/ts-node ./scripts/migrate.ts",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
@@ -47,15 +48,5 @@
   "license": "MIT",
   "engines": {
     "node": ">= 14.0.0"
-  },
-  "jest": {
-    "preset": "ts-jest",
-    "testEnvironment": "node",
-    "transform": {
-      "node_modules/variables/.+\\.(j|t)sx?$": "ts-jest"
-    },
-    "transformIgnorePatterns": [
-      "node_modules/(?!variables/.*)"
-    ]
   }
 }

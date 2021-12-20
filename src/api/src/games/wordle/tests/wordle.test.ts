@@ -1,20 +1,22 @@
-// import * as sql from '../src/sql';
-
-// const SQL = sql.sqlFactory({
-//   writeUrl: 'http://wombat:1wombat2@localhost:5434/pgexplorer_test',
-// });
-
 import * as utils from '../utils';
+import * as db from '../../../db';
 
-describe('Test SQL Basic', () => {
-  beforeEach(async () => {});
-
-  afterAll(async () => {});
-
+describe('Test utils', () => {
   it('test_evaluateGuess', async () => {
     expect(utils.evaluateGuess('masse', 'basse')).toStrictEqual([' ', '+', '+', '+', '+']);
     expect(utils.evaluateGuess('masse', 'masse')).toStrictEqual(['+', '+', '+', '+', '+']);
+    expect(utils.evaluateGuess('masse', 'xmass')).toStrictEqual([' ', '-', '-', '+', '-']);
     expect(utils.evaluateGuess('masse', 'sasas')).toStrictEqual(['-', '+', '+', ' ', ' ']);
     expect(utils.evaluateGuess('guest', 'xgues')).toStrictEqual([' ', '-', '-', '-', '-']);
   });
+});
+
+describe('Test league series', () => {
+  beforeEach(async () => {});
+
+  afterAll(async () => {
+    db.SQL.pool.end();
+  });
+
+  it('test_generateAllSeries', async () => {});
 });
