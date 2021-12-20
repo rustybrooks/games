@@ -1,3 +1,4 @@
+import * as pgexplorer from '@rustybrooks/pgexplorer';
 import * as utils from '../utils';
 import * as queries from '../queries';
 import * as db from '../../../db';
@@ -16,16 +17,18 @@ describe('Test utils', () => {
 });
 
 describe('Test league series', () => {
-  beforeEach(async () => {});
+  beforeEach(async () => {
+    pgexplorer.tableConstraintDeleteOrder({}).forEach(t => db.SQL.execute(`truncate ${t}`));
+  });
 
   afterAll(async () => {
     mockRoundedNow.mockRestore();
-    db.SQL.pool.end();
+    db.SQL.db.$pool.end();
   });
 
   it('test_generateAllSeries', async () => {
     mockRoundedNow = jest.spyOn(queries, 'roundedNow');
+    expect(await queries.leagueSeries()).toStrictEqual([]);
     await migrations.bootstrapLeagues();
-    expect();
   });
 });

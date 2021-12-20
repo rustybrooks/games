@@ -22,11 +22,11 @@ export async function leagueSeries({
   sort = null,
 }: {
   league_id?: number;
-  end_date_before: Date;
+  end_date_before?: Date;
   page?: number;
   limit?: number;
-  sort: string[] | string;
-}) {
+  sort?: string[] | string;
+} = {}) {
   const [where, bindvars] = SQL.autoWhere({ league_id });
 
   if (end_date_before) {
@@ -34,7 +34,7 @@ export async function leagueSeries({
     bindvars.push(end_date_before);
   }
 
-  return SQL.selectOne(
+  return SQL.select(
     `
         select *
         from wordle_league_series
