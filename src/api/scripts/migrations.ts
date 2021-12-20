@@ -23,8 +23,8 @@ initial.addStatement(`
 initial.addStatement(`
     create table wordle_leagues(
         wordle_league_id serial primary key,
-        league_slug varchar(200) not null,
-        league_name varchar(200) not null, 
+        league_slug varchar(200) not null unique,
+        league_name varchar(200) not null unique, 
         create_date timestamp with time zone not null default now(),
         start_date timestamp with time zone not null,
         series_days smallint,
@@ -44,7 +44,7 @@ initial.addStatement(`
     )
 `);
 initial.addStatement(`
-create unique index wordle_league_series_u on wordle_league_series(wordle_league_id, start_time, end_time) 
+create unique index wordle_league_series_u on wordle_league_series(wordle_league_id, start_date, end_date) 
 `);
 
 initial.addStatement(`
@@ -80,25 +80,25 @@ initial.addStatement(`
     )
 `);
 
-export async function bootstrapLeagues() {
-  SQL.insert('wordle_leagues', {
+export async function bootstrapLeagues(startDate: Date) {
+  await SQL.insert('wordle_leagues', {
     league_name: 'Daily Play / Weekly Series / 5 letters',
     league_slug: 'daily_weekly_5',
     series_days: 7,
     answer_cron_interval: '0 0 0 * * *',
     letters: 5,
     time_to_live_hours: 24,
-    start_date: '2021-12-19',
+    start_date: startDate,
   });
 
-  SQL.insert('wordle_leagues', {
+  await SQL.insert('wordle_leagues', {
     league_name: 'Every 6h Play / Weekly Series / 5 letters',
     league_slug: 'every_6h_weekly_5',
     series_days: 7,
     answer_cron_interval: '0 0 0-23/6 * * *',
     letters: 5,
     time_to_live_hours: 24,
-    start_date: '2021-12-19',
+    start_date: startDate,
   });
 }
 
@@ -119,12 +119,11 @@ async function bootstrapAdmin() {
 
 export async function migrateSimple({ apply = [], isInitial = false }: { apply?: number[]; isInitial?: boolean }) {
   console.log('apply', apply, 'initial', isInitial);
-  // const SQL = pgexplorer.sql.sqlFactory({ writeUrl: process.env.WRITE_URL });
-  console.log(await migrations.Migration.migrate(SQL, isInitial, apply));
+  await migrations.Migration.migrate(SQL, isInitial, apply);
 }
 
 export async function migrate({ apply = [], isInitial = false }: { apply?: number[]; isInitial?: boolean }) {
   await migrateSimple({ apply, isInitial });
-  await bootstrapLeagues();
+  await bootstrapLeagues(new Date('2021-12-19'));
   await bootstrapAdmin();
 }

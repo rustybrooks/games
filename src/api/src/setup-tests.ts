@@ -29,9 +29,9 @@ async function isPortReachable({ port, host, timeout = 1000 }: { port: number; h
 }
 
 module.exports = async () => {
-  console.log('wait for postgres');
   await isPortReachable({ port: 5432, host: 'games-postgres-test', timeout: 30000 });
-  console.log('before migrate');
-  execSync('node_modules/.bin/ts-node ./scripts/migrate.ts initial');
-  console.log('after migrate');
+  execSync(
+    'node_modules/.bin/ts-node ./scripts/migrate.ts initial simple',
+    // { stdio: 'inherit' }
+  );
 };

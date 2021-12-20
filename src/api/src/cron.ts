@@ -3,7 +3,7 @@ import * as wordle from './games/wordle';
 
 export async function init() {
   cron.schedule('0 0 * * * *', () => {
-    wordle.generateAllSeries();
+    wordle.generateAllSeries(wordle.roundedNow());
   });
 
   (await wordle.leagues()).forEach((l: any) => {

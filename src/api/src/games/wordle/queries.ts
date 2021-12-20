@@ -15,19 +15,19 @@ export async function leagues() {
 
 /* ******* series ******** */
 export async function leagueSeries({
-  league_id = null,
+  wordle_league_id = null,
   end_date_before = null,
   page = null,
   limit = null,
   sort = null,
 }: {
-  league_id?: number;
+  wordle_league_id?: number;
   end_date_before?: Date;
   page?: number;
   limit?: number;
   sort?: string[] | string;
 } = {}) {
-  const [where, bindvars] = SQL.autoWhere({ league_id });
+  const [where, bindvars] = SQL.autoWhere({ wordle_league_id });
 
   if (end_date_before) {
     where.push('end_date <= $1');
@@ -47,38 +47,42 @@ export async function leagueSeries({
 }
 
 export async function addLeagueSeries(data: { [id: string]: any }) {
-  return SQL.insert('league_series', data, 200, false, true);
+  return SQL.insert('wordle_league_series', data, 200, false, true);
 }
 
-export async function generateSeries(league: any) {
+export async function generateSeries(league: any, now: Date) {
+  console.log('league', league);
   const lastSeries = await leagueSeries({
-    league_id: league.league_id,
+    wordle_league_id: league.wordle_league_id,
     page: 1,
     limit: 1,
     sort: '-start_date',
   });
+  console.log('last series', lastSeries);
 
   let start = league.start_date;
   if (lastSeries.length) {
-    const daysToEnd = lastSeries.end_date.getTime() - roundedNow().getTime();
-    if (daysToEnd <= 1) {
-      start = lastSeries.end_date;
-    }
+    start = lastSeries[0].end_date;
   }
 
-  const end = start.copy();
-  end.setDate(end.getDate() + league.series_days);
-  return addLeagueSeries({
-    league_id: league.league_id,
-    start_date: start,
-    end_date: end,
-  });
+  const startCutoff = new Date(now);
+  startCutoff.setDate(startCutoff.getDate() + 7);
+  while (start < startCutoff) {
+    const end = new Date(start);
+    end.setDate(end.getDate() + league.series_days);
+    await addLeagueSeries({
+      wordle_league_id: league.wordle_league_id,
+      start_date: start,
+      end_date: end,
+    });
+    start = new Date(end);
+  }
 }
 
-export async function generateAllSeries() {
-  (await leagues()).map(async (l: any) => {
-    generateSeries(l);
-  });
+export async function generateAllSeries(now: Date) {
+  for (const l of await leagues()) {
+    await generateSeries(l, now);
+  }
 }
 
 /* ******* answers ******** */
@@ -87,14 +91,14 @@ export async function generateAnswer(league: any) {
   const end = roundedNow();
   end.setHours(end.getHours + league.time_to_live_hours);
   const series = await leagueSeries({
-    league_id: league.league_id,
+    wordle_league_id: league.wordle_league_id,
     end_date_before: now,
     page: 1,
     limit: 1,
     sort: '-start_date',
   });
   SQL.insert('answers', {
-    league_series_id: series.league_series_id,
+    wordle_league_series_id: series.wordle_league_series_id,
     answer: utils.randomWord(league.letters),
     active_after: now,
     active_before: now,
