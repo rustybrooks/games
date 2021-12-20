@@ -1,7 +1,7 @@
 import { SQL } from '../../db';
 import * as utils from './utils';
 
-function roundedNow() {
+export function roundedNow() {
   const d = new Date();
   d.setMinutes(60 * Math.round(d.getMinutes() / 60));
   return d;

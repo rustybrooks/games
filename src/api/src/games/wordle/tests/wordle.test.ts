@@ -1,5 +1,9 @@
 import * as utils from '../utils';
+import * as queries from '../queries';
 import * as db from '../../../db';
+import * as migrations from '../../../../scripts/migrations';
+
+let mockRoundedNow: jest.SpyInstance;
 
 describe('Test utils', () => {
   it('test_evaluateGuess', async () => {
@@ -15,8 +19,12 @@ describe('Test league series', () => {
   beforeEach(async () => {});
 
   afterAll(async () => {
+    mockRoundedNow.mockRestore();
     db.SQL.pool.end();
   });
 
-  it('test_generateAllSeries', async () => {});
+  it('test_generateAllSeries', async () => {
+    mockRoundedNow = jest.spyOn(queries, 'roundedNow');
+    await migrations.bootstrapLeagues();
+  });
 });

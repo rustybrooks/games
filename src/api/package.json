@@ -40,9 +40,8 @@
     "test": "./node_modules/.bin/jest --config ./src/jest.config.ts",
     "serve": "nodemon src/app.ts",
     "migrate": "./node_modules/.bin/ts-node ./scripts/migrate.ts",
-    "test:watch": "jest --watch",
-    "test:cov": "jest --coverage",
-    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand"
+    "test:watch": "jest --config ./src/jest.config.ts --watch",
+    "test:cov": "jest --config ./src/jest.config.ts　--coverage"
   },
   "author": "",
   "license": "MIT",

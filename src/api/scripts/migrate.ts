@@ -2,4 +2,5 @@
 
 import * as migrations from './migrations';
 
-migrations.migrate({ apply: [], isInitial: true }).then(() => process.exit(0));
+const isInitial = process.argv[1] === 'initial';
+migrations.migrate({ apply: [], isInitial }).then(() => process.exit(0));

@@ -14,6 +14,8 @@ services:
     entrypoint: /srv/src/api/entrypoint.sh
     env_file:
       - ./src/api/env.local
+    depends_on:
+      - games-postgres
 
   games-ui:
     build:
@@ -25,10 +27,26 @@ services:
     volumes:
       - ./src/ui/src:/srv/src/ui/src
     entrypoint: /srv/src/ui/entrypoint.sh
+    depends_on:
+      - games-api
 
-  postgres:
-    image: postgres:10.6
-    container_name: postgres
+  games-api-test:
+    build:
+      context: ./src/api
+      dockerfile: Dockerfile
+    container_name: games-api-test
+    volumes:
+      - ./src/api/src:/srv/src/api/src
+      - ./src/api/scripts:/srv/src/api/scripts
+    entrypoint: npm test
+    env_file:
+      - ./src/api/env.test
+    depends_on:
+      - games-postgres-test
+
+  games-postgres:
+    image: postgres:13
+    container_name: games-postgres
     environment:
       - POSTGRES_DB=games
       - POSTGRES_USER=wombat
@@ -40,3 +58,14 @@ services:
       - 5434:5432
     # uncomment to see all queries
     # command: ["postgres", "-c", "log_statement=all"]
+
+  games-postgres-test:
+    image: postgres:13
+    container_name: games-postgres-test
+    environment:
+      - POSTGRES_DB=games_test
+      - POSTGRES_USER=wombat
+      - POSTGRES_PASSWORD=1wombat2
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - ./data/postgres_test:/var/lib/postgresql/data/pgdata
