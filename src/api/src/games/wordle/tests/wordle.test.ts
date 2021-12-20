@@ -26,5 +26,6 @@ describe('Test league series', () => {
   it('test_generateAllSeries', async () => {
     mockRoundedNow = jest.spyOn(queries, 'roundedNow');
     await migrations.bootstrapLeagues();
+    expect();
   });
 });

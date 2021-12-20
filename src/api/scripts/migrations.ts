@@ -39,8 +39,8 @@ initial.addStatement(`
     create table wordle_league_series(
         wordle_league_series_id serial primary key,
         wordle_league_id bigint not null references wordle_leagues(wordle_league_id),
-        start_time timestamp with time zone not null,
-        end_time timestamp with time zone not null
+        start_date timestamp with time zone not null,
+        end_date timestamp with time zone not null
     )
 `);
 initial.addStatement(`
