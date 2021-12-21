@@ -8,7 +8,7 @@ export async function init() {
 
   (await wordle.leagues()).forEach((l: any) => {
     cron.schedule(l.answer_cron_interval, () => {
-      wordle.generateAnswer(l);
+      wordle.generateAnswer(l, wordle.roundedNow());
     });
   });
 }

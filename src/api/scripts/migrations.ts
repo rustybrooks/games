@@ -39,6 +39,7 @@ initial.addStatement(`
     create table wordle_league_series(
         wordle_league_series_id serial primary key,
         wordle_league_id bigint not null references wordle_leagues(wordle_league_id),
+        create_date timestamp with time zone not null default now(),
         start_date timestamp with time zone not null,
         end_date timestamp with time zone not null
     )
@@ -52,7 +53,7 @@ initial.addStatement(`
         wordle_league_member_id serial primary key,
         user_id bigint not null references users(user_id),
         wordle_league_id bigint not null references wordle_leagues(wordle_league_id),
-        added timestamp with time zone not null default now()
+        add_date timestamp with time zone not null default now()
     )
 `);
 
@@ -65,6 +66,9 @@ initial.addStatement(`
         active_after timestamp with time zone not null,
         active_before timestamp with time zone
     )
+`);
+initial.addStatement(`
+create unique index wordle_answers_u on wordle_answers(wordle_league_series_id, active_after)
 `);
 
 initial.addStatement(`

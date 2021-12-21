@@ -1,0 +1,1145 @@
+Found orphan containers (postgres) for this project. If you removed or renamed this service in your compose file, you can run this command with the --remove-orphans flag to clean it up.
+Creating games_games-api-test_run ... 
+[1A[2KCreating games_games-api-test_run ... [32mdone[0m[1B
+> games@1.0.0 test
+> ./node_modules/.bin/jest --config ./src/jest.config.ts
+
+[1m[2mDetermining test suites to run...[22m[22mapply [] initial [33mtrue[39m
+Version = null, todo = 1, initial=true
+Running migration 1: initial version
+SQL Execute: drop table if exists wordle_guesses
+SQL Execute: drop table if exists wordle_answers
+SQL Execute: drop table if exists wordle_league_series
+SQL Execute: drop table if exists wordle_league_members
+SQL Execute: drop table if exists wordle_leagues
+SQL Execute: drop table if exists users
+SQL Execute: 
+    create table users(
+      user_id serial primary key,
+      password varchar(200) not null,
+      email varchar(200) not null unique,
+      username varchar(50) not null unique,
+      is_admin bool default false not null,
+      api_key char(64) not null unique
+    )
+ 
+SQL Execute: 
+    create table wordle_leagues(
+        wordle_league_id serial primary key,
+        league_slug varchar(200) not null unique,
+        league_name varchar(200) not null unique, 
+        create_date timestamp with time zone not null default now(),
+        start_date timestamp with time zone not null,
+        series_days smallint,
+        answer_cron_interval varchar(100),
+        letters smallint default 5,
+        time_to_live_hours int default 24*60
+    )
+
+SQL Execute: 
+    create table wordle_league_series(
+        wordle_league_series_id serial primary key,
+        wordle_league_id bigint not null references wordle_leagues(wordle_league_id),
+        start_date timestamp with time zone not null,
+        end_date timestamp with time zone not null
+    )
+
+SQL Execute: 
+create unique index wordle_league_series_u on wordle_league_series(wordle_league_id, start_date, end_date) 
+
+SQL Execute: 
+    create table wordle_league_members(
+        wordle_league_member_id serial primary key,
+        user_id bigint not null references users(user_id),
+        wordle_league_id bigint not null references wordle_leagues(wordle_league_id),
+        added timestamp with time zone not null default now()
+    )
+
+SQL Execute: 
+    create table wordle_answers(
+        wordle_answer_id serial primary key,
+        wordle_league_series_id bigint not null references wordle_league_series(wordle_league_series_id),
+        answer varchar(10) not null,
+        create_date timestamp with time zone not null default now(),
+        active_after timestamp with time zone not null,
+        active_before timestamp with time zone
+    )
+
+SQL Execute: 
+    create table wordle_guesses(
+        wordle_guess_id serial primary key,
+        user_id bigint not null references users(user_id),
+        wordle_answer_id bigint not null references wordle_answers(wordle_answer_id),
+        guess varchar(10) not null,
+        correct_placement smallint not null default 0,
+        correct_letters smallint not null default 0,
+        correct boolean not null default false,
+        create_date timestamp with time zone not null default now()               
+    )
+
+[999D[K
+[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    league {
+      wordle_league_id: 1,
+      league_slug: 'daily_weekly_5',
+      league_name: 'Daily Play / Weekly Series / 5 letters',
+      create_date: 2021-12-20T22:14:46.231Z,
+      start_date: 2021-01-01T00:00:00.000Z,
+      series_days: 7,
+      answer_cron_interval: '0 0 0 * * *',
+      letters: 5,
+      time_to_live_hours: 24
+    }
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:55:11[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    league {
+      wordle_league_id: 2,
+      league_slug: 'every_6h_weekly_5',
+      league_name: 'Every 6h Play / Weekly Series / 5 letters',
+      create_date: 2021-12-20T22:14:46.251Z,
+      start_date: 2021-01-01T00:00:00.000Z,
+      series_days: 7,
+      answer_cron_interval: '0 0 0-23/6 * * *',
+      letters: 5,
+      time_to_live_hours: 24
+    }
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:55:11[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    last series []
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:62:11[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    first start 2021-01-01T00:00:00.000Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:72:11[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-01-01T00:00:00.000Z new end 2021-01-08T00:00:00.000Z cutoff 2021-12-27T22:00:46.261Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-01-08T00:00:00.000Z new end 2021-01-15T00:00:00.000Z cutoff 2021-12-27T22:00:46.261Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-01-15T00:00:00.000Z new end 2021-01-22T00:00:00.000Z cutoff 2021-12-27T22:00:46.261Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-01-22T00:00:00.000Z new end 2021-01-29T00:00:00.000Z cutoff 2021-12-27T22:00:46.261Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-01-29T00:00:00.000Z new end 2021-02-05T00:00:00.000Z cutoff 2021-12-27T22:00:46.261Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    last series []
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:62:11[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    first start 2021-01-01T00:00:00.000Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:72:11[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-01-01T00:00:00.000Z new end 2021-01-08T00:00:00.000Z cutoff 2021-12-27T22:00:46.328Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-02-05T00:00:00.000Z new end 2021-02-12T00:00:00.000Z cutoff 2021-12-27T22:00:46.261Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-01-08T00:00:00.000Z new end 2021-01-15T00:00:00.000Z cutoff 2021-12-27T22:00:46.328Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-02-12T00:00:00.000Z new end 2021-02-19T00:00:00.000Z cutoff 2021-12-27T22:00:46.261Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-01-15T00:00:00.000Z new end 2021-01-22T00:00:00.000Z cutoff 2021-12-27T22:00:46.328Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-02-19T00:00:00.000Z new end 2021-02-26T00:00:00.000Z cutoff 2021-12-27T22:00:46.261Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-01-22T00:00:00.000Z new end 2021-01-29T00:00:00.000Z cutoff 2021-12-27T22:00:46.328Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-02-26T00:00:00.000Z new end 2021-03-05T00:00:00.000Z cutoff 2021-12-27T22:00:46.261Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-01-29T00:00:00.000Z new end 2021-02-05T00:00:00.000Z cutoff 2021-12-27T22:00:46.328Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-03-05T00:00:00.000Z new end 2021-03-12T00:00:00.000Z cutoff 2021-12-27T22:00:46.261Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-02-05T00:00:00.000Z new end 2021-02-12T00:00:00.000Z cutoff 2021-12-27T22:00:46.328Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-03-12T00:00:00.000Z new end 2021-03-19T00:00:00.000Z cutoff 2021-12-27T22:00:46.261Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-02-12T00:00:00.000Z new end 2021-02-19T00:00:00.000Z cutoff 2021-12-27T22:00:46.328Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-02-19T00:00:00.000Z new end 2021-02-26T00:00:00.000Z cutoff 2021-12-27T22:00:46.328Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-03-19T00:00:00.000Z new end 2021-03-26T00:00:00.000Z cutoff 2021-12-27T22:00:46.261Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-02-26T00:00:00.000Z new end 2021-03-05T00:00:00.000Z cutoff 2021-12-27T22:00:46.328Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-03-05T00:00:00.000Z new end 2021-03-12T00:00:00.000Z cutoff 2021-12-27T22:00:46.328Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-03-26T00:00:00.000Z new end 2021-04-02T00:00:00.000Z cutoff 2021-12-27T22:00:46.261Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-03-12T00:00:00.000Z new end 2021-03-19T00:00:00.000Z cutoff 2021-12-27T22:00:46.328Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-04-02T00:00:00.000Z new end 2021-04-09T00:00:00.000Z cutoff 2021-12-27T22:00:46.261Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-03-19T00:00:00.000Z new end 2021-03-26T00:00:00.000Z cutoff 2021-12-27T22:00:46.328Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-04-09T00:00:00.000Z new end 2021-04-16T00:00:00.000Z cutoff 2021-12-27T22:00:46.261Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-04-16T00:00:00.000Z new end 2021-04-23T00:00:00.000Z cutoff 2021-12-27T22:00:46.261Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-03-26T00:00:00.000Z new end 2021-04-02T00:00:00.000Z cutoff 2021-12-27T22:00:46.328Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-04-23T00:00:00.000Z new end 2021-04-30T00:00:00.000Z cutoff 2021-12-27T22:00:46.261Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-04-02T00:00:00.000Z new end 2021-04-09T00:00:00.000Z cutoff 2021-12-27T22:00:46.328Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-04-30T00:00:00.000Z new end 2021-05-07T00:00:00.000Z cutoff 2021-12-27T22:00:46.261Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-04-09T00:00:00.000Z new end 2021-04-16T00:00:00.000Z cutoff 2021-12-27T22:00:46.328Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-05-07T00:00:00.000Z new end 2021-05-14T00:00:00.000Z cutoff 2021-12-27T22:00:46.261Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-04-16T00:00:00.000Z new end 2021-04-23T00:00:00.000Z cutoff 2021-12-27T22:00:46.328Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-05-14T00:00:00.000Z new end 2021-05-21T00:00:00.000Z cutoff 2021-12-27T22:00:46.261Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-04-23T00:00:00.000Z new end 2021-04-30T00:00:00.000Z cutoff 2021-12-27T22:00:46.328Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-05-21T00:00:00.000Z new end 2021-05-28T00:00:00.000Z cutoff 2021-12-27T22:00:46.261Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-04-30T00:00:00.000Z new end 2021-05-07T00:00:00.000Z cutoff 2021-12-27T22:00:46.328Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-05-28T00:00:00.000Z new end 2021-06-04T00:00:00.000Z cutoff 2021-12-27T22:00:46.261Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-05-07T00:00:00.000Z new end 2021-05-14T00:00:00.000Z cutoff 2021-12-27T22:00:46.328Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-06-04T00:00:00.000Z new end 2021-06-11T00:00:00.000Z cutoff 2021-12-27T22:00:46.261Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-05-14T00:00:00.000Z new end 2021-05-21T00:00:00.000Z cutoff 2021-12-27T22:00:46.328Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-06-11T00:00:00.000Z new end 2021-06-18T00:00:00.000Z cutoff 2021-12-27T22:00:46.261Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-05-21T00:00:00.000Z new end 2021-05-28T00:00:00.000Z cutoff 2021-12-27T22:00:46.328Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-06-18T00:00:00.000Z new end 2021-06-25T00:00:00.000Z cutoff 2021-12-27T22:00:46.261Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-05-28T00:00:00.000Z new end 2021-06-04T00:00:00.000Z cutoff 2021-12-27T22:00:46.328Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-06-25T00:00:00.000Z new end 2021-07-02T00:00:00.000Z cutoff 2021-12-27T22:00:46.261Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-06-04T00:00:00.000Z new end 2021-06-11T00:00:00.000Z cutoff 2021-12-27T22:00:46.328Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-07-02T00:00:00.000Z new end 2021-07-09T00:00:00.000Z cutoff 2021-12-27T22:00:46.261Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-06-11T00:00:00.000Z new end 2021-06-18T00:00:00.000Z cutoff 2021-12-27T22:00:46.328Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-07-09T00:00:00.000Z new end 2021-07-16T00:00:00.000Z cutoff 2021-12-27T22:00:46.261Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-06-18T00:00:00.000Z new end 2021-06-25T00:00:00.000Z cutoff 2021-12-27T22:00:46.328Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-07-16T00:00:00.000Z new end 2021-07-23T00:00:00.000Z cutoff 2021-12-27T22:00:46.261Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-06-25T00:00:00.000Z new end 2021-07-02T00:00:00.000Z cutoff 2021-12-27T22:00:46.328Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-07-23T00:00:00.000Z new end 2021-07-30T00:00:00.000Z cutoff 2021-12-27T22:00:46.261Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-07-02T00:00:00.000Z new end 2021-07-09T00:00:00.000Z cutoff 2021-12-27T22:00:46.328Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-07-30T00:00:00.000Z new end 2021-08-06T00:00:00.000Z cutoff 2021-12-27T22:00:46.261Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-07-09T00:00:00.000Z new end 2021-07-16T00:00:00.000Z cutoff 2021-12-27T22:00:46.328Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-08-06T00:00:00.000Z new end 2021-08-13T00:00:00.000Z cutoff 2021-12-27T22:00:46.261Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-07-16T00:00:00.000Z new end 2021-07-23T00:00:00.000Z cutoff 2021-12-27T22:00:46.328Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-08-13T00:00:00.000Z new end 2021-08-20T00:00:00.000Z cutoff 2021-12-27T22:00:46.261Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-07-23T00:00:00.000Z new end 2021-07-30T00:00:00.000Z cutoff 2021-12-27T22:00:46.328Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-08-20T00:00:00.000Z new end 2021-08-27T00:00:00.000Z cutoff 2021-12-27T22:00:46.261Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-07-30T00:00:00.000Z new end 2021-08-06T00:00:00.000Z cutoff 2021-12-27T22:00:46.328Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-08-27T00:00:00.000Z new end 2021-09-03T00:00:00.000Z cutoff 2021-12-27T22:00:46.261Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-08-06T00:00:00.000Z new end 2021-08-13T00:00:00.000Z cutoff 2021-12-27T22:00:46.328Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-09-03T00:00:00.000Z new end 2021-09-10T00:00:00.000Z cutoff 2021-12-27T22:00:46.261Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-08-13T00:00:00.000Z new end 2021-08-20T00:00:00.000Z cutoff 2021-12-27T22:00:46.328Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-09-10T00:00:00.000Z new end 2021-09-17T00:00:00.000Z cutoff 2021-12-27T22:00:46.261Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-08-20T00:00:00.000Z new end 2021-08-27T00:00:00.000Z cutoff 2021-12-27T22:00:46.328Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-09-17T00:00:00.000Z new end 2021-09-24T00:00:00.000Z cutoff 2021-12-27T22:00:46.261Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-08-27T00:00:00.000Z new end 2021-09-03T00:00:00.000Z cutoff 2021-12-27T22:00:46.328Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-09-24T00:00:00.000Z new end 2021-10-01T00:00:00.000Z cutoff 2021-12-27T22:00:46.261Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-09-03T00:00:00.000Z new end 2021-09-10T00:00:00.000Z cutoff 2021-12-27T22:00:46.328Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-10-01T00:00:00.000Z new end 2021-10-08T00:00:00.000Z cutoff 2021-12-27T22:00:46.261Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-09-10T00:00:00.000Z new end 2021-09-17T00:00:00.000Z cutoff 2021-12-27T22:00:46.328Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-10-08T00:00:00.000Z new end 2021-10-15T00:00:00.000Z cutoff 2021-12-27T22:00:46.261Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-09-17T00:00:00.000Z new end 2021-09-24T00:00:00.000Z cutoff 2021-12-27T22:00:46.328Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-10-15T00:00:00.000Z new end 2021-10-22T00:00:00.000Z cutoff 2021-12-27T22:00:46.261Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-09-24T00:00:00.000Z new end 2021-10-01T00:00:00.000Z cutoff 2021-12-27T22:00:46.328Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-10-22T00:00:00.000Z new end 2021-10-29T00:00:00.000Z cutoff 2021-12-27T22:00:46.261Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-10-01T00:00:00.000Z new end 2021-10-08T00:00:00.000Z cutoff 2021-12-27T22:00:46.328Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-10-29T00:00:00.000Z new end 2021-11-05T00:00:00.000Z cutoff 2021-12-27T22:00:46.261Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-10-08T00:00:00.000Z new end 2021-10-15T00:00:00.000Z cutoff 2021-12-27T22:00:46.328Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-11-05T00:00:00.000Z new end 2021-11-12T00:00:00.000Z cutoff 2021-12-27T22:00:46.261Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-10-15T00:00:00.000Z new end 2021-10-22T00:00:00.000Z cutoff 2021-12-27T22:00:46.328Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-10-22T00:00:00.000Z new end 2021-10-29T00:00:00.000Z cutoff 2021-12-27T22:00:46.328Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-11-12T00:00:00.000Z new end 2021-11-19T00:00:00.000Z cutoff 2021-12-27T22:00:46.261Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-10-29T00:00:00.000Z new end 2021-11-05T00:00:00.000Z cutoff 2021-12-27T22:00:46.328Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-11-19T00:00:00.000Z new end 2021-11-26T00:00:00.000Z cutoff 2021-12-27T22:00:46.261Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-11-05T00:00:00.000Z new end 2021-11-12T00:00:00.000Z cutoff 2021-12-27T22:00:46.328Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-11-26T00:00:00.000Z new end 2021-12-03T00:00:00.000Z cutoff 2021-12-27T22:00:46.261Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-11-12T00:00:00.000Z new end 2021-11-19T00:00:00.000Z cutoff 2021-12-27T22:00:46.328Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-12-03T00:00:00.000Z new end 2021-12-10T00:00:00.000Z cutoff 2021-12-27T22:00:46.261Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-11-19T00:00:00.000Z new end 2021-11-26T00:00:00.000Z cutoff 2021-12-27T22:00:46.328Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-12-10T00:00:00.000Z new end 2021-12-17T00:00:00.000Z cutoff 2021-12-27T22:00:46.261Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-11-26T00:00:00.000Z new end 2021-12-03T00:00:00.000Z cutoff 2021-12-27T22:00:46.328Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-12-17T00:00:00.000Z new end 2021-12-24T00:00:00.000Z cutoff 2021-12-27T22:00:46.261Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-12-03T00:00:00.000Z new end 2021-12-10T00:00:00.000Z cutoff 2021-12-27T22:00:46.328Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-12-24T00:00:00.000Z new end 2021-12-31T00:00:00.000Z cutoff 2021-12-27T22:00:46.261Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-12-10T00:00:00.000Z new end 2021-12-17T00:00:00.000Z cutoff 2021-12-27T22:00:46.328Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-12-17T00:00:00.000Z new end 2021-12-24T00:00:00.000Z cutoff 2021-12-27T22:00:46.328Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  [2mconsole.log[22m
+    new start 2021-12-24T00:00:00.000Z new end 2021-12-31T00:00:00.000Z cutoff 2021-12-27T22:00:46.328Z
+[2m[22m
+[2m      [2mat [22m[2mgames/wordle/queries.ts[2m:79:13[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[0m[7m[1m[31m FAIL [39m[22m[27m[0m [2msrc/games/wordle/tests/[22m[1mwordle.test.ts[22m
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  Test utils
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A    [32m✓[39m [2mtest_evaluateGuess (8 ms)[22m
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A  Test league series
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A    [31m✕[39m [2mtest_generateAllSeries (201 ms)[22m
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[1m[31m  [1m● [22m[1mTest league series › test_generateAllSeries[39m[22m
+
+    [2mexpect([22m[31mreceived[39m[2m).[22mtoBe[2m([22m[32mexpected[39m[2m) // Object.is equality[22m
+
+    Expected: [32m0[39m
+    Received: [31m4[39m
+[2m[22m
+[2m    [0m [90m 39 |[39m     mockRoundedNow[33m.[39mmockReturnValue([36mnew[39m [33mDate[39m([32m'2020-12-15'[39m))[33m;[39m[0m[22m
+[2m    [0m [90m 40 |[39m     [36mawait[39m queries[33m.[39mgenerateAllSeries()[33m;[39m[0m[22m
+[2m    [0m[31m[1m>[22m[2m[39m[90m 41 |[39m     expect(([36mawait[39m queries[33m.[39mleagueSeries())[33m.[39mlength)[33m.[39mtoBe([35m0[39m)[33m;[39m[0m[22m
+[2m    [0m [90m    |[39m                                                   [31m[1m^[22m[2m[39m[0m[22m
+[2m    [0m [90m 42 |[39m[0m[22m
+[2m    [0m [90m 43 |[39m     [90m// the first one is close enough, should generate one set[39m[0m[22m
+[2m    [0m [90m 44 |[39m     [90m// mockRoundedNow.mockReturnValue(new Date('2020-12-31'));[39m[0m[22m
+[2m[22m
+[2m      [2mat [22m[2m[0m[36mgames/wordle/tests/wordle.test.ts[39m[0m[2m:41:51[22m[2m[22m
+[2m      [2mat fulfilled ([22m[2m[0m[36mgames/wordle/tests/wordle.test.ts[39m[0m[2m:24:58)[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[K[1A[K[1A[999D[K[1mTest Suites: [22m[1m[31m1 failed[39m[22m, 1 total
+[1mTests:       [22m[1m[31m1 failed[39m[22m, [1m[32m1 passed[39m[22m, 2 total
+[1mSnapshots:   [22m0 total
+[1mTime:[22m        2.45 s
+[2mRan all test suites[22m[2m.[22m

@@ -33,7 +33,7 @@ export function wordList(length: number) {
   if (!(length in words)) {
     console.log('Loading words of length', length);
     words[length] = fs
-      .readFileSync('../../data/scrabble.txt', 'utf8')
+      .readFileSync('./data/scrabble.txt', 'utf8')
       .split('\n')
       .filter(w => w.length === length);
   }

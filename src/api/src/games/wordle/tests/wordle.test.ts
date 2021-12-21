@@ -16,17 +16,15 @@ describe('Test utils', () => {
   });
 });
 
-describe('Test league series', () => {
-  beforeEach(async () => {});
-
+describe('Test cron stuff', () => {
   afterAll(async () => {
-    // if (mockRoundedNow) mockRoundedNow.mockRestore();
+    db.SQL.db.$pool.end();
+  });
 
+  afterEach(async () => {
     for (const t of await pgexplorer.tableConstraintDeleteOrder({})) {
       await db.SQL.execute(`truncate ${t} cascade`);
     }
-
-    db.SQL.db.$pool.end();
   });
 
   it('test_generateAllSeries', async () => {
@@ -52,5 +50,33 @@ describe('Test league series', () => {
     // now we're close enough an make another
     await queries.generateAllSeries(new Date('2022-01-06'));
     expect((await queries.leagueSeries()).length).toBe(4);
+  });
+
+  it('test_generateAnswer', async () => {
+    await migrations.bootstrapLeagues(new Date('2022-01-01'));
+    const league = (await queries.leagues({ league_slug: 'every_6h_weekly_5' }))[0];
+
+    expect(await queries.answers()).toStrictEqual([]);
+
+    // nothing will happen because no series exist yet
+    await queries.generateAnswer(league, new Date('2022-01-01'));
+    expect((await queries.answers()).length).toBe(0);
+
+    // generate series but use date not appropriate for it, so still nothing
+    await queries.generateAllSeries(new Date('2022-01-01'));
+    await queries.generateAnswer(league, new Date('2021-12-31'));
+    expect((await queries.answers()).length).toBe(0);
+
+    // now use appropriate date, should get new answer
+    await queries.generateAnswer(league, new Date('2022-01-01'));
+    expect((await queries.answers()).length).toBe(1);
+
+    // now use same date, should get nothing new
+    await queries.generateAnswer(league, new Date('2022-01-01'));
+    expect((await queries.answers()).length).toBe(1);
+
+    // now use another date, should get new answer
+    await queries.generateAnswer(league, new Date('2022-01-01T06:00'));
+    expect((await queries.answers()).length).toBe(2);
   });
 });
