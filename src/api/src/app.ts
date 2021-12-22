@@ -5,12 +5,7 @@ import * as users from './users/api';
 import * as admin from './admin/api';
 import * as wordle from './games/wordle/api';
 
-import * as cron from './cron';
-
-cron.init();
-
-const app = express();
-const port = 5000;
+export const app = express();
 
 const beforeRequest = async (req: Request, res: Response, next: NextFunction) => {
   res.locals.user = await users.isLoggedIn(req);
@@ -19,6 +14,7 @@ const beforeRequest = async (req: Request, res: Response, next: NextFunction) =>
 };
 
 function errorMiddleware(error: HttpException, request: Request, response: Response, next: NextFunction) {
+  console.log('errorMiddleware', error);
   const status = error.status || 500;
   const message = error.message || 'Something went wrong';
   response.status(status).send({
@@ -28,9 +24,9 @@ function errorMiddleware(error: HttpException, request: Request, response: Respo
 }
 
 function defaulterrorMiddleware(error: Error, request: Request, response: Response, next: NextFunction) {
-  if (!(error instanceof HaltException)) {
-    console.log('my dumb error ware', error);
-  }
+  console.log('my dumb error ware', error);
+  // if (!(error instanceof HaltException)) {
+  // }
 }
 
 const corsOptions = {
@@ -43,11 +39,10 @@ app.use(beforeRequest);
 
 app.use(cors(corsOptions));
 app.options('*', cors()); // include before other routes
-app.listen(port, '0.0.0.0');
 
-app.use('/games/wordle', wordle.router);
-app.use('/admin', admin.router);
-app.use('/user', users.router);
+app.use('/api/games/wordle', wordle.router);
+app.use('/api/admin', admin.router);
+app.use('/api/user', users.router);
 
 // must go last
 app.use(errorMiddleware);

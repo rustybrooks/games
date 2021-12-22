@@ -1,36 +1,60 @@
 import express, { Request, Response, NextFunction } from 'express';
 
 import * as utils from './utils';
-// import { getParams } from '../utils';
-// import * as queries from './queries';
-// import * as exceptions from '../exceptions';
+import { getParams } from '../../utils';
+import * as exceptions from '../../exceptions';
+import * as users from '../../users';
+import * as queries from './queries';
+import { HttpBadRequest } from '../../exceptions';
 
 export const router = express.Router();
 
-const wordleCheck = (request: Request, response: Response) => {
-  const expected = 'masse';
+const wordleCheck = async (request: Request, response: Response, next: NextFunction) => {
+  try {
+    users.requireLogin(response, next);
+  } catch (e) {
+    return next(e);
+  }
+  const { guess, league_slug } = getParams(request);
 
-  let guess = '';
+  const league = await queries.league({ league_slug, user_id: response.locals.user.user_id });
+  if (!league) {
+    return next(new exceptions.HttpNotFound('League not found'));
+  }
 
-  if (request.body && request.body.guess) {
-    guess = request.body.guess;
-  } else if (request.query && request.query.guess) {
-    guess = request.query.guess.toString();
+  const answers = await queries.answers({ league_slug, active_between: new Date(), sort: 'active_after' });
+  if (!answers.length) {
+    return next(new exceptions.HttpNotFound('Wordle not found'));
   }
 
   if (!guess) {
-    response.status(400).json({
-      detail: 'must pass field named "guess" containing guessed word',
-    });
-    return;
+    return next(new exceptions.HttpBadRequest('must pass field named "guess" containing guessed word'));
   }
-  if (guess.length !== 5) {
-    response.status(400).json({
-      detail: 'guess must be 5 letters',
-    });
+  if (guess.length !== league.letters) {
+    return next(new exceptions.HttpBadRequest(`guess must be ${league.letters}letters`));
   }
 
-  response.status(200).json(utils.evaluateGuess(expected, guess).join(''));
+  const result = utils.evaluateGuess(answers[0].answer, guess);
+  queries.addGuess({
+    user_id: response.locals.user.user_id,
+    wordle_answer_id: answers[0].wordle_answer_id,
+    guess,
+    correct_placement: result.reduce((c, n) => (c + n === '+' ? 1 : 0), 0),
+    correct_letters: result.reduce((c, n) => (c + n === ' ' ? 0 : 1), 0),
+    correct: guess === answers[0].answer,
+  });
+
+  const guesses = await queries.guesses({
+    wordle_answer_id: answers[0].wordle_answer_id,
+    sort: 'create_date',
+  });
+
+  response.status(200).json(
+    guesses.map((g: any) => ({
+      guess: g.guess,
+      result: utils.evaluateGuess(answers[0].answer, g),
+    })),
+  );
 };
 
 router.all('/check', wordleCheck);

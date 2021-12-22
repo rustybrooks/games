@@ -1,10 +1,22 @@
 import * as pgexplorer from '@rustybrooks/pgexplorer';
+import supertest from 'supertest';
 import * as utils from '../utils';
 import * as queries from '../queries';
 import * as db from '../../../db';
 import * as migrations from '../../../../scripts/migrations';
+import * as users from '../../../users';
+import { app } from '../../../app';
+import { leagues } from '../queries';
 
 pgexplorer.setupDb(null, db.SQL.writeUrl); // this is kinda lame, fix pgexplorer
+
+const apiKey = 'xxx';
+let user: any;
+let league: any;
+
+afterAll(async () => {
+  pgexplorer.SQL.db.$pool.end();
+});
 
 describe('Test utils', () => {
   it('test_evaluateGuess', async () => {
@@ -17,10 +29,6 @@ describe('Test utils', () => {
 });
 
 describe('Test cron stuff', () => {
-  afterAll(async () => {
-    db.SQL.db.$pool.end();
-  });
-
   afterEach(async () => {
     for (const t of await pgexplorer.tableConstraintDeleteOrder({})) {
       await db.SQL.execute(`truncate ${t} cascade`);
@@ -78,5 +86,54 @@ describe('Test cron stuff', () => {
     // now use another date, should get new answer
     await queries.generateAnswer(league, new Date('2022-01-01T06:00'));
     expect((await queries.answers()).length).toBe(2);
+  });
+});
+
+describe('Test answer submission', () => {
+  beforeEach(async () => {
+    user = await users.addUser({
+      username: 'test',
+      password: 'test',
+      email: 'test@test.com',
+      is_admin: false,
+      api_key: apiKey,
+    });
+    const answerMock = jest.spyOn(utils, 'randomWord');
+    answerMock.mockReturnValue('train');
+    await migrations.bootstrapLeagues(new Date('2022-01-01'));
+    league = (await queries.leagues({ league_slug: 'every_6h_weekly_5' }))[0];
+    await queries.generateAllSeries(new Date('2022-01-01'));
+    const answer = await queries.generateAnswer(league, new Date('2022-01-01'));
+    console.log('answer', answer);
+  });
+
+  afterEach(async () => {
+    for (const t of await pgexplorer.tableConstraintDeleteOrder({})) {
+      await db.SQL.execute(`truncate ${t} cascade`);
+    }
+  });
+
+  it('test_submit_fails', async () => {
+    // not logged in, forbidden
+    await supertest(app).post('/api/games/wordle/check').send({ league_slug: 'every_6h_weekly_5', guess: 'xxx' }).expect(403);
+
+    //   // logged in, but league doesn't exist
+    //   await supertest(app).post('/api/games/wordle/check').set('X-API-KEY', apiKey).send({ league_slug: 'xxx', guess: 'xxx' }).expect(404);
+    //
+    //   // logged in, but not part of league
+    //   await supertest(app)
+    //     .post('/api/games/wordle/check')
+    //     .set('X-API-KEY', apiKey)
+    //     .send({ league_slug: 'every_6h_weekly_5', guess: 'xxx' })
+    //     .expect(404);
+    //
+    //   // invalid guess
+    //   console.log('user', user, 'league', league);
+    //   await queries.addLeagueMember({ user_id: user.user_id, wordle_league_id: league.wordle_league_id });
+    //   await supertest(app)
+    //     .post('/api/games/wordle/check')
+    //     .set('X-API-KEY', apiKey)
+    //     .send({ league_slug: 'every_6h_weekly_5', guess: 'xxx' })
+    //     .expect(400);
   });
 });

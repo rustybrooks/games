@@ -34,7 +34,7 @@ export function wordList(length: number) {
     console.log('Loading words of length', length);
     words[length] = fs
       .readFileSync('./data/scrabble.txt', 'utf8')
-      .split('\n')
+      .split('\r\n')
       .filter(w => w.length === length);
   }
 

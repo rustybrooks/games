@@ -28,7 +28,7 @@ services:
       - ./src/ui/src:/srv/src/ui/src
     entrypoint: /srv/src/ui/entrypoint.sh
     depends_on:
-      - games-api
+      - games-postgres
 
   games-api-test:
     build:

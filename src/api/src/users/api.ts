@@ -14,13 +14,13 @@ export const isLoggedIn = async (request: Request) => {
       const { username } = jwt.verify(apiKey, process.env.TOKEN_KEY) as { username: string };
       return await queries.user({ username });
     } catch (e) {
-      console.log('failed to decode jwt token');
+      // console.log('failed to decode jwt token');
     }
 
     try {
       return await queries.user({ apiKey });
     } catch (e) {
-      console.log('failed to look up user by api key');
+      // console.log('failed to look up user by api key');
     }
   }
   return null;
@@ -28,8 +28,9 @@ export const isLoggedIn = async (request: Request) => {
 
 export const requireLogin = (response: Response, next: NextFunction) => {
   if (response.locals.user === null) {
-    next(new exceptions.HttpException(403, 'unauthorized'));
-    throw new exceptions.HaltException('halt'); // prevent further execution?
+    throw new exceptions.HttpException(403, 'unauthorized');
+    // next(new exceptions.HttpException(403, 'unauthorized'));
+    // throw new exceptions.HaltException('halt'); // prevent further execution?
   }
 };
 
@@ -84,7 +85,6 @@ const changePassword = async (request: Request, response: Response, next: NextFu
 };
 
 const user = (request: Request, response: Response, next: NextFunction) => {
-  console.log('user start');
   requireLogin(response, next);
 
   response.status(200).json({

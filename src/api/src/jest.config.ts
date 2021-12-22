@@ -12,5 +12,6 @@ const config: Config.InitialOptions = {
   },
   transformIgnorePatterns: ['node_modules/(?!variables/.*)'],
   globalSetup: './setup-tests.ts',
+  globalTeardown: './teardown-tests.ts',
 };
 export default config;

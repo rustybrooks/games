@@ -20,7 +20,7 @@ export async function user({ username = null, apiKey = null }: { username?: stri
   }
   const query = `select * from users ${SQL.whereClause(where)}`;
   // const query = 'select * from users';
-  console.log(query, bindvars, await SQL.select(query, bindvars));
+  // console.log(query, bindvars, await SQL.select(query, bindvars));
   return SQL.selectZeroOrOne(query, bindvars);
 }
 
@@ -44,7 +44,7 @@ export async function addUser({
     is_admin,
     api_key: api_key || crypto.createHash('sha256').update(Math.random().toString()).digest('hex'),
   };
-  return SQL.insert('users', idata);
+  return SQL.insert('users', idata, 200, false, true);
 }
 
 export async function updateUser({ user_id, password }: { user_id: number; password: string }) {

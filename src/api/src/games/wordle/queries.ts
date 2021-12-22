@@ -11,26 +11,42 @@ export function roundedNow() {
 export async function leagues({
   wordle_league_id = null,
   league_slug = null,
+  user_id = null,
   page = null,
   limit = null,
   sort = null,
 }: {
   wordle_league_id?: number;
   league_slug?: string;
+  user_id?: number;
   page?: number;
   limit?: number;
   sort?: string[] | string;
 } = {}) {
-  const [where, bindvars] = SQL.autoWhere({ wordle_league_id, league_slug });
+  const [where, bindvars] = SQL.autoWhere({ wordle_league_id, league_slug, user_id });
+
+  const joins = [];
+  if (user_id) {
+    joins.push('join wordle_league_members using (wordle_league_id)');
+  }
 
   const query = `
       select * 
       from wordle_leagues
+      ${joins.join('\n')}
       ${SQL.whereClause(where)}
       ${SQL.orderBy(sort)}
       ${SQL.limit(page, limit)}
   `;
   return SQL.select(query, bindvars);
+}
+
+export async function league(args: any) {
+  const l = await leagues(args);
+  if (l.length > 1) {
+    throw new Error(`Expected only one league entry, found ${l.length}`);
+  }
+  return l.length ? l[0] : null;
 }
 
 /* ******* series ******** */
@@ -124,20 +140,47 @@ export async function generateAllSeries(now: Date) {
 
 /* ******* answers ******** */
 export async function answers({
+  wordle_league_id = null,
+  league_slug = null,
   active_after = null,
+  active_between = null,
   page = null,
   limit = null,
   sort = null,
-}: { active_after?: Date; page?: number; limit?: number; sort?: string | string[] } = {}) {
-  const [where, bindvars] = SQL.autoWhere({ active_after });
+}: {
+  wordle_league_id?: number;
+  league_slug?: string;
+  active_after?: Date;
+  active_between?: Date;
+  page?: number;
+  limit?: number;
+  sort?: string | string[];
+} = {}) {
+  const [where, bindvars] = SQL.autoWhere({ wordle_league_id, league_slug, active_after });
+
+  if (active_between) {
+    where.push('$(active_between) between active_after and active_before');
+    bindvars.active_between = active_between;
+  }
+
   const query = `
-    select * 
-    from wordle_answers
+    select a.* 
+    from wordle_answers a
+    join wordle_league_series ls using (wordle_league_series_id)
+    join wordle_leagues l using (wordle_league_id)
     ${SQL.whereClause(where)}
     ${SQL.orderBy(sort)}
     ${SQL.limit(page, limit)}
   `;
   return SQL.select(query, bindvars);
+}
+
+export async function answer(args: any) {
+  const l = await answers(args);
+  if (l.length > 1) {
+    throw new Error(`Expected only one answer entry, found ${l.length}`);
+  }
+  return l.length ? l[0] : null;
 }
 
 export async function generateAnswer(league: any, now: Date) {
@@ -152,8 +195,8 @@ export async function generateAnswer(league: any, now: Date) {
     sort: '-start_date',
   });
   if (!series.length) {
-    // console.log('No series for league, not creating answer', league);
-    return;
+    console.log('No series for league, not creating answer', league);
+    return null;
   }
 
   const a = await answers({
@@ -161,12 +204,78 @@ export async function generateAnswer(league: any, now: Date) {
     page: 1,
     limit: 1,
   });
-  if (a.length) return;
+  if (a.length) return a[0];
 
-  await SQL.insert('wordle_answers', {
-    wordle_league_series_id: series[0].wordle_league_series_id,
-    answer: utils.randomWord(league.letters),
-    active_after: now,
-    active_before: end,
+  console.log('inserting');
+  return SQL.insert(
+    'wordle_answers',
+    {
+      wordle_league_series_id: series[0].wordle_league_series_id,
+      answer: utils.randomWord(league.letters),
+      active_after: now,
+      active_before: end,
+    },
+    200,
+    false,
+    true,
+  );
+}
+
+/* ******* guesses ******** */
+
+export async function addGuess({
+  user_id,
+  wordle_answer_id,
+  guess,
+  correct_placement,
+  correct_letters,
+  correct,
+}: {
+  user_id: number;
+  wordle_answer_id: number;
+  guess: string;
+  correct_placement: number;
+  correct_letters: number;
+  correct: boolean;
+}) {
+  SQL.insert('wordle_guesses', {
+    user_id,
+    wordle_answer_id,
+    guess,
+    correct_placement,
+    correct_letters,
+    correct,
+  });
+}
+
+export async function guesses({
+  wordle_answer_id = null,
+  page = null,
+  limit = null,
+  sort = null,
+}: {
+  wordle_answer_id?: number;
+  page?: number;
+  limit?: number;
+  sort?: string | string[];
+} = {}) {
+  const [where, bindvars] = SQL.autoWhere({ wordle_answer_id });
+  const query = `
+      select *
+      from wordle_answers
+      join wordle_guesses using (wordle_answer_id)
+    ${SQL.whereClause(where)}
+    ${SQL.orderBy(sort)}
+    ${SQL.limit(page, limit)}
+  `;
+  return SQL.select(query, bindvars);
+}
+
+/* ******* league members ******** */
+
+export async function addLeagueMember({ user_id, wordle_league_id }: { user_id: number; wordle_league_id: number }) {
+  SQL.insert('wordle_league_members', {
+    user_id,
+    wordle_league_id,
   });
 }

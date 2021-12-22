@@ -30,10 +30,11 @@ initial.addStatement(`
         series_days smallint,
         answer_cron_interval varchar(100),
         letters smallint default 5,
-        time_to_live_hours int default 24*60
+        time_to_live_hours int default 24*60,
+        is_hard_mode boolean default false
     )
 `);
-// initial.addStatement('create index wordle_leagues_league_name on wordle_leagues(league_name)');
+initial.addStatement('create index wordle_leagues_league_name on wordle_leagues(league_slug)');
 
 initial.addStatement(`
     create table wordle_league_series(
