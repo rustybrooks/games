@@ -1,4 +1,5 @@
 import { SQL } from '../../db';
+import { League } from '../../../../ui/types/wordle';
 import * as utils from './utils';
 
 export function roundedNow() {
@@ -24,24 +25,30 @@ export async function leagues({
   page?: number;
   limit?: number;
   sort?: string[] | string;
-} = {}) {
-  const [where, bindvars] = SQL.autoWhere({ wordle_league_id, league_slug, user_id });
+} = {}): Promise<League[]> {
+  const [where, bindvars] = SQL.autoWhere({ wordle_league_id, league_slug });
 
   const joins = [];
   const extraCols = [];
   if (user_id) {
-    extraCols.push('user_id');
-    joins.push(`${isMemberOnly ? '' : 'left '}join wordle_league_members using (wordle_league_id)`);
+    bindvars.user_id = user_id;
+    extraCols.push('case when user_id is null then false else true end as is_member');
+    joins.push(
+      `${
+        isMemberOnly ? '' : 'left '
+      }join wordle_league_members wlm on (wlm.wordle_league_id=wl.wordle_league_id and wlm.user_id=$(user_id))`,
+    );
   }
-
+  // console.log(extraCols, user_id);
   const query = `
-      select wl.*${extraCols.length ? extraCols.join(', ') : ''}
+      select wl.*${extraCols.length ? `, ${extraCols.join(', ')}` : ''}
       from wordle_leagues wl
       ${joins.join('\n')}
       ${SQL.whereClause(where)}
       ${SQL.orderBy(sort)}
       ${SQL.limit(page, limit)}
   `;
+  console.log(query);
   return SQL.select(query, bindvars);
 }
 

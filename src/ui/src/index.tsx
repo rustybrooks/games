@@ -10,29 +10,30 @@ import * as material from '@mui/material';
 import * as constants from './constants';
 
 import { Wordle } from './components/Wordle';
+import { WordleLeagues } from './components/WordleLeagues';
 import { Login } from './components/Login';
 
 const styles = {
-  root: {
+  root: css({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     paddingRight: 0,
     paddingLeft: 0,
-  },
+  }),
 
-  tabLink: {
+  tabLink: css({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     paddingRight: 0,
     paddingLeft: 0,
-  },
+  }),
 };
 
 const genUrl = (fn = '') => `${constants.BASE_URL}/api/user/${fn}`;
 
-const NavBarX = ({ history }: { history: any }) => {
+const NavBar = ({ history }: { history: any }) => {
   const [loginOpen, setLoginOpen] = useGetAndSet('login-open', false);
   const [loginWidget, setLoginWidget] = useGetAndSet('login-widget');
   const [user, setUser]: [{ username: string }, any] = useGetAndSet('user');
@@ -120,14 +121,16 @@ const storeConfig = {
   logging: process.env.NODE_ENV !== 'production',
 };
 
-const NavBar = withStore(NavBarX, initialValue, storeConfig);
+function AppX({ history }: { history: any }) {
+  return (
+    <BrowserRouter>
+      <NavBar history={history} />
+      <Routes>
+        <Route path="/" element={<WordleLeagues />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
+const App = withStore(AppX, initialValue, storeConfig);
 
-ReactDOM.render(
-  <BrowserRouter>
-    <NavBar />
-    <Routes>
-      <Route path="/" element={<Wordle />} />
-    </Routes>
-  </BrowserRouter>,
-  document.getElementById('root'),
-);
+ReactDOM.render(<App />, document.getElementById('root'));

@@ -5,22 +5,34 @@ import { getParams } from '../../utils';
 import * as exceptions from '../../exceptions';
 import * as users from '../../users';
 import * as queries from './queries';
+import { League } from '../../../../ui/types/wordle';
 
 export const router = express.Router();
 
 const leagues = async (request: Request, response: Response, next: NextFunction) => {
   const { sort = 'league_name' } = getParams(request);
-  const l = await queries.leagues({ sort, user_id: response.locals.user.id, isMemberOnly: false });
-  response.status(200).json(l);
+  const lg = await queries.leagues({ sort, user_id: response.locals.user ? response.locals.user.user_id : null, isMemberOnly: false });
+  // console.log('lg', lg);
+  const cols: (keyof League)[] = [
+    'league_slug',
+    'league_name',
+    'letters',
+    'series_days',
+    'create_date',
+    'start_date',
+    'time_to_live_hours',
+    'is_member',
+  ];
+  response.status(200).json(lg.map(l => Object.fromEntries(cols.map(c => [c, l[c]]))));
 };
 
-const joinLeague = async (request: Request, response: Response, next: NextFunction) => {
+const joinLeagues = async (request: Request, response: Response, next: NextFunction) => {
   try {
     users.requireLogin(response, next);
   } catch (e) {
     return next(e);
   }
-  const { league_slug } = getParams(request);
+  const { league_slugs } = getParams(request);
 
   return response.status(200).json({ details: 'ok' });
 };
@@ -75,3 +87,5 @@ const check = async (request: Request, response: Response, next: NextFunction) =
 };
 
 router.all('/check', check);
+router.all('/leagues', leagues);
+router.all('/join_leagues', joinLeagues);

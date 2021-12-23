@@ -2,31 +2,29 @@ import * as React from 'react';
 
 // import { withStyles } from '@mui/core/styles';
 import { useGetAndSet } from 'react-context-hook';
+import { css } from '@emotion/react';
 
 import * as material from '@mui/material';
 import * as constants from '../constants';
 
-// const style = (theme: any) => {
-//   const x: any = {
-//     root: {
-//       maxWidth: 600,
-//       minWidth: 400,
-//       float: 'left',
-//     },
-//
-//     formControl: {
-//       margin: theme.spacing(1),
-//       minWidth: 120,
-//     },
-//
-//     button: {
-//       margin: theme.spacing(1),
-//     },
-//   };
-//   return x;
-// };
+const style = {
+  root: css({
+    maxWidth: 600,
+    minWidth: 400,
+    float: 'left',
+  }),
 
-const genUrl = (fn = '') => `${constants.BASE_URL}/user/${fn}`;
+  formControl: css({
+    margin: '10px',
+    minWidth: 120,
+  }),
+
+  button: css({
+    margin: '10px',
+  }),
+};
+
+const genUrl = (fn = '') => `${constants.BASE_URL}/api/user/${fn}`;
 
 function LoginX({ classes, updateUser }: { classes?: any; updateUser: any }) {
   const [tab, setTab] = React.useState('login');
@@ -96,7 +94,7 @@ function LoginX({ classes, updateUser }: { classes?: any; updateUser: any }) {
   };
 
   return (
-    <div className={classes.root}>
+    <div css={style.root}>
       <material.Tabs value={tab} onChange={handleTabChange}>
         <material.Tab label="Login" value="login" />
         <material.Tab label="Signup" value="signup" />
@@ -104,7 +102,7 @@ function LoginX({ classes, updateUser }: { classes?: any; updateUser: any }) {
 
       <material.Box component="div" display={tab === 'signup' ? 'block' : 'none'}>
         <material.FormGroup>
-          <material.FormControl className={classes.formControl}>
+          <material.FormControl css={style.formControl}>
             <material.TextField
               error={Boolean(errors.username)}
               helperText={errors.username}
@@ -114,7 +112,7 @@ function LoginX({ classes, updateUser }: { classes?: any; updateUser: any }) {
             />
           </material.FormControl>
 
-          <material.FormControl className={classes.formControl}>
+          <material.FormControl css={style.formControl}>
             <material.TextField
               error={Boolean(errors.email)}
               helperText={errors.email}
@@ -124,7 +122,7 @@ function LoginX({ classes, updateUser }: { classes?: any; updateUser: any }) {
             />
           </material.FormControl>
 
-          <material.FormControl className={classes.formControl}>
+          <material.FormControl css={style.formControl}>
             <material.TextField
               error={Boolean(errors.password)}
               helperText={errors.password}
@@ -135,7 +133,7 @@ function LoginX({ classes, updateUser }: { classes?: any; updateUser: any }) {
             />
           </material.FormControl>
 
-          <material.FormControl className={classes.formControl}>
+          <material.FormControl css={style.formControl}>
             <material.TextField
               error={Boolean(errors.password2)}
               helperText={errors.password2}
@@ -147,17 +145,17 @@ function LoginX({ classes, updateUser }: { classes?: any; updateUser: any }) {
           </material.FormControl>
         </material.FormGroup>
 
-        <material.Button className={classes.button} onClick={doCancel} variant="contained">
+        <material.Button css={style.button} onClick={doCancel} variant="contained">
           Cancel
         </material.Button>
-        <material.Button className={classes.button} onClick={doSignup} variant="contained" color="primary">
+        <material.Button css={style.button} onClick={doSignup} variant="contained" color="primary">
           Sign up
         </material.Button>
       </material.Box>
 
       <material.Box component="div" display={tab === 'login' ? 'block' : 'none'}>
         <material.FormGroup>
-          <material.FormControl className={classes.formControl}>
+          <material.FormControl css={style.formControl}>
             <material.TextField
               error={Boolean(errors.username)}
               helperText={errors.username}
@@ -167,7 +165,7 @@ function LoginX({ classes, updateUser }: { classes?: any; updateUser: any }) {
             />
           </material.FormControl>
 
-          <material.FormControl className={classes.formControl}>
+          <material.FormControl css={style.formControl}>
             <material.TextField
               error={Boolean(errors.password)}
               helperText={errors.password}
@@ -179,10 +177,10 @@ function LoginX({ classes, updateUser }: { classes?: any; updateUser: any }) {
           </material.FormControl>
         </material.FormGroup>
 
-        <material.Button className={classes.button} onClick={doCancel} variant="contained">
+        <material.Button css={style.button} onClick={doCancel} variant="contained">
           Cancel
         </material.Button>
-        <material.Button className={classes.button} onClick={doLogin} variant="contained" color="primary">
+        <material.Button css={style.button} onClick={doLogin} variant="contained" color="primary">
           Login
         </material.Button>
       </material.Box>
