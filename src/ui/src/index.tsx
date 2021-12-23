@@ -2,9 +2,10 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { withStore, useGetAndSet } from 'react-context-hook';
+import { css } from '@emotion/react';
 
-import { withStyles } from '@material-ui/core/styles';
-import * as material from '@material-ui/core';
+// import { withStyles } from '@mui/core/styles';
+import * as material from '@mui/material';
 
 import * as constants from './constants';
 
@@ -31,7 +32,7 @@ const styles = {
 
 const genUrl = (fn = '') => `${constants.BASE_URL}/api/user/${fn}`;
 
-const NavBarX = ({ classes, history }: any) => {
+const NavBarX = ({ history }: { history: any }) => {
   const [loginOpen, setLoginOpen] = useGetAndSet('login-open', false);
   const [loginWidget, setLoginWidget] = useGetAndSet('login-widget');
   const [user, setUser]: [{ username: string }, any] = useGetAndSet('user');
@@ -75,7 +76,7 @@ const NavBarX = ({ classes, history }: any) => {
 
   console.log('user =', user);
   return (
-    <div className={classes.root}>
+    <div css={styles.root}>
       <material.AppBar position="static">
         <material.Toolbar>
           {user ? (
@@ -119,7 +120,7 @@ const storeConfig = {
   logging: process.env.NODE_ENV !== 'production',
 };
 
-const NavBar = withStore(withStyles(styles)(NavBarX), initialValue, storeConfig);
+const NavBar = withStore(NavBarX, initialValue, storeConfig);
 
 ReactDOM.render(
   <BrowserRouter>

@@ -12,6 +12,7 @@ export async function leagues({
   wordle_league_id = null,
   league_slug = null,
   user_id = null,
+  isMemberOnly = false,
   page = null,
   limit = null,
   sort = null,
@@ -19,6 +20,7 @@ export async function leagues({
   wordle_league_id?: number;
   league_slug?: string;
   user_id?: number;
+  isMemberOnly?: boolean;
   page?: number;
   limit?: number;
   sort?: string[] | string;
@@ -26,13 +28,15 @@ export async function leagues({
   const [where, bindvars] = SQL.autoWhere({ wordle_league_id, league_slug, user_id });
 
   const joins = [];
+  const extraCols = [];
   if (user_id) {
-    joins.push('join wordle_league_members using (wordle_league_id)');
+    extraCols.push('user_id');
+    joins.push(`${isMemberOnly ? '' : 'left '}join wordle_league_members using (wordle_league_id)`);
   }
 
   const query = `
-      select * 
-      from wordle_leagues
+      select wl.*${extraCols.length ? extraCols.join(', ') : ''}
+      from wordle_leagues wl
       ${joins.join('\n')}
       ${SQL.whereClause(where)}
       ${SQL.orderBy(sort)}

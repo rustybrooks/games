@@ -1,43 +1,39 @@
 import * as React from 'react';
-import { withStyles } from '@material-ui/core/styles';
+import { css } from '@emotion/react';
 
 import Keyboard from 'react-simple-keyboard';
 import 'react-simple-keyboard/build/css/index.css';
 
 import * as constants from '../constants';
 
-const style = () => {
-  const x: any = {
-    cell: {
-      width: '3rem',
-      height: '3rem',
-      background: 'white',
-      padding: '5px',
-      border: '2px solid #ccc',
-      textAlign: 'center',
-      verticalAlign: 'middle',
-      fontFamily: 'Arial, sans-serif',
-      fontWeight: 'bold',
-      fontSize: '30px',
-    },
+let style: { [id: string]: any } = {
+  cell: css({
+    width: '3rem',
+    height: '3rem',
+    background: 'white',
+    padding: '5px',
+    border: '2px solid #ccc',
+    textAlign: 'center',
+    verticalAlign: 'middle',
+    fontFamily: 'Arial, sans-serif',
+    fontWeight: 'bold',
+    fontSize: '30px',
+  }),
 
-    table: {
-      padding: '20px',
-      borderSpacing: '6px',
-      borderCollapse: 'separate',
-    },
-  };
-
-  x.wrongCell = { ...x.cell, backgroundColor: '#787c7e' };
-  x.rightCell = { ...x.cell, backgroundColor: '#6aaa64' };
-  x.sortaCell = { ...x.cell, backgroundColor: '#c9b458' };
-
-  return x;
+  table: css({
+    padding: '20px',
+    borderSpacing: '6px',
+    borderCollapse: 'separate',
+  }),
 };
+
+style.wrongCell = css({ ...style.cell, backgroundColor: '#787c7e' });
+style.rightCell = css({ ...style.cell, backgroundColor: '#6aaa64' });
+style.sortaCell = css({ ...style.cell, backgroundColor: '#c9b458' });
 
 const genUrl = (fn = '') => `${constants.BASE_URL}/api/games/wordle/${fn}`;
 
-const WordleX = ({ classes }: { classes: { [id: string]: any } }) => {
+const WordleX = () => {
   const [results, setResults] = React.useState(['', '', '', '', '', '']);
   const [guesses, setGuesses] = React.useState(['', '', '', '', '', '']);
   const gridIdx = React.useRef(0);
@@ -86,7 +82,7 @@ const WordleX = ({ classes }: { classes: { [id: string]: any } }) => {
   return (
     <div style={{ height: '100%', display: 'flex', justifyContent: 'center' }}>
       <div style={{ width: 500, padding: 20 }}>
-        <table className={classes.table} style={{ margin: '0 auto' }}>
+        <table css={style.table} style={{ margin: '0 auto' }}>
           <tbody>
             {[0, 1, 2, 3, 4, 5].map(y => (
               <tr key={y}>
@@ -110,7 +106,7 @@ const WordleX = ({ classes }: { classes: { [id: string]: any } }) => {
                     }
                   }
                   return (
-                    <td key={x} className={classes[cn]}>
+                    <td key={x} css={style[cn]}>
                       {g.toUpperCase()}
                     </td>
                   );
@@ -137,4 +133,4 @@ const WordleX = ({ classes }: { classes: { [id: string]: any } }) => {
   );
 };
 
-export const Wordle = withStyles(style)(WordleX);
+export const Wordle = WordleX;

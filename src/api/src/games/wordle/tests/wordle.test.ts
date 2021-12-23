@@ -129,7 +129,7 @@ describe('Test answer submission', () => {
       .send({ league_slug: 'xxx', guess: 'xxx' })
       .expect(404)
       .then(response => {
-        expect(response.body.message === 'League not found');
+        expect(response.body.detail === 'League not found');
       });
 
     // logged in, but not part of league
@@ -139,7 +139,7 @@ describe('Test answer submission', () => {
       .send({ league_slug: 'every_6h_weekly_5', guess: 'xxx' })
       .expect(404)
       .then(response => {
-        expect(response.body.message === 'League not found');
+        expect(response.body.detail === 'League not found');
       });
 
     // invalid guess
@@ -150,7 +150,7 @@ describe('Test answer submission', () => {
       .send({ league_slug: 'every_6h_weekly_5', guess: 'xxx' })
       .expect(400)
       .then(response => {
-        expect(response.body.message === 'guess must be 5 letters');
+        expect(response.body.detail === 'guess must be 5 letters');
       });
 
     // missing guess
@@ -160,7 +160,7 @@ describe('Test answer submission', () => {
       .send({ league_slug: 'every_6h_weekly_5' })
       .expect(400)
       .then(response => {
-        expect(response.body.message === 'must pass field named "guess" containing guessed word');
+        expect(response.body.detail === 'must pass field named "guess" containing guessed word');
       });
 
     // no answer for some reason
@@ -171,7 +171,7 @@ describe('Test answer submission', () => {
       .send({ league_slug: 'every_6h_weekly_5' })
       .expect(404)
       .then(response => {
-        expect(response.body.message === 'Wordle not found');
+        expect(response.body.detail === 'Wordle not found');
       });
   });
 });

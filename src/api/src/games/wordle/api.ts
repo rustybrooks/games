@@ -5,11 +5,27 @@ import { getParams } from '../../utils';
 import * as exceptions from '../../exceptions';
 import * as users from '../../users';
 import * as queries from './queries';
-import { HttpBadRequest } from '../../exceptions';
 
 export const router = express.Router();
 
-const wordleCheck = async (request: Request, response: Response, next: NextFunction) => {
+const leagues = async (request: Request, response: Response, next: NextFunction) => {
+  const { sort = 'league_name' } = getParams(request);
+  const l = await queries.leagues({ sort, user_id: response.locals.user.id, isMemberOnly: false });
+  response.status(200).json(l);
+};
+
+const joinLeague = async (request: Request, response: Response, next: NextFunction) => {
+  try {
+    users.requireLogin(response, next);
+  } catch (e) {
+    return next(e);
+  }
+  const { league_slug } = getParams(request);
+
+  return response.status(200).json({ details: 'ok' });
+};
+
+const check = async (request: Request, response: Response, next: NextFunction) => {
   try {
     users.requireLogin(response, next);
   } catch (e) {
@@ -50,7 +66,7 @@ const wordleCheck = async (request: Request, response: Response, next: NextFunct
     sort: 'create_date',
   });
 
-  response.status(200).json(
+  return response.status(200).json(
     guesses.map((g: any) => ({
       guess: g.guess,
       result: utils.evaluateGuess(answers[0].answer, g),
@@ -58,4 +74,4 @@ const wordleCheck = async (request: Request, response: Response, next: NextFunct
   );
 };
 
-router.all('/check', wordleCheck);
+router.all('/check', check);

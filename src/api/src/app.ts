@@ -19,7 +19,7 @@ function errorMiddleware(error: HttpException, request: Request, response: Respo
   const message = error.message || 'Something went wrong';
   response.status(status).send({
     status,
-    message,
+    detail: message,
   });
 }
 

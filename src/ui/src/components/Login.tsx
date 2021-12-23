@@ -1,34 +1,34 @@
 import * as React from 'react';
 
-import { withStyles } from '@material-ui/core/styles';
-import { withStore, useGetAndSet } from 'react-context-hook';
+// import { withStyles } from '@mui/core/styles';
+import { useGetAndSet } from 'react-context-hook';
 
-import * as material from '@material-ui/core';
+import * as material from '@mui/material';
 import * as constants from '../constants';
 
-const style = (theme: any) => {
-  const x: any = {
-    root: {
-      maxWidth: 600,
-      minWidth: 400,
-      float: 'left',
-    },
-
-    formControl: {
-      margin: theme.spacing(1),
-      minWidth: 120,
-    },
-
-    button: {
-      margin: theme.spacing(1),
-    },
-  };
-  return x;
-};
+// const style = (theme: any) => {
+//   const x: any = {
+//     root: {
+//       maxWidth: 600,
+//       minWidth: 400,
+//       float: 'left',
+//     },
+//
+//     formControl: {
+//       margin: theme.spacing(1),
+//       minWidth: 120,
+//     },
+//
+//     button: {
+//       margin: theme.spacing(1),
+//     },
+//   };
+//   return x;
+// };
 
 const genUrl = (fn = '') => `${constants.BASE_URL}/user/${fn}`;
 
-function LoginX({ classes, updateUser }: { classes: any; updateUser: any }) {
+function LoginX({ classes, updateUser }: { classes?: any; updateUser: any }) {
   const [tab, setTab] = React.useState('login');
   const [username, setUsername] = React.useState('');
   const [email, setEmail] = React.useState('');
@@ -110,7 +110,7 @@ function LoginX({ classes, updateUser }: { classes: any; updateUser: any }) {
               helperText={errors.username}
               id="susername"
               label="Username"
-              onChange={event => setUsername(event.target.value)}
+              onChange={(event: any) => setUsername(event.target.value)}
             />
           </material.FormControl>
 
@@ -120,7 +120,7 @@ function LoginX({ classes, updateUser }: { classes: any; updateUser: any }) {
               helperText={errors.email}
               id="semail"
               label="Email"
-              onChange={event => setEmail(event.target.value)}
+              onChange={(event: any) => setEmail(event.target.value)}
             />
           </material.FormControl>
 
@@ -131,7 +131,7 @@ function LoginX({ classes, updateUser }: { classes: any; updateUser: any }) {
               id="spassword"
               label="Password"
               type="password"
-              onChange={event => setPassword(event.target.value)}
+              onChange={(event: any) => setPassword(event.target.value)}
             />
           </material.FormControl>
 
@@ -142,7 +142,7 @@ function LoginX({ classes, updateUser }: { classes: any; updateUser: any }) {
               id="spassword2"
               label="Confirm Password"
               type="password"
-              onChange={event => setPassword2(event.target.value)}
+              onChange={(event: any) => setPassword2(event.target.value)}
             />
           </material.FormControl>
         </material.FormGroup>
@@ -163,7 +163,7 @@ function LoginX({ classes, updateUser }: { classes: any; updateUser: any }) {
               helperText={errors.username}
               id="username"
               label="Username"
-              onChange={event => setUsername(event.target.value)}
+              onChange={(event: any) => setUsername(event.target.value)}
             />
           </material.FormControl>
 
@@ -174,7 +174,7 @@ function LoginX({ classes, updateUser }: { classes: any; updateUser: any }) {
               id="password"
               label="Password"
               type="password"
-              onChange={event => setPassword(event.target.value)}
+              onChange={(event: any) => setPassword(event.target.value)}
             />
           </material.FormControl>
         </material.FormGroup>
@@ -190,4 +190,4 @@ function LoginX({ classes, updateUser }: { classes: any; updateUser: any }) {
   );
 }
 
-export const Login = withStyles(style)(LoginX);
+export const Login = LoginX;
