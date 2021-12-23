@@ -13,10 +13,11 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import Checkbox from '@mui/material/Checkbox';
-import IconButton from '@mui/material/IconButton';
+import LoadingButton from '@mui/material/LoadingButton';
 import Tooltip from '@mui/material/Tooltip';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { visuallyHidden } from '@mui/utils';
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
@@ -118,11 +119,11 @@ function EnhancedTableHead<T>(props: EnhancedTableProps<T>) {
 interface EnhancedTableToolbarProps {
   title: string;
   numSelected: number;
+  loading: boolean;
 }
 
 const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
   const { numSelected, title } = props;
-
   return (
     <Toolbar
       sx={{
@@ -133,28 +134,14 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
         }),
       }}
     >
-      {numSelected > 0 ? (
-        <Typography sx={{ flex: '1 1 100%' }} color="inherit" variant="subtitle1" component="div">
-          {numSelected} selected
-        </Typography>
-      ) : (
-        <Typography sx={{ flex: '1 1 100%' }} variant="h6" id="tableTitle" component="div">
-          {title}
-        </Typography>
-      )}
-      {numSelected > 0 ? (
-        <Tooltip title="Delete">
-          <IconButton>
-            <DeleteIcon />
-          </IconButton>
-        </Tooltip>
-      ) : (
-        <Tooltip title="Filter list">
-          <IconButton>
-            <FilterListIcon />
-          </IconButton>
-        </Tooltip>
-      )}
+      <Typography sx={{ flex: '1 1 100%' }} color="inherit" variant="subtitle1" component="div">
+        {numSelected > 0 ? `${numSelected} selected` : ''}
+      </Typography>
+      <Tooltip title="Add">
+        <LoadingButton loading={loading} disabled={numSelected == 0} variant={'contained'} startIcon={<AddCircleOutlineIcon />}>
+          Join
+        </LoadingButton>
+      </Tooltip>
     </Toolbar>
   );
 };
@@ -174,6 +161,7 @@ export function EnhancedTable<T extends unknown>({ rows, headCells, mainColumn, 
   const [selected, setSelected] = React.useState<readonly any[]>([]);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [loading, setLoading] = React.useState(false);
 
   const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof T) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -224,7 +212,6 @@ export function EnhancedTable<T extends unknown>({ rows, headCells, mainColumn, 
   return (
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%', mb: 2 }}>
-        <EnhancedTableToolbar numSelected={selected.length} title={title} />
         <TableContainer>
           <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size="small">
             <EnhancedTableHead
@@ -300,6 +287,7 @@ export function EnhancedTable<T extends unknown>({ rows, headCells, mainColumn, 
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
+        <EnhancedTableToolbar loading={loading} numSelected={selected.length} title={title} />
       </Paper>
     </Box>
   );

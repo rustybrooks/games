@@ -3,7 +3,7 @@ import { useGetAndSet } from 'react-context-hook';
 import * as eht from './EnhancedTable';
 import { League } from '../../types/wordle';
 import Typography from '@mui/material/Typography';
-
+import Paper from '@mui/material/Paper';
 import * as constants from '../constants';
 
 const genUrl = (fn = '') => `${constants.BASE_URL}/api/games/wordle/${fn}`;
@@ -84,7 +84,7 @@ const WordleLeaguesX = () => {
     return <div>Loading...</div>;
   }
   return (
-    <div>
+    <Paper sx={{ width: '100%', mb: 2 }}>
       <div>
         <Typography>
           These are all the available leagues that you can join, along with details about the conditions of the league. Any league with a
@@ -98,7 +98,7 @@ const WordleLeaguesX = () => {
         mainColumn={'league_slug'}
         initialSortColumn={'league_name'}
       />
-    </div>
+    </Paper>
   );
 };
 
