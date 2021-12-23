@@ -8,7 +8,7 @@ import * as material from '@material-ui/core';
 
 import * as constants from './constants';
 
-import { Wordle } from './components/Worldle';
+import { Wordle } from './components/Wordle';
 import { Login } from './components/Login';
 
 const styles = {
@@ -29,7 +29,7 @@ const styles = {
   },
 };
 
-const genUrl = (fn = '') => `${constants.BASE_URL}/user/${fn}`;
+const genUrl = (fn = '') => `${constants.BASE_URL}/api/user/${fn}`;
 
 const NavBarX = ({ classes, history }: any) => {
   const [loginOpen, setLoginOpen] = useGetAndSet('login-open', false);

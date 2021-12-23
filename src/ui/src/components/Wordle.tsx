@@ -35,7 +35,7 @@ const style = () => {
   return x;
 };
 
-const genUrl = (fn = '') => `${constants.BASE_URL}/games/wordle/${fn}`;
+const genUrl = (fn = '') => `${constants.BASE_URL}/api/games/wordle/${fn}`;
 
 const WordleX = ({ classes }: { classes: { [id: string]: any } }) => {
   const [results, setResults] = React.useState(['', '', '', '', '', '']);

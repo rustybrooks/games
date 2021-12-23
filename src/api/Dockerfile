@@ -10,6 +10,8 @@ RUN apt-get -y update \
  && curl -sL https://deb.nodesource.com/setup_16.x | bash - \
  && apt-get install -y nodejs
 
+RUN mkdir logs
+
 COPY package*.json /srv/src/api/
 RUN npm install
 

@@ -1,4 +1,4 @@
-import 'setup-newrelic';
+import './setup-newrelic';
 import { app } from './app';
 import * as cron from './cron';
 
