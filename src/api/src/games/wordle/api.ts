@@ -22,7 +22,8 @@ const wordleCheck = async (request: Request, response: Response, next: NextFunct
     return next(new exceptions.HttpNotFound('League not found'));
   }
 
-  const answers = await queries.answers({ league_slug, active_between: new Date(), sort: 'active_after' });
+  const abDate = new Date();
+  const answers = await queries.answers({ league_slug, active_between: abDate, sort: 'active_after' });
   if (!answers.length) {
     return next(new exceptions.HttpNotFound('Wordle not found'));
   }
@@ -31,7 +32,7 @@ const wordleCheck = async (request: Request, response: Response, next: NextFunct
     return next(new exceptions.HttpBadRequest('must pass field named "guess" containing guessed word'));
   }
   if (guess.length !== league.letters) {
-    return next(new exceptions.HttpBadRequest(`guess must be ${league.letters}letters`));
+    return next(new exceptions.HttpBadRequest(`guess must be ${league.letters} letters`));
   }
 
   const result = utils.evaluateGuess(answers[0].answer, guess);

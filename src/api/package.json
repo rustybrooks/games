@@ -11,7 +11,9 @@
     "express": "latest",
     "jsonwebtoken": "latest",
     "node-cron": "latest",
-    "sprintf-js": "latest"
+    "sprintf-js": "latest",
+    "newrelic": "latest",
+    "@newrelic/native-metrics": "latest"
   },
   "devDependencies": {
     "@jest/types": "latest",
@@ -25,6 +27,7 @@
     "@types/sprintf-js": "latest",
     "@typescript-eslint/eslint-plugin": "latest",
     "@types/supertest": "latest",
+    "mockdate": "latest",
     "eslint": "latest",
     "eslint-config-airbnb": "latest",
     "eslint-config-airbnb-base": "latest",

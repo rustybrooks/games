@@ -195,7 +195,7 @@ export async function generateAnswer(league: any, now: Date) {
     sort: '-start_date',
   });
   if (!series.length) {
-    console.log('No series for league, not creating answer', league);
+    // console.log('No series for league, not creating answer', league);
     return null;
   }
 
@@ -206,7 +206,6 @@ export async function generateAnswer(league: any, now: Date) {
   });
   if (a.length) return a[0];
 
-  console.log('inserting');
   return SQL.insert(
     'wordle_answers',
     {
@@ -215,9 +214,7 @@ export async function generateAnswer(league: any, now: Date) {
       active_after: now,
       active_before: end,
     },
-    200,
-    false,
-    true,
+    '*',
   );
 }
 

@@ -1,5 +1,6 @@
 import * as pgexplorer from '@rustybrooks/pgexplorer';
 import supertest from 'supertest';
+import MockDate from 'mockdate';
 import * as utils from '../utils';
 import * as queries from '../queries';
 import * as db from '../../../db';
@@ -101,39 +102,76 @@ describe('Test answer submission', () => {
     const answerMock = jest.spyOn(utils, 'randomWord');
     answerMock.mockReturnValue('train');
     await migrations.bootstrapLeagues(new Date('2022-01-01'));
-    league = (await queries.leagues({ league_slug: 'every_6h_weekly_5' }))[0];
+    [league] = await queries.leagues({ league_slug: 'every_6h_weekly_5' });
     await queries.generateAllSeries(new Date('2022-01-01'));
     const answer = await queries.generateAnswer(league, new Date('2022-01-01'));
-    console.log('answer', answer);
   });
 
   afterEach(async () => {
+    MockDate.reset();
     for (const t of await pgexplorer.tableConstraintDeleteOrder({})) {
       await db.SQL.execute(`truncate ${t} cascade`);
     }
   });
 
   it('test_submit_fails', async () => {
+    const d1 = new Date('2022-01-01T03:00');
+    const d2 = new Date('2022-01-10T03:00');
+    MockDate.set(d1);
+
     // not logged in, forbidden
     await supertest(app).post('/api/games/wordle/check').send({ league_slug: 'every_6h_weekly_5', guess: 'xxx' }).expect(403);
 
-    //   // logged in, but league doesn't exist
-    //   await supertest(app).post('/api/games/wordle/check').set('X-API-KEY', apiKey).send({ league_slug: 'xxx', guess: 'xxx' }).expect(404);
-    //
-    //   // logged in, but not part of league
-    //   await supertest(app)
-    //     .post('/api/games/wordle/check')
-    //     .set('X-API-KEY', apiKey)
-    //     .send({ league_slug: 'every_6h_weekly_5', guess: 'xxx' })
-    //     .expect(404);
-    //
-    //   // invalid guess
-    //   console.log('user', user, 'league', league);
-    //   await queries.addLeagueMember({ user_id: user.user_id, wordle_league_id: league.wordle_league_id });
-    //   await supertest(app)
-    //     .post('/api/games/wordle/check')
-    //     .set('X-API-KEY', apiKey)
-    //     .send({ league_slug: 'every_6h_weekly_5', guess: 'xxx' })
-    //     .expect(400);
+    // logged in, but league doesn't exist
+    await supertest(app)
+      .post('/api/games/wordle/check')
+      .set('X-API-KEY', apiKey)
+      .send({ league_slug: 'xxx', guess: 'xxx' })
+      .expect(404)
+      .then(response => {
+        expect(response.body.message === 'League not found');
+      });
+
+    // logged in, but not part of league
+    await supertest(app)
+      .post('/api/games/wordle/check')
+      .set('X-API-KEY', apiKey)
+      .send({ league_slug: 'every_6h_weekly_5', guess: 'xxx' })
+      .expect(404)
+      .then(response => {
+        expect(response.body.message === 'League not found');
+      });
+
+    // invalid guess
+    await queries.addLeagueMember({ user_id: user.user_id, wordle_league_id: league.wordle_league_id });
+    await supertest(app)
+      .post('/api/games/wordle/check')
+      .set('X-API-KEY', apiKey)
+      .send({ league_slug: 'every_6h_weekly_5', guess: 'xxx' })
+      .expect(400)
+      .then(response => {
+        expect(response.body.message === 'guess must be 5 letters');
+      });
+
+    // missing guess
+    await supertest(app)
+      .post('/api/games/wordle/check')
+      .set('X-API-KEY', apiKey)
+      .send({ league_slug: 'every_6h_weekly_5' })
+      .expect(400)
+      .then(response => {
+        expect(response.body.message === 'must pass field named "guess" containing guessed word');
+      });
+
+    // no answer for some reason
+    MockDate.set(d2);
+    await supertest(app)
+      .post('/api/games/wordle/check')
+      .set('X-API-KEY', apiKey)
+      .send({ league_slug: 'every_6h_weekly_5' })
+      .expect(404)
+      .then(response => {
+        expect(response.body.message === 'Wordle not found');
+      });
   });
 });

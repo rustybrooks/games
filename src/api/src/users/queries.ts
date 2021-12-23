@@ -44,7 +44,7 @@ export async function addUser({
     is_admin,
     api_key: api_key || crypto.createHash('sha256').update(Math.random().toString()).digest('hex'),
   };
-  return SQL.insert('users', idata, 200, false, true);
+  return SQL.insert('users', idata, '*');
 }
 
 export async function updateUser({ user_id, password }: { user_id: number; password: string }) {
