@@ -32,7 +32,7 @@ export async function leagues({
   const extraCols = [];
   if (user_id) {
     bindvars.user_id = user_id;
-    extraCols.push('case when user_id is null then false else true end as is_member');
+    extraCols.push('case when user_id is null or not active then false else true end as is_member');
     joins.push(
       `${
         isMemberOnly ? '' : 'left '
@@ -48,7 +48,7 @@ export async function leagues({
       ${SQL.orderBy(sort)}
       ${SQL.limit(page, limit)}
   `;
-  console.log(query);
+  // console.log(query);
   return SQL.select(query, bindvars);
 }
 

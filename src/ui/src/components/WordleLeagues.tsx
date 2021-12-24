@@ -72,35 +72,35 @@ const WordleLeaguesX = () => {
 
   async function joinLeague(row: League): Promise<void> {
     console.log('join', row);
-    const data = await (fetch(genUrl('join_league')),
-    {
+    const data = await fetch(genUrl('join_league'), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'X-API-KEY': localStorage.getItem('api-key'),
       },
-      json: {
+      body: JSON.stringify({
         league_slug: row.league_slug,
-      },
+      }),
     });
     console.log('join data', data);
+    setLeagues(await getLeagues());
   }
 
   async function leaveLeague(row: League): Promise<void> {
     console.log('leave', row);
     console.log('join', row);
-    const data = await (fetch(genUrl('join_league')),
-    {
+    const data = await fetch(genUrl('leave_league'), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'X-API-KEY': localStorage.getItem('api-key'),
       },
-      json: {
+      body: JSON.stringify({
         league_slug: row.league_slug,
-      },
+      }),
     });
     console.log('leave data', data);
+    setLeagues(await getLeagues());
   }
 
   function canLeave(row: League): boolean {
