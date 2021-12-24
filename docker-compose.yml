@@ -61,7 +61,6 @@ services:
     ports:
       - 5434:5432
     # uncomment to see all queries
-    # command: ["postgres", "-c", "log_statement=all"]
 
   games-postgres-test:
     image: postgres:13
@@ -73,3 +72,4 @@ services:
       - PGDATA=/var/lib/postgresql/data/pgdata
     volumes:
       - ./data/postgres_test:/var/lib/postgresql/data/pgdata
+    command: ["postgres", "-c", "log_statement=all"]

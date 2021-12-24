@@ -25,7 +25,7 @@ initial.addStatement(`
         wordle_league_id serial primary key,
         league_slug varchar(200) not null unique,
         league_name varchar(200) not null unique, 
-        create_date timestamp with time zone not null default now(),
+        create_date timestamp with time zone not null,
         start_date timestamp with time zone not null,
         series_days smallint,
         answer_cron_interval varchar(100),
@@ -40,7 +40,7 @@ initial.addStatement(`
     create table wordle_league_series(
         wordle_league_series_id serial primary key,
         wordle_league_id bigint not null references wordle_leagues(wordle_league_id),
-        create_date timestamp with time zone not null default now(),
+        create_date timestamp with time zone not null,
         start_date timestamp with time zone not null,
         end_date timestamp with time zone not null
     )
@@ -54,7 +54,7 @@ initial.addStatement(`
         wordle_league_member_id serial primary key,
         user_id bigint not null references users(user_id),
         wordle_league_id bigint not null references wordle_leagues(wordle_league_id),
-        add_date timestamp with time zone not null default now(),
+        add_date timestamp with time zone not null,
         leave_date timestamp with time zone,
         rejoin_date timestamp with time zone,
         active boolean default true
@@ -67,7 +67,7 @@ initial.addStatement(`
         wordle_answer_id serial primary key,
         wordle_league_series_id bigint not null references wordle_league_series(wordle_league_series_id),
         answer varchar(10) not null,
-        create_date timestamp with time zone not null default now(),
+        create_date timestamp with time zone not null,
         active_after timestamp with time zone not null,
         active_before timestamp with time zone
     )
@@ -85,7 +85,7 @@ initial.addStatement(`
         correct_placement smallint not null default 0,
         correct_letters smallint not null default 0,
         correct boolean not null default false,
-        create_date timestamp with time zone not null default now()               
+        create_date timestamp with time zone not null               
     )
 `);
 
@@ -98,6 +98,7 @@ export async function bootstrapLeagues(startDate: Date) {
     letters: 5,
     time_to_live_hours: 24,
     start_date: startDate,
+    create_date: new Date(),
   });
 
   await SQL.insert('wordle_leagues', {
@@ -108,6 +109,7 @@ export async function bootstrapLeagues(startDate: Date) {
     letters: 7,
     time_to_live_hours: 24,
     start_date: startDate,
+    create_date: new Date(),
   });
 
   await SQL.insert('wordle_leagues', {
@@ -118,6 +120,7 @@ export async function bootstrapLeagues(startDate: Date) {
     letters: 5,
     time_to_live_hours: 24,
     start_date: startDate,
+    create_date: new Date(),
   });
 }
 

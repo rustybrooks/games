@@ -136,6 +136,7 @@ export async function generateSeries(league: any, now: Date) {
     end.setDate(end.getDate() + league.series_days);
     await addLeagueSeries({
       wordle_league_id: league.wordle_league_id,
+      create_date: now,
       start_date: start,
       end_date: end,
     });
@@ -222,6 +223,7 @@ export async function generateAnswer(league: any, now: Date) {
     {
       wordle_league_series_id: series[0].wordle_league_series_id,
       answer: utils.randomWord(league.letters),
+      create_date: now,
       active_after: now,
       active_before: end,
     },
@@ -253,6 +255,7 @@ export async function addGuess({
     correct_placement,
     correct_letters,
     correct,
+    create_date: new Date(),
   });
 }
 
@@ -281,22 +284,50 @@ export async function guesses({
 
 /* ******* league members ******** */
 
+export async function leagueMembers({
+  page = null,
+  limit = null,
+  sort = null,
+}: {
+  page?: number;
+  limit?: number;
+  sort?: string | string[];
+} = {}) {
+  const [where, bindvars] = SQL.autoWhere({});
+  const query = `
+      select * 
+      from wordle_league_members
+    ${SQL.whereClause(where)}
+    ${SQL.orderBy(sort)}
+    ${SQL.limit(page, limit)}
+  `;
+  return SQL.select(query, bindvars);
+}
+
 export async function addLeagueMember({ user_id, wordle_league_id }: { user_id: number; wordle_league_id: number }) {
+  const now = new Date();
   SQL.insert(
     'wordle_league_members',
     {
       user_id,
       wordle_league_id,
+      add_date: now,
+      rejoin_date: now,
+      active: true,
     },
     null,
-    'on conflict (wordle_league_id, user_id) do update set active=true, rejoin_date=now() ',
+    `
+        on conflict (wordle_league_id, user_id) 
+        do update set 
+        active=true, 
+        rejoin_date=case when wordle_league_members.active then wordle_league_members.rejoin_date else excluded.rejoin_date end`,
   );
 }
 
 export async function removeLeagueMember({ user_id, wordle_league_id }: { user_id: number; wordle_league_id: number }) {
   SQL.update(
     'wordle_league_members',
-    'wordle_leage_id=${wordle_league_id} and user_id=${user_id}',
+    'wordle_league_id=$(wordle_league_id) and user_id=$(user_id)',
     { wordle_league_id, user_id },
     {
       active: false,
