@@ -40,6 +40,8 @@ services:
     volumes:
       - ./src/api/src:/srv/src/api/src
       - ./src/api/scripts:/srv/src/api/scripts
+      - ./src/ui/types:/srv/src/ui/types
+
     entrypoint: npm test
     env_file:
       - ./src/api/env.test

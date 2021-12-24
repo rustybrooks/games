@@ -289,7 +289,7 @@ export async function addLeagueMember({ user_id, wordle_league_id }: { user_id: 
       wordle_league_id,
     },
     null,
-    'on conflict (wordle_league_members_u) do update set active=true, rejoin_date=now() ',
+    'on conflict (wordle_league_id, user_id) do update set active=true, rejoin_date=now() ',
   );
 }
 

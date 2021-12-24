@@ -70,7 +70,7 @@ const check = async (request: Request, response: Response, next: NextFunction) =
   }
   const { guess, league_slug } = getParams(request);
 
-  const league = await queries.league({ league_slug, user_id: response.locals.user.user_id });
+  const league = await queries.league({ league_slug, user_id: response.locals.user.user_id, isMemberOnly: true });
   if (!league) {
     return next(new exceptions.HttpNotFound('League not found'));
   }
