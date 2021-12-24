@@ -1,17 +1,16 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { withStore, useGetAndSet } from 'react-context-hook';
+import { useGetAndSet, withStore } from 'react-context-hook';
 import { css } from '@emotion/react';
 
-// import { withStyles } from '@mui/core/styles';
 import * as material from '@mui/material';
 
 import * as constants from './constants';
-
-import { Wordle } from './components/Wordle';
-import { WordleLeagues } from './components/WordleLeagues';
 import { Login } from './components/Login';
+import { WordleGames } from './components/WordleGames';
+import { WordleLeagues } from './components/WordleLeagues';
+import { Home } from './components/Home';
 
 const styles = {
   root: css({
@@ -78,8 +77,12 @@ const NavBar = ({ history }: { history: any }) => {
   console.log('user =', user);
   return (
     <div css={styles.root}>
-      <material.AppBar position="static">
+      <material.AppBar position="static" css={{ flexGrow: 1 }}>
         <material.Toolbar>
+          <div css={{ flexGrow: 1 }}>
+            <material.Button color="inherit">Home</material.Button>
+            <material.Button color="inherit">Wordle</material.Button>
+          </div>
           {user ? (
             <div>
               <material.Typography>
@@ -96,7 +99,7 @@ const NavBar = ({ history }: { history: any }) => {
           )}
         </material.Toolbar>
       </material.AppBar>
-      <material.Drawer anchor="left" open={loginOpen} onClose={closeDrawer}>
+      <material.Drawer anchor="right" open={loginOpen} onClose={closeDrawer}>
         <div role="presentation">
           <Login updateUser={updateUser} />
         </div>
@@ -126,7 +129,9 @@ function AppX({ history }: { history: any }) {
     <BrowserRouter>
       <NavBar history={history} />
       <Routes>
-        <Route path="/" element={<WordleLeagues />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/wordle" element={<WordleGames />} />
+        <Route path="/wordle/leagues" element={<WordleLeagues />} />
       </Routes>
     </BrowserRouter>
   );
