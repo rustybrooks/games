@@ -70,6 +70,47 @@ const WordleLeaguesX = () => {
     return data.json();
   }
 
+  async function joinLeague(row: League): Promise<void> {
+    console.log('join', row);
+    const data = await (fetch(genUrl('join_league')),
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-API-KEY': localStorage.getItem('api-key'),
+      },
+      json: {
+        league_slug: row.league_slug,
+      },
+    });
+    console.log('join data', data);
+  }
+
+  async function leaveLeague(row: League): Promise<void> {
+    console.log('leave', row);
+    console.log('join', row);
+    const data = await (fetch(genUrl('join_league')),
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-API-KEY': localStorage.getItem('api-key'),
+      },
+      json: {
+        league_slug: row.league_slug,
+      },
+    });
+    console.log('leave data', data);
+  }
+
+  function canLeave(row: League): boolean {
+    return row.is_member;
+  }
+
+  function canJoin(row: League): boolean {
+    return !row.is_member;
+  }
+
   React.useEffect(() => {
     async function fetchMyAPI() {
       const l = await getLeagues();
@@ -92,11 +133,15 @@ const WordleLeaguesX = () => {
         </Typography>
       </div>
       <eht.EnhancedTable
-        title="Leagues"
         rows={leagues}
         headCells={ourheadCells}
         mainColumn={'league_slug'}
         initialSortColumn={'league_name'}
+        checkButtons={false}
+        rowButtons={[
+          ['Join', joinLeague, canJoin],
+          ['Leave', leaveLeague, canLeave],
+        ]}
       />
     </Paper>
   );

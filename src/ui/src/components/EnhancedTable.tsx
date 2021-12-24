@@ -13,7 +13,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import Checkbox from '@mui/material/Checkbox';
-import LoadingButton from '@mui/material/LoadingButton';
+import LoadingButton from '@mui/lab/LoadingButton';
 import Tooltip from '@mui/material/Tooltip';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
@@ -61,6 +61,8 @@ export interface HeadCell<T> {
 }
 
 interface EnhancedTableProps<T> {
+  checkButtons: boolean;
+  rowButtons: any[];
   headCells: HeadCell<T>[];
   numSelected: number;
   onRequestSort: (event: React.MouseEvent<unknown>, property: keyof T) => void;
@@ -71,7 +73,17 @@ interface EnhancedTableProps<T> {
 }
 
 function EnhancedTableHead<T>(props: EnhancedTableProps<T>) {
-  const { headCells, onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
+  const {
+    headCells,
+    onSelectAllClick,
+    order,
+    orderBy,
+    numSelected,
+    rowCount,
+    onRequestSort,
+    checkButtons = false,
+    rowButtons = [],
+  } = props;
   const createSortHandler = (property: keyof T) => (event: React.MouseEvent<unknown>) => {
     onRequestSort(event, property);
   };
@@ -79,17 +91,19 @@ function EnhancedTableHead<T>(props: EnhancedTableProps<T>) {
   return (
     <TableHead>
       <TableRow>
-        <TableCell padding="checkbox">
-          <Checkbox
-            color="primary"
-            indeterminate={numSelected > 0 && numSelected < rowCount}
-            checked={rowCount > 0 && numSelected === rowCount}
-            onChange={onSelectAllClick}
-            inputProps={{
-              'aria-label': 'select all desserts',
-            }}
-          />
-        </TableCell>
+        {checkButtons ? (
+          <TableCell padding="checkbox">
+            <Checkbox
+              color="primary"
+              indeterminate={numSelected > 0 && numSelected < rowCount}
+              checked={rowCount > 0 && numSelected === rowCount}
+              onChange={onSelectAllClick}
+              inputProps={{
+                'aria-label': 'select all desserts',
+              }}
+            />
+          </TableCell>
+        ) : null}
         {headCells.map(headCell => (
           <TableCell
             key={headCell.id.toString()}
@@ -111,19 +125,19 @@ function EnhancedTableHead<T>(props: EnhancedTableProps<T>) {
             </TableSortLabel>
           </TableCell>
         ))}
+        {rowButtons && rowButtons.length ? <TableCell key="buttons" /> : null}
       </TableRow>
     </TableHead>
   );
 }
 
 interface EnhancedTableToolbarProps {
-  title: string;
   numSelected: number;
   loading: boolean;
 }
 
 const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
-  const { numSelected, title } = props;
+  const { numSelected, loading } = props;
   return (
     <Toolbar
       sx={{
@@ -151,11 +165,19 @@ interface Props<T> {
   headCells: HeadCell<T>[];
   mainColumn: keyof T;
   initialSortColumn: keyof T;
-  title: string;
+  checkButtons: boolean;
+  rowButtons: [string, (row: T) => Promise<void>, (row: T) => boolean][];
 }
 
 // eslint-disable-next-line import/no-default-export
-export function EnhancedTable<T extends unknown>({ rows, headCells, mainColumn, initialSortColumn, title }: Props<T>) {
+export function EnhancedTable<T extends unknown>({
+  rows,
+  headCells,
+  mainColumn,
+  initialSortColumn,
+  checkButtons = false,
+  rowButtons = null,
+}: Props<T>) {
   const [order, setOrder] = React.useState<Order>('asc');
   const [orderBy, setOrderBy] = React.useState<keyof T>(initialSortColumn);
   const [selected, setSelected] = React.useState<readonly any[]>([]);
@@ -204,6 +226,10 @@ export function EnhancedTable<T extends unknown>({ rows, headCells, mainColumn, 
     setPage(0);
   };
 
+  const handleButtonClick = (row: T, fn: (row: T) => Promise<void>) => {
+    fn(row);
+  };
+
   const isSelected = (name: string) => selected.indexOf(name) !== -1;
 
   // Avoid a layout jump when reaching the last page with empty rows.
@@ -222,6 +248,8 @@ export function EnhancedTable<T extends unknown>({ rows, headCells, mainColumn, 
               onSelectAllClick={handleSelectAllClick}
               onRequestSort={handleRequestSort}
               rowCount={rows.length}
+              checkButtons={checkButtons}
+              rowButtons={rowButtons}
             />
             <TableBody>
               {/*getComparator(order, orderBy)*/}
@@ -243,15 +271,18 @@ export function EnhancedTable<T extends unknown>({ rows, headCells, mainColumn, 
                       key={row[mainColumn].toString()}
                       selected={isItemSelected}
                     >
-                      <TableCell padding="checkbox">
-                        <Checkbox
-                          color="primary"
-                          checked={isItemSelected}
-                          inputProps={{
-                            'aria-labelledby': labelId,
-                          }}
-                        />
-                      </TableCell>
+                      {checkButtons ? (
+                        <TableCell padding="checkbox">
+                          <Checkbox
+                            color="primary"
+                            checked={isItemSelected}
+                            inputProps={{
+                              'aria-labelledby': labelId,
+                            }}
+                          />
+                        </TableCell>
+                      ) : null}
+
                       {headCells.map(c =>
                         c.id === mainColumn ? (
                           <TableCell key={c.id.toString()} component="th" id={labelId} scope={'row'} padding={'none'}>
@@ -263,6 +294,22 @@ export function EnhancedTable<T extends unknown>({ rows, headCells, mainColumn, 
                           </TableCell>
                         ),
                       )}
+                      {rowButtons && rowButtons.length ? (
+                        <TableCell key="buttons">
+                          {rowButtons.map(b => (
+                            <LoadingButton
+                              sx={{ marginLeft: '5px' }}
+                              key={b[0]}
+                              loading={loading}
+                              disabled={!b[2](row)}
+                              variant={'contained'}
+                              onClick={event => handleButtonClick(row, b[1])}
+                            >
+                              {b[0]}
+                            </LoadingButton>
+                          ))}
+                        </TableCell>
+                      ) : null}
                     </TableRow>
                   );
                 })}
@@ -287,7 +334,7 @@ export function EnhancedTable<T extends unknown>({ rows, headCells, mainColumn, 
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
-        <EnhancedTableToolbar loading={loading} numSelected={selected.length} title={title} />
+        {checkButtons ? <EnhancedTableToolbar loading={loading} numSelected={selected.length} /> : null}
       </Paper>
     </Box>
   );

@@ -54,9 +54,13 @@ initial.addStatement(`
         wordle_league_member_id serial primary key,
         user_id bigint not null references users(user_id),
         wordle_league_id bigint not null references wordle_leagues(wordle_league_id),
-        add_date timestamp with time zone not null default now()
+        add_date timestamp with time zone not null default now(),
+        leave_date timestamp with time zone,
+        rejoin_date timestamp with time zone,
+        active boolean default true
     )
 `);
+initial.addStatement('create unique index wordle_league_members_u on wordle_league_members(wordle_league_id, user_id)');
 
 initial.addStatement(`
     create table wordle_answers(
@@ -92,6 +96,16 @@ export async function bootstrapLeagues(startDate: Date) {
     series_days: 7,
     answer_cron_interval: '0 0 0 * * *',
     letters: 5,
+    time_to_live_hours: 24,
+    start_date: startDate,
+  });
+
+  await SQL.insert('wordle_leagues', {
+    league_name: 'Daily Play / Weekly Series / 7 letters',
+    league_slug: 'daily_weekly_7',
+    series_days: 7,
+    answer_cron_interval: '0 0 0 * * *',
+    letters: 7,
     time_to_live_hours: 24,
     start_date: startDate,
   });

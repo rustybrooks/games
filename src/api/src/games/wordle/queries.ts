@@ -282,8 +282,25 @@ export async function guesses({
 /* ******* league members ******** */
 
 export async function addLeagueMember({ user_id, wordle_league_id }: { user_id: number; wordle_league_id: number }) {
-  SQL.insert('wordle_league_members', {
-    user_id,
-    wordle_league_id,
-  });
+  SQL.insert(
+    'wordle_league_members',
+    {
+      user_id,
+      wordle_league_id,
+    },
+    null,
+    'on conflict (wordle_league_members_u) do update set active=true, rejoin_date=now() ',
+  );
+}
+
+export async function removeLeagueMember({ user_id, wordle_league_id }: { user_id: number; wordle_league_id: number }) {
+  SQL.update(
+    'wordle_league_members',
+    'wordle_leage_id=${wordle_league_id} and user_id=${user_id}',
+    { wordle_league_id, user_id },
+    {
+      active: false,
+      leave_date: new Date(),
+    },
+  );
 }

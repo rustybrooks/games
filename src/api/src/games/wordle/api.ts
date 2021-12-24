@@ -26,13 +26,38 @@ const leagues = async (request: Request, response: Response, next: NextFunction)
   response.status(200).json(lg.map(l => Object.fromEntries(cols.map(c => [c, l[c]]))));
 };
 
-const joinLeagues = async (request: Request, response: Response, next: NextFunction) => {
+const joinLeague = async (request: Request, response: Response, next: NextFunction) => {
   try {
     users.requireLogin(response, next);
   } catch (e) {
     return next(e);
   }
-  const { league_slugs } = getParams(request);
+  const { league_slug } = getParams(request);
+
+  const league = await queries.league({ league_slug, user_id: response.locals.user.user_id });
+  if (!league) {
+    return next(new exceptions.HttpNotFound('League not found'));
+  }
+
+  await queries.addLeagueMember({ user_id: response.locals.user.user_id, wordle_league_id: league.wordle_league_id });
+
+  return response.status(200).json({ details: 'ok' });
+};
+
+const leaveLeague = async (request: Request, response: Response, next: NextFunction) => {
+  try {
+    users.requireLogin(response, next);
+  } catch (e) {
+    return next(e);
+  }
+  const { league_slug } = getParams(request);
+
+  const league = await queries.league({ league_slug, user_id: response.locals.user.user_id });
+  if (!league) {
+    return next(new exceptions.HttpNotFound('League not found'));
+  }
+
+  await queries.removeLeagueMember({ user_id: response.locals.user.user_id, wordle_league_id: league.wordle_league_id });
 
   return response.status(200).json({ details: 'ok' });
 };
@@ -88,4 +113,5 @@ const check = async (request: Request, response: Response, next: NextFunction) =
 
 router.all('/check', check);
 router.all('/leagues', leagues);
-router.all('/join_leagues', joinLeagues);
+router.all('/join_league', joinLeague);
+router.all('/leave_league', leaveLeague);

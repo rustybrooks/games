@@ -15,6 +15,7 @@
     "@mui/material": "latest",
     "@mui/icons-material": "latest",
     "@mui/utils": "latest",
+    "@mui/lab": "latest",
     "@emotion/react": "latest",
     "@emotion/styled": "latest",
     "css-loader": "latest",
