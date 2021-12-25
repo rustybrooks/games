@@ -5,6 +5,8 @@ import Keyboard from 'react-simple-keyboard';
 import 'react-simple-keyboard/build/css/index.css';
 
 import * as constants from '../constants';
+import { ActivePuzzle, League } from '../../types/wordle';
+import { useGetAndSet } from 'react-context-hook';
 
 let style: { [id: string]: any } = {
   cell: css({
@@ -33,86 +35,149 @@ style.sortaCell = css({ ...style.cell, backgroundColor: '#c9b458' });
 
 const genUrl = (fn = '') => `${constants.BASE_URL}/api/games/wordle/${fn}`;
 
-const WordleX = () => {
-  const [results, setResults] = React.useState(['', '', '', '', '', '']);
-  const [guesses, setGuesses] = React.useState(['', '', '', '', '', '']);
+export const Wordle = ({ puzzle }: { puzzle: ActivePuzzle }) => {
+  const [leagues, setLeagues] = useGetAndSet<League[]>('leagues');
+  const [results, setResults] = React.useState<{ guess: string; result: string[] }[]>([]);
   const gridIdx = React.useRef(0);
+  const league = leagues.find(l => l.league_name === puzzle.league_name);
 
-  const onKeyPress = (button: string) => {
+  async function sendGuess(word: string) {
+    const r = await fetch(genUrl('check'), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-API-KEY': localStorage.getItem('api-key'),
+      },
+      body: JSON.stringify({
+        guess: word,
+        wordle_answer_id: puzzle.wordle_answer_id,
+        league_slug: league.league_slug,
+      }),
+    });
+    if (r.status === 200) {
+      const data = await r.json();
+      console.log('setting gridIdx', gridIdx.current, data.length);
+      gridIdx.current = data.length;
+      while (data.length < 6) {
+        data.push({ guess: '', result: [] });
+      }
+      setResults(data);
+    }
+  }
+
+  async function getGuesses() {
+    const r = await fetch(genUrl('guesses'), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-API-KEY': localStorage.getItem('api-key'),
+      },
+      body: JSON.stringify({
+        wordle_answer_id: puzzle.wordle_answer_id,
+        league_slug: league.league_slug,
+      }),
+    });
+    if (r.status === 200) {
+      const data = await r.json();
+      console.log('setting gridIdx', gridIdx.current, data.length);
+      gridIdx.current = data.length;
+      while (data.length < 6) {
+        data.push({ guess: '', result: [] });
+      }
+      console.log('setting results', data);
+      setResults(data);
+    }
+  }
+
+  const onKeyPress = async (button: string) => {
+    console.log('grid', gridIdx.current);
     const buttonx = button.toLowerCase();
-    let word = guesses[gridIdx.current];
+    const res = results[gridIdx.current];
+    console.log(gridIdx.current, res, results);
+    let word = res.guess;
 
     if (buttonx === '{bksp}' || buttonx === 'backspace') {
-      guesses[gridIdx.current] = word.slice(0, word.length - 1);
-      setGuesses([...guesses]);
+      let newResults = [...results];
+      newResults[gridIdx.current].guess = word.slice(0, word.length - 1);
+      setResults(newResults);
     } else if (buttonx === '{enter}' || buttonx === 'enter') {
-      fetch(genUrl('check'), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ guess: word }),
-      }).then(r => {
-        if (r.status === 200) {
-          r.json().then(x => {
-            results.splice(gridIdx.current, 1, x);
-            setResults([...results]);
-            gridIdx.current += 1;
-          });
-        }
-      });
-    } else if (word.length < 5 && button.length === 1) {
+      sendGuess(word);
+    } else if (word.length < league.letters && button.length === 1) {
       const myre = /[a-z]/;
       if (myre.test(button)) {
         word += buttonx;
-        guesses.splice(gridIdx.current, 1, word);
-        setGuesses([...guesses]);
+        let newResults = [...results];
+        newResults[gridIdx.current].guess = word;
+        setResults(newResults);
       }
     }
   };
 
-  const onKeyPress2 = (button: string) => {
-    onKeyPress(button);
+  const handleKeyDown = (event: any) => {
+    onKeyPress(event.key);
   };
 
   React.useEffect(() => {
-    document.addEventListener('keydown', event => onKeyPress2(event.key), false);
-  }, []);
+    // window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener('keydown', handleKeyDown, false);
+
+    // cleanup this component
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [results]);
+
+  React.useEffect(() => {
+    getGuesses();
+  }, [puzzle]);
+
+  // console.log(leagues);
+  // console.log(puzzle);
+  // console.log(league);
+
+  if (!results.length) {
+    return <div>Loading...</div>;
+  }
+
+  console.log('results is', results);
 
   return (
     <div style={{ height: '100%', display: 'flex', justifyContent: 'center' }}>
       <div style={{ width: 500, padding: 20 }}>
         <table css={style.table} style={{ margin: '0 auto' }}>
           <tbody>
-            {[0, 1, 2, 3, 4, 5].map(y => (
-              <tr key={y}>
-                {[0, 1, 2, 3, 4].map(x => {
-                  const g = guesses[y][x] || '';
-                  const r = results[y][x];
-                  let cn = 'cell';
-                  if (r) {
-                    switch (r) {
-                      case '+':
-                        cn = 'rightCell';
-                        break;
-                      case '-':
-                        cn = 'sortaCell';
-                        break;
-                      case ' ':
-                        cn = 'wrongCell';
-                        break;
-                      default:
-                        cn = 'cell';
+            {[...Array(6).keys()].map(y => {
+              const result = results[y] || { guess: '', result: [] };
+              return (
+                <tr key={y}>
+                  {[...Array(league.letters).keys()].map(x => {
+                    const g = result.guess[x] || '';
+                    const r = result.result[x];
+                    let cn = 'cell';
+                    if (r) {
+                      switch (r) {
+                        case '+':
+                          cn = 'rightCell';
+                          break;
+                        case '-':
+                          cn = 'sortaCell';
+                          break;
+                        case ' ':
+                          cn = 'wrongCell';
+                          break;
+                        default:
+                          cn = 'cell';
+                      }
                     }
-                  }
-                  return (
-                    <td key={x} css={style[cn]}>
-                      {g.toUpperCase()}
-                    </td>
-                  );
-                })}
-              </tr>
-            ))}
+                    return (
+                      <td key={x} css={style[cn]}>
+                        {g.toUpperCase()}
+                      </td>
+                    );
+                  })}
+                </tr>
+              );
+            })}
           </tbody>
         </table>
         <div style={{ width: 500 }}>
@@ -132,5 +197,3 @@ const WordleX = () => {
     </div>
   );
 };
-
-export const Wordle = WordleX;

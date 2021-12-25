@@ -1,12 +1,35 @@
 import * as React from 'react';
 import { useGetAndSet } from 'react-context-hook';
 import * as eht from './EnhancedTable';
-import { League } from '../../types/wordle';
+import { ActivePuzzle, League } from '../../types/wordle';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import * as constants from '../constants';
 
 const genUrl = (fn = '') => `${constants.BASE_URL}/api/games/wordle/${fn}`;
+
+// move this to utils or something
+export async function getLeagues(): Promise<League[]> {
+  const data = await fetch(genUrl('leagues'), {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-API-KEY': localStorage.getItem('api-key'),
+    },
+  });
+  return data.json();
+}
+
+export async function getActivePuzzles(): Promise<ActivePuzzle[]> {
+  const data = await fetch(genUrl('active_puzzles'), {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-API-KEY': localStorage.getItem('api-key'),
+    },
+  });
+  return data.json();
+}
 
 const ourheadCells: eht.HeadCell<League>[] = [
   // {
@@ -56,19 +79,8 @@ const ourheadCells: eht.HeadCell<League>[] = [
 /// ///////////////////////
 
 const WordleLeaguesX = () => {
-  const [leagues, setLeagues] = React.useState<League[]>([]);
+  const [leagues, setLeagues] = useGetAndSet<League[]>('leagues');
   const [user, setUser]: [{ username: string }, any] = useGetAndSet('user');
-
-  async function getLeagues(): Promise<League[]> {
-    const data = await fetch(genUrl('leagues'), {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-API-KEY': localStorage.getItem('api-key'),
-      },
-    });
-    return data.json();
-  }
 
   async function joinLeague(row: League): Promise<void> {
     console.log('join', row);
@@ -112,13 +124,18 @@ const WordleLeaguesX = () => {
   }
 
   React.useEffect(() => {
-    async function fetchMyAPI() {
-      const l = await getLeagues();
-      console.log('leagues', l);
-      setLeagues(l);
-    }
-
-    fetchMyAPI();
+    // async function fetchMyAPI() {
+    //   const l = await getLeagues();
+    //   console.log('leagues', l);
+    //   setLeagues(l);
+    // }
+    //
+    // if (leagues === null) {
+    //   fetchMyAPI();
+    // }
+    (async () => {
+      setLeagues(await getLeagues());
+    })();
   }, [user]);
 
   if (!leagues) {

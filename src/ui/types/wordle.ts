@@ -9,3 +9,13 @@ export interface League {
   start_date: number;
   is_member: boolean;
 }
+
+export interface ActivePuzzle {
+  league_slug: string;
+  league_name: string;
+  wordle_answer_id: number;
+  active_after: Date;
+  active_before: Date;
+  series_start_date: Date;
+  series_end_date: Date;
+}

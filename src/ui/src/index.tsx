@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes, Link } from 'react-router-dom';
 import { useGetAndSet, withStore } from 'react-context-hook';
 import { css } from '@emotion/react';
 
@@ -80,8 +80,12 @@ const NavBar = ({ history }: { history: any }) => {
       <material.AppBar position="static" css={{ flexGrow: 1 }}>
         <material.Toolbar>
           <div css={{ flexGrow: 1 }}>
-            <material.Button color="inherit">Home</material.Button>
-            <material.Button color="inherit">Wordle</material.Button>
+            <material.Button color="inherit" component={Link} to="/">
+              Home
+            </material.Button>
+            <material.Button color="inherit" component={Link} to="/wordle">
+              Wordle
+            </material.Button>
           </div>
           {user ? (
             <div>
@@ -112,6 +116,8 @@ const initialValue: { [id: string]: any } = {
   'login-widget': null,
   'login-open': false,
   user: null,
+  leagues: [],
+  'active-puzzles': [],
 };
 
 const storeConfig = {

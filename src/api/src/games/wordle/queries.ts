@@ -1,5 +1,5 @@
 import { SQL } from '../../db';
-import { League } from '../../../../ui/types/wordle';
+import { ActivePuzzle, League } from '../../../../ui/types/wordle';
 import * as utils from './utils';
 
 export function roundedNow() {
@@ -151,8 +151,10 @@ export async function generateAllSeries(now: Date) {
 }
 
 /* ******* answers ******** */
+
 export async function answers({
   wordle_league_id = null,
+  wordle_answer_id = null,
   league_slug = null,
   active_after = null,
   active_between = null,
@@ -161,6 +163,7 @@ export async function answers({
   sort = null,
 }: {
   wordle_league_id?: number;
+  wordle_answer_id?: number;
   league_slug?: string;
   active_after?: Date;
   active_between?: Date;
@@ -168,7 +171,7 @@ export async function answers({
   limit?: number;
   sort?: string | string[];
 } = {}) {
-  const [where, bindvars] = SQL.autoWhere({ wordle_league_id, league_slug, active_after });
+  const [where, bindvars] = SQL.autoWhere({ wordle_league_id, wordle_answer_id, league_slug, active_after });
 
   if (active_between) {
     where.push('$(active_between) between active_after and active_before');
@@ -184,6 +187,7 @@ export async function answers({
     ${SQL.orderBy(sort)}
     ${SQL.limit(page, limit)}
   `;
+  // console.log(query, bindvars);
   return SQL.select(query, bindvars);
 }
 
@@ -229,6 +233,39 @@ export async function generateAnswer(league: any, now: Date) {
     },
     '*',
   );
+}
+
+export async function active_puzzles({
+  user_id,
+  page = null,
+  limit = null,
+  sort = null,
+}: {
+  user_id: number;
+  page?: number;
+  limit?: number;
+  sort?: string | string[];
+}): Promise<ActivePuzzle> {
+  const [where, bindvars] = SQL.autoWhere({ user_id });
+
+  where.push('m.active');
+
+  where.push('$(now) between active_after and active_before');
+  bindvars.now = new Date();
+
+  const query = `
+      select league_slug, league_name, 
+             wordle_answer_id, active_after, active_before, 
+             s.start_date as series_start_date, s.end_date as series_end_date
+      from wordle_league_members m
+      join wordle_leagues l using (wordle_league_id)
+      join wordle_league_series s using (wordle_league_id)
+      join wordle_answers a using (wordle_league_series_id)
+      ${SQL.whereClause(where)}
+      ${SQL.orderBy(sort)}
+      ${SQL.limit(page, limit)}
+  `;
+  return SQL.select(query, bindvars);
 }
 
 /* ******* guesses ******** */

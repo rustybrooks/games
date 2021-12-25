@@ -3,6 +3,7 @@ import * as fs from 'fs';
 const words: { [id: number]: string[] } = {};
 
 export function evaluateGuess(expected: string, guess: string) {
+  console.log('evaluateGuess', expected, guess);
   const expectedCounts = expected.split('').reduce((prev: { [id: string]: number }, current) => {
     const prev2 = { ...prev };
     prev2[current] = (prev2[current] || 0) + 1;

@@ -68,7 +68,7 @@ const check = async (request: Request, response: Response, next: NextFunction) =
   } catch (e) {
     return next(e);
   }
-  const { guess, league_slug } = getParams(request);
+  const { guess, league_slug, wordle_answer_id } = getParams(request);
 
   const league = await queries.league({ league_slug, user_id: response.locals.user.user_id, isMemberOnly: true });
   if (!league) {
@@ -76,8 +76,8 @@ const check = async (request: Request, response: Response, next: NextFunction) =
   }
 
   const abDate = new Date();
-  const answers = await queries.answers({ league_slug, active_between: abDate, sort: 'active_after' });
-  if (!answers.length) {
+  const answer = await queries.answer({ league_slug, wordle_answer_id, active_between: abDate });
+  if (!answer) {
     return next(new exceptions.HttpNotFound('Wordle not found'));
   }
 
@@ -88,30 +88,75 @@ const check = async (request: Request, response: Response, next: NextFunction) =
     return next(new exceptions.HttpBadRequest(`guess must be ${league.letters} letters`));
   }
 
-  const result = utils.evaluateGuess(answers[0].answer, guess);
+  const result = utils.evaluateGuess(answer.answer, guess);
   queries.addGuess({
     user_id: response.locals.user.user_id,
-    wordle_answer_id: answers[0].wordle_answer_id,
+    wordle_answer_id: answer.wordle_answer_id,
     guess,
     correct_placement: result.reduce((c, n) => (c + n === '+' ? 1 : 0), 0),
     correct_letters: result.reduce((c, n) => (c + n === ' ' ? 0 : 1), 0),
-    correct: guess === answers[0].answer,
+    correct: guess === answer.answer,
   });
 
   const guesses = await queries.guesses({
-    wordle_answer_id: answers[0].wordle_answer_id,
-    sort: 'create_date',
+    wordle_answer_id: answer.wordle_answer_id,
+    sort: 'wordle_guesses.create_date',
   });
 
   return response.status(200).json(
     guesses.map((g: any) => ({
       guess: g.guess,
-      result: utils.evaluateGuess(answers[0].answer, g),
+      result: utils.evaluateGuess(answer.answer, g.guess),
     })),
   );
 };
 
+const guesses = async (request: Request, response: Response, next: NextFunction) => {
+  try {
+    users.requireLogin(response, next);
+  } catch (e) {
+    return next(e);
+  }
+  const { league_slug, wordle_answer_id } = getParams(request);
+
+  const league = await queries.league({ league_slug, user_id: response.locals.user.user_id, isMemberOnly: true });
+  if (!league) {
+    return next(new exceptions.HttpNotFound('League not found'));
+  }
+
+  const answer = await queries.answer({ league_slug, wordle_answer_id });
+  if (!answer) {
+    return next(new exceptions.HttpNotFound('Wordle not found'));
+  }
+
+  const guesses = await queries.guesses({
+    wordle_answer_id: answer.wordle_answer_id,
+    sort: 'wordle_guesses.create_date',
+  });
+  console.log('guesses', guesses);
+  return response.status(200).json(
+    guesses.map((g: any) => ({
+      guess: g.guess,
+      result: utils.evaluateGuess(answer.answer, g.guess),
+    })),
+  );
+};
+
+const activePuzzles = async (request: Request, response: Response, next: NextFunction) => {
+  try {
+    users.requireLogin(response, next);
+  } catch (e) {
+    return next(e);
+  }
+  const {} = getParams(request);
+
+  const puzzles = await queries.active_puzzles({ user_id: response.locals.user.user_id });
+  return response.status(200).json(puzzles);
+};
+
 router.all('/check', check);
+router.all('/guesses', guesses);
 router.all('/leagues', leagues);
 router.all('/join_league', joinLeague);
 router.all('/leave_league', leaveLeague);
+router.all('/active_puzzles', activePuzzles);
