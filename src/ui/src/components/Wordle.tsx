@@ -9,7 +9,7 @@ import { ActivePuzzle, League } from '../../types/wordle';
 import { useGetAndSet } from 'react-context-hook';
 
 let style: { [id: string]: any } = {
-  cell: css({
+  cell: {
     width: '3rem',
     height: '3rem',
     background: 'white',
@@ -20,18 +20,18 @@ let style: { [id: string]: any } = {
     fontFamily: 'Arial, sans-serif',
     fontWeight: 'bold',
     fontSize: '30px',
-  }),
+  },
 
-  table: css({
+  table: {
     padding: '20px',
     borderSpacing: '6px',
     borderCollapse: 'separate',
-  }),
+  },
 };
 
-style.wrongCell = css({ ...style.cell, backgroundColor: '#787c7e' });
-style.rightCell = css({ ...style.cell, backgroundColor: '#6aaa64' });
-style.sortaCell = css({ ...style.cell, backgroundColor: '#c9b458' });
+style.wrongCell = { ...style.cell, backgroundColor: '#787c7e' };
+style.rightCell = { ...style.cell, backgroundColor: '#6aaa64' };
+style.sortaCell = { ...style.cell, backgroundColor: '#c9b458' };
 
 const genUrl = (fn = '') => `${constants.BASE_URL}/api/games/wordle/${fn}`;
 
@@ -169,6 +169,7 @@ export const Wordle = ({ puzzle }: { puzzle: ActivePuzzle }) => {
                           cn = 'cell';
                       }
                     }
+                    console.log(result, x, r, cn, style[cn]);
                     return (
                       <td key={x} css={style[cn]}>
                         {g.toUpperCase()}

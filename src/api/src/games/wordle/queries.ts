@@ -226,7 +226,7 @@ export async function generateAnswer(league: any, now: Date) {
     'wordle_answers',
     {
       wordle_league_series_id: series[0].wordle_league_series_id,
-      answer: utils.randomWord(league.letters),
+      answer: utils.randomWord(league.letters).toLowerCase(),
       create_date: now,
       active_after: now,
       active_before: end,
@@ -288,7 +288,7 @@ export async function addGuess({
   SQL.insert('wordle_guesses', {
     user_id,
     wordle_answer_id,
-    guess,
+    guess: guess.toLowerCase(),
     correct_placement,
     correct_letters,
     correct,
