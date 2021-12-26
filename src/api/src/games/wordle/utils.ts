@@ -30,7 +30,7 @@ export function evaluateGuess(expected: string, guess: string) {
     }
     return ' ';
   });
-  console.log('evaluateGuess', expectedl, guessl, res);
+  // console.log('evaluateGuess', expectedl, guessl, res);
   return res;
 }
 
@@ -40,7 +40,8 @@ export function wordList(length: number) {
     words[length] = fs
       .readFileSync('./data/scrabble.txt', 'utf8')
       .split('\r\n')
-      .filter(w => w.length === length);
+      .filter(w => w.length === length)
+      .map(w => w.toLowerCase());
   }
 
   return words[length];
@@ -49,4 +50,9 @@ export function wordList(length: number) {
 export function randomWord(length: number) {
   const wl = wordList(length);
   return wl[Math.floor(Math.random() * wl.length)];
+}
+
+export function isWordInList(word: string) {
+  const wl = wordList(word.length);
+  return wl.includes(word);
 }

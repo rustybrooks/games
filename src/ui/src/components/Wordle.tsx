@@ -65,13 +65,14 @@ export const Wordle = ({ puzzle }: { puzzle: ActivePuzzle }) => {
       while (data.length < league.max_guesses) {
         data.push({ guess: '', result: [] });
       }
-      if (error) {
+      if (error.length) {
         setError('');
       }
       setResults(data);
     } else {
       const data = await r.json();
-      setError(data.json().message);
+      console.log('received error', data);
+      setError(data.detail);
     }
   }
 
@@ -100,15 +101,16 @@ export const Wordle = ({ puzzle }: { puzzle: ActivePuzzle }) => {
   }
 
   const onKeyPress = async (button: string) => {
-    // console.log('grid', gridIdx.current);
     const buttonx = button.toLowerCase();
     const res = results[gridIdx.current];
-    // console.log(gridIdx.current, res, results);
     let word = res.guess;
 
     if (buttonx === '{bksp}' || buttonx === 'backspace') {
       let newResults = [...results];
       newResults[gridIdx.current].guess = word.slice(0, word.length - 1);
+      if (error.length) {
+        setError('');
+      }
       setResults(newResults);
     } else if (buttonx === '{enter}' || buttonx === 'enter') {
       sendGuess(word);
@@ -118,6 +120,9 @@ export const Wordle = ({ puzzle }: { puzzle: ActivePuzzle }) => {
         word += buttonx;
         let newResults = [...results];
         newResults[gridIdx.current].guess = word;
+        if (error.length) {
+          setError('');
+        }
         setResults(newResults);
       }
     }
@@ -148,7 +153,7 @@ export const Wordle = ({ puzzle }: { puzzle: ActivePuzzle }) => {
     );
   }
 
-  const rightKeys = [];
+  const rightKeys: string[] = [];
   const wrongKeys = [];
   const sortaKeys = [];
   for (const r of results) {
@@ -225,8 +230,8 @@ export const Wordle = ({ puzzle }: { puzzle: ActivePuzzle }) => {
               );
             })}
             <tr>
-              <td colSpan={10}>
-                <Typography color="#d22">{error}</Typography>
+              <td colSpan={league.letters}>
+                <Typography color="#d22">{error}&nbsp;</Typography>
               </td>
             </tr>
           </tbody>

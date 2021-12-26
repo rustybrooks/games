@@ -1,3 +1,14 @@
+export interface Guess {
+  wordle_guess_id: number;
+  user_id: number;
+  wordle_answer_id: number;
+  guess: string;
+  correct_placement: number;
+  correct_letters: number;
+  correct: boolean;
+  create_date: Date;
+}
+
 export interface League {
   wordle_league_id?: number;
   league_slug: string;

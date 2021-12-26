@@ -89,6 +89,27 @@ const check = async (request: Request, response: Response, next: NextFunction) =
     return next(new exceptions.HttpBadRequest(`guess must be ${league.letters} letters`));
   }
 
+  const guessesList = await queries.guesses({
+    wordle_answer_id: answer.wordle_answer_id,
+    sort: 'wordle_guesses.create_date',
+  });
+
+  if (guessesList.find(g => g.correct)) {
+    return next(new exceptions.HttpBadRequest(`Already have a correct answer`));
+  }
+
+  const guesses = guessesList.map(g => g.guess);
+
+  if (guesses.length >= league.max_guesses) {
+    return next(new exceptions.HttpBadRequest(`Already reached maximum number of quesses for this puzzle`));
+  }
+
+  if (!utils.isWordInList(guess)) {
+    return next(new exceptions.HttpBadRequest(`Invalid word`));
+  }
+
+  guesses.push(guess);
+
   const result = utils.evaluateGuess(answer.answer, guess);
   queries.addGuess({
     user_id: response.locals.user.user_id,
@@ -99,15 +120,10 @@ const check = async (request: Request, response: Response, next: NextFunction) =
     correct: guess === answer.answer,
   });
 
-  const guesses = await queries.guesses({
-    wordle_answer_id: answer.wordle_answer_id,
-    sort: 'wordle_guesses.create_date',
-  });
-
   return response.status(200).json(
-    guesses.map((g: any) => ({
-      guess: g.guess,
-      result: utils.evaluateGuess(answer.answer, g.guess),
+    guesses.map((g: string) => ({
+      guess: g,
+      result: utils.evaluateGuess(answer.answer, g),
     })),
   );
 };
@@ -134,7 +150,6 @@ const guesses = async (request: Request, response: Response, next: NextFunction)
     wordle_answer_id: answer.wordle_answer_id,
     sort: 'wordle_guesses.create_date',
   });
-  console.log('guesses', guesses);
   return response.status(200).json(
     guesses.map((g: any) => ({
       guess: g.guess,

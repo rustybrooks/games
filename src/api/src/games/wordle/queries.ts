@@ -1,5 +1,5 @@
 import { SQL } from '../../db';
-import { ActivePuzzle, League } from '../../../../ui/types/wordle';
+import { ActivePuzzle, Guess, League } from '../../../../ui/types/wordle';
 import * as utils from './utils';
 
 export function roundedNow() {
@@ -308,7 +308,7 @@ export async function guesses({
   page?: number;
   limit?: number;
   sort?: string | string[];
-} = {}) {
+} = {}): Promise<Guess[]> {
   const [where, bindvars] = SQL.autoWhere({ wordle_answer_id });
   const query = `
       select *
