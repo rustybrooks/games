@@ -17,6 +17,7 @@ const leagues = async (request: Request, response: Response, next: NextFunction)
     'league_slug',
     'league_name',
     'letters',
+    'max_guesses',
     'series_days',
     'create_date',
     'start_date',

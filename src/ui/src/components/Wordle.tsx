@@ -1,4 +1,5 @@
 import * as React from 'react';
+import './Wordle.css';
 import { css } from '@emotion/react';
 
 import Keyboard from 'react-simple-keyboard';
@@ -59,7 +60,7 @@ export const Wordle = ({ puzzle }: { puzzle: ActivePuzzle }) => {
     });
     if (r.status === 200) {
       const data = await r.json();
-      console.log('setting gridIdx', gridIdx.current, data.length);
+      // console.log('setting gridIdx', gridIdx.current, data.length);
       gridIdx.current = data.length;
       while (data.length < league.max_guesses) {
         data.push({ guess: '', result: [] });
@@ -88,21 +89,21 @@ export const Wordle = ({ puzzle }: { puzzle: ActivePuzzle }) => {
     });
     if (r.status === 200) {
       const data = await r.json();
-      console.log('setting gridIdx', gridIdx.current, data.length);
+      // console.log('setting gridIdx', gridIdx.current, data.length);
       gridIdx.current = data.length;
       while (data.length < league.max_guesses) {
         data.push({ guess: '', result: [] });
       }
-      console.log('setting results', data);
+      // console.log('setting results', data);
       setResults(data);
     }
   }
 
   const onKeyPress = async (button: string) => {
-    console.log('grid', gridIdx.current);
+    // console.log('grid', gridIdx.current);
     const buttonx = button.toLowerCase();
     const res = results[gridIdx.current];
-    console.log(gridIdx.current, res, results);
+    // console.log(gridIdx.current, res, results);
     let word = res.guess;
 
     if (buttonx === '{bksp}' || buttonx === 'backspace') {
@@ -139,10 +140,6 @@ export const Wordle = ({ puzzle }: { puzzle: ActivePuzzle }) => {
     getGuesses();
   }, [puzzle]);
 
-  // console.log(leagues);
-  // console.log(puzzle);
-  // console.log(league);
-
   if (!results.length) {
     return (
       <div>
@@ -151,7 +148,43 @@ export const Wordle = ({ puzzle }: { puzzle: ActivePuzzle }) => {
     );
   }
 
-  console.log('results is', results);
+  const rightKeys = [];
+  const wrongKeys = [];
+  const sortaKeys = [];
+  for (const r of results) {
+    if (!r.guess.length) continue;
+    for (const i in r.result) {
+      if (r.result[i] === '+') {
+        rightKeys.push(r.guess[i]);
+      } else if (r.result[i] === '-') {
+        sortaKeys.push(r.guess[i]);
+      } else {
+        wrongKeys.push(r.guess[i]);
+      }
+    }
+  }
+
+  const sortaKeys2 = sortaKeys.filter(k => !rightKeys.includes(k));
+
+  const buttonTheme = [];
+  if (wrongKeys.length) {
+    buttonTheme.push({
+      class: 'hg-wrong',
+      buttons: wrongKeys.join(' '),
+    });
+  }
+  if (sortaKeys2.length) {
+    buttonTheme.push({
+      class: 'hg-sorta',
+      buttons: sortaKeys2.join(' '),
+    });
+  }
+  if (rightKeys.length) {
+    buttonTheme.push({
+      class: 'hg-right',
+      buttons: rightKeys.join(' '),
+    });
+  }
 
   return (
     <div style={{ height: '100%', display: 'flex', justifyContent: 'center' }}>
@@ -181,7 +214,7 @@ export const Wordle = ({ puzzle }: { puzzle: ActivePuzzle }) => {
                           cn = 'cell';
                       }
                     }
-                    console.log(result, x, r, cn, style[cn]);
+                    // console.log(result, x, r, cn, style[cn]);
                     return (
                       <td key={x} css={style[cn]}>
                         {g.toUpperCase()}
@@ -207,6 +240,7 @@ export const Wordle = ({ puzzle }: { puzzle: ActivePuzzle }) => {
             layout={{
               default: ['q w e r t y u i o p', 'a s d f g h j k l', '{enter} z x c v b n m {bksp}'],
             }}
+            buttonTheme={buttonTheme}
             layoutName="default"
             onKeyPress={onKeyPress}
           />

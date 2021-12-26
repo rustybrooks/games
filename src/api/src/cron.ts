@@ -2,7 +2,9 @@ import * as cron from 'node-cron';
 import * as wordle from './games/wordle';
 
 export async function init() {
-  cron.schedule('0 0 * * * *', () => {
+  cron.getTasks().forEach(c => c.stop());
+
+  cron.schedule('0 0 * * * * *', () => {
     wordle.generateAllSeries(wordle.roundedNow());
   });
 

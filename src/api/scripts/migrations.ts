@@ -151,6 +151,6 @@ export async function migrateSimple({ apply = [], isInitial = false }: { apply?:
 
 export async function migrate({ apply = [], isInitial = false }: { apply?: number[]; isInitial?: boolean }) {
   await migrateSimple({ apply, isInitial });
-  await bootstrapLeagues(new Date('2021-12-19'));
+  await bootstrapLeagues(new Date('2021-12-25'));
   await bootstrapAdmin();
 }

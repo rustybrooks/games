@@ -145,6 +145,7 @@ export async function generateSeries(league: any, now: Date) {
 }
 
 export async function generateAllSeries(now: Date) {
+  console.log(new Date(), 'generateAllSeries');
   for (const l of await leagues()) {
     await generateSeries(l, now);
   }
@@ -200,6 +201,7 @@ export async function answer(args: any) {
 }
 
 export async function generateAnswer(league: any, now: Date) {
+  console.log(new Date(), 'Generate answer', league);
   const end = new Date(now);
   end.setHours(end.getHours() + league.time_to_live_hours);
   const series = await leagueSeries({

@@ -48,7 +48,7 @@ const ourheadCells: eht.HeadCell<EnumeratedPuzzle>[] = [
     id: 'active_before',
     numeric: true,
     disablePadding: false,
-    label: 'Active before',
+    label: 'Active until',
   },
   // {
   //   id: 'series_start_date',
