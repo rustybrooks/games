@@ -51,6 +51,12 @@ const ourheadCells: eht.HeadCell<League>[] = [
     label: '# letters',
   },
   {
+    id: 'max_guesses',
+    numeric: true,
+    disablePadding: false,
+    label: '# guesses',
+  },
+  {
     id: 'series_days',
     numeric: true,
     disablePadding: false,

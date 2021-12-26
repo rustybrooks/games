@@ -46,19 +46,19 @@ describe('Cron stuff', () => {
 
     // the first one is close enough, should generate one set
     await queries.generateAllSeries(new Date('2021-12-31'));
-    expect((await queries.leagueSeries()).length).toBe(2);
+    expect((await queries.leagueSeries()).length).toBe(3);
 
     // running it again should not make more
     await queries.generateAllSeries(new Date('2021-12-31'));
-    expect((await queries.leagueSeries()).length).toBe(2);
+    expect((await queries.leagueSeries()).length).toBe(3);
 
     // not close enough to new one so still no more
     await queries.generateAllSeries(new Date('2022-01-01'));
-    expect((await queries.leagueSeries()).length).toBe(2);
+    expect((await queries.leagueSeries()).length).toBe(3);
 
     // now we're close enough an make another
     await queries.generateAllSeries(new Date('2022-01-06'));
-    expect((await queries.leagueSeries()).length).toBe(4);
+    expect((await queries.leagueSeries()).length).toBe(6);
   });
 
   it('test_generateAnswer', async () => {

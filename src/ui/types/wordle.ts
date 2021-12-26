@@ -3,6 +3,7 @@ export interface League {
   league_slug: string;
   league_name: string;
   letters: number;
+  max_guesses: number;
   series_days: number;
   time_to_live_hours: number;
   create_date: number;

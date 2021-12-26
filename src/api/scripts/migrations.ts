@@ -27,11 +27,13 @@ initial.addStatement(`
         league_name varchar(200) not null unique, 
         create_date timestamp with time zone not null,
         start_date timestamp with time zone not null,
-        series_days smallint,
-        answer_cron_interval varchar(100),
-        letters smallint default 5,
-        time_to_live_hours int default 24*60,
-        is_hard_mode boolean default false
+        series_days smallint not null,
+        answer_cron_interval varchar(100) not null,
+        letters smallint not null default 5,
+        max_guesses smallint not null default 6,
+        time_to_live_hours int not null default 24*60,
+        is_hard_mode boolean not null default false,
+        invite_code char(32) 
     )
 `);
 initial.addStatement('create index wordle_leagues_league_name on wordle_leagues(league_slug)');
@@ -57,7 +59,7 @@ initial.addStatement(`
         add_date timestamp with time zone not null,
         leave_date timestamp with time zone,
         rejoin_date timestamp with time zone,
-        active boolean default true
+        active boolean not null
     )
 `);
 initial.addStatement('create unique index wordle_league_members_u on wordle_league_members(wordle_league_id, user_id)');
@@ -82,9 +84,9 @@ initial.addStatement(`
         user_id bigint not null references users(user_id),
         wordle_answer_id bigint not null references wordle_answers(wordle_answer_id),
         guess varchar(10) not null,
-        correct_placement smallint not null default 0,
-        correct_letters smallint not null default 0,
-        correct boolean not null default false,
+        correct_placement smallint not null,
+        correct_letters smallint not null,
+        correct boolean not null,
         create_date timestamp with time zone not null               
     )
 `);
@@ -96,6 +98,7 @@ export async function bootstrapLeagues(startDate: Date) {
     series_days: 7,
     answer_cron_interval: '0 0 0 * * *',
     letters: 5,
+    max_guesses: 6,
     time_to_live_hours: 24,
     start_date: startDate,
     create_date: new Date(),
@@ -107,6 +110,7 @@ export async function bootstrapLeagues(startDate: Date) {
     series_days: 7,
     answer_cron_interval: '0 0 0 * * *',
     letters: 7,
+    max_guesses: 7,
     time_to_live_hours: 24,
     start_date: startDate,
     create_date: new Date(),
@@ -118,6 +122,7 @@ export async function bootstrapLeagues(startDate: Date) {
     series_days: 7,
     answer_cron_interval: '0 0 0-23/6 * * *',
     letters: 5,
+    max_guesses: 6,
     time_to_live_hours: 24,
     start_date: startDate,
     create_date: new Date(),
