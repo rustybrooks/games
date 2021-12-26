@@ -7,6 +7,7 @@ import 'react-simple-keyboard/build/css/index.css';
 import * as constants from '../constants';
 import { ActivePuzzle, League } from '../../types/wordle';
 import { useGetAndSet } from 'react-context-hook';
+import { Typography } from '@mui/material';
 
 let style: { [id: string]: any } = {
   cell: {
@@ -38,6 +39,8 @@ const genUrl = (fn = '') => `${constants.BASE_URL}/api/games/wordle/${fn}`;
 export const Wordle = ({ puzzle }: { puzzle: ActivePuzzle }) => {
   const [leagues, setLeagues] = useGetAndSet<League[]>('leagues');
   const [results, setResults] = React.useState<{ guess: string; result: string[] }[]>([]);
+  const [error, setError] = React.useState('');
+
   const gridIdx = React.useRef(0);
   const league = leagues.find(l => l.league_name === puzzle.league_name);
 
@@ -58,10 +61,16 @@ export const Wordle = ({ puzzle }: { puzzle: ActivePuzzle }) => {
       const data = await r.json();
       console.log('setting gridIdx', gridIdx.current, data.length);
       gridIdx.current = data.length;
-      while (data.length < 6) {
+      while (data.length < league.max_guesses) {
         data.push({ guess: '', result: [] });
       }
+      if (error) {
+        setError('');
+      }
       setResults(data);
+    } else {
+      const data = await r.json();
+      setError(data.json().message);
     }
   }
 
@@ -81,7 +90,7 @@ export const Wordle = ({ puzzle }: { puzzle: ActivePuzzle }) => {
       const data = await r.json();
       console.log('setting gridIdx', gridIdx.current, data.length);
       gridIdx.current = data.length;
-      while (data.length < 6) {
+      while (data.length < league.max_guesses) {
         data.push({ guess: '', result: [] });
       }
       console.log('setting results', data);
@@ -118,7 +127,6 @@ export const Wordle = ({ puzzle }: { puzzle: ActivePuzzle }) => {
   };
 
   React.useEffect(() => {
-    // window.removeEventListener('keydown', handleKeyDown);
     window.addEventListener('keydown', handleKeyDown, false);
 
     // cleanup this component
@@ -136,7 +144,11 @@ export const Wordle = ({ puzzle }: { puzzle: ActivePuzzle }) => {
   // console.log(league);
 
   if (!results.length) {
-    return <div>Loading...</div>;
+    return (
+      <div>
+        <Typography variant="h3">Loading...</Typography>
+      </div>
+    );
   }
 
   console.log('results is', results);
@@ -146,7 +158,7 @@ export const Wordle = ({ puzzle }: { puzzle: ActivePuzzle }) => {
       <div style={{ width: 500, padding: 20 }}>
         <table css={style.table} style={{ margin: '0 auto' }}>
           <tbody>
-            {[...Array(6).keys()].map(y => {
+            {[...Array(league.max_guesses).keys()].map(y => {
               const result = results[y] || { guess: '', result: [] };
               return (
                 <tr key={y}>
@@ -179,6 +191,11 @@ export const Wordle = ({ puzzle }: { puzzle: ActivePuzzle }) => {
                 </tr>
               );
             })}
+            <tr>
+              <td colSpan={10}>
+                <Typography color="#d22">{error}</Typography>
+              </td>
+            </tr>
           </tbody>
         </table>
         <div style={{ width: 500 }}>

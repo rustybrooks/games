@@ -145,7 +145,7 @@ const WordleLeaguesX = () => {
   }, [user]);
 
   if (!leagues) {
-    return <div>Loading...</div>;
+    return <Typography variant="h3">Loading...</Typography>;
   }
   return (
     <Paper sx={{ width: '100%', mb: 2 }}>
