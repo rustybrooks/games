@@ -122,11 +122,11 @@ const WordleLeaguesX = () => {
   }
 
   function canLeave(row: League): boolean {
-    return row.is_member;
+    return row.is_member && user !== null;
   }
 
   function canJoin(row: League): boolean {
-    return !row.is_member;
+    return !row.is_member && user !== null;
   }
 
   React.useEffect(() => {
