@@ -125,7 +125,7 @@ const check = async (request: Request, response: Response, next: NextFunction) =
     guesses.map((g: string) => ({
       guess: g,
       result: utils.evaluateGuess(answer.answer, g),
-      correct: g === answer,
+      correct: g === answer.answer,
     })),
   );
 };
