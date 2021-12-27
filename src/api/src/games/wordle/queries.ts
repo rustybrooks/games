@@ -5,6 +5,8 @@ import * as utils from './utils';
 export function roundedNow() {
   const d = new Date();
   d.setMinutes(60 * Math.round(d.getMinutes() / 60));
+  d.setSeconds(0);
+  d.setMilliseconds(0);
   return d;
 }
 
