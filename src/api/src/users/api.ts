@@ -68,7 +68,6 @@ const signup = async (request: Request, response: Response, next: NextFunction) 
 const login = async (request: Request, response: Response, next: NextFunction) => {
   const { username, password } = getParams(request);
 
-  console.log(username, password);
   if (username && password) {
     const user = await queries.user({ username });
     if (!user) {

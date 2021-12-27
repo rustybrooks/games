@@ -118,13 +118,15 @@ export async function addLeagueSeries(data: { [id: string]: any }) {
   return SQL.insert('wordle_league_series', data, 200, false, true);
 }
 
-export async function generateSeries(league: any, now: Date) {
+export async function generateSeries(league: League, now: Date) {
+  console.log('generateSeries', league.league_slug, now);
   const lastSeries = await leagueSeries({
     wordle_league_id: league.wordle_league_id,
     page: 1,
     limit: 1,
     sort: '-start_date',
   });
+  console.log('found last series', lastSeries);
 
   let start = league.start_date;
   if (lastSeries.length) {
@@ -136,6 +138,7 @@ export async function generateSeries(league: any, now: Date) {
   while (start < startCutoff) {
     const end = new Date(start);
     end.setDate(end.getDate() + league.series_days);
+    console.log('Add league series', league.league_slug, now, start, end);
     await addLeagueSeries({
       wordle_league_id: league.wordle_league_id,
       create_date: now,
@@ -202,41 +205,75 @@ export async function answer(args: any) {
   return l.length ? l[0] : null;
 }
 
-export async function generateAnswer(league: any, now: Date) {
-  console.log(new Date(), 'Generate answer', league);
-  const end = new Date(now);
-  end.setHours(end.getHours() + league.time_to_live_hours);
+export async function generateAnswer(league: any, activeAfter: Date) {
+  console.log(new Date(), 'Generate answer', activeAfter, league);
+  const activeBefore = new Date(activeAfter);
+  activeBefore.setHours(activeBefore.getHours() + league.time_to_live_hours);
   const series = await leagueSeries({
     wordle_league_id: league.wordle_league_id,
-    start_date_before: now,
-    end_date_after: now,
+    start_date_before: activeAfter,
+    end_date_after: activeAfter,
     page: 1,
     limit: 1,
     sort: '-start_date',
   });
+  console.log('answer found series', series);
   if (!series.length) {
     // console.log('No series for league, not creating answer', league);
     return null;
   }
 
   const a = await answers({
-    active_after: now,
+    wordle_league_id: league.wordle_league_id,
+    active_after: activeAfter,
     page: 1,
     limit: 1,
   });
   if (a.length) return a[0];
 
+  console.log('Adding', activeAfter, activeBefore);
   return SQL.insert(
     'wordle_answers',
     {
       wordle_league_series_id: series[0].wordle_league_series_id,
       answer: utils.randomWord(league.letters).toLowerCase(),
-      create_date: now,
-      active_after: now,
-      active_before: end,
+      create_date: new Date(),
+      active_after: activeAfter,
+      active_before: activeBefore,
     },
     '*',
   );
+}
+
+export async function generateAnswers(league: League, now: Date) {
+  const lastAnswer = await answers({
+    wordle_league_id: league.wordle_league_id,
+    page: 1,
+    limit: 1,
+    sort: '-active_after',
+  });
+  console.log('last answer', league.wordle_league_id, league.league_slug, lastAnswer);
+
+  let start = league.start_date;
+  if (lastAnswer.length) {
+    start = lastAnswer[0].active_after;
+    start.setHours(start.getHours() + league.answer_interval_hours);
+  }
+
+  const startCutoff = new Date(now);
+  startCutoff.setDate(startCutoff.getDate() + 7);
+  while (start < startCutoff) {
+    console.log('genAnswer', league.league_slug, start, startCutoff);
+    await generateAnswer(league, start);
+    start.setHours(start.getHours() + league.answer_interval_hours);
+  }
+}
+
+export async function generateAllAnswers(now: Date) {
+  console.log(new Date(), 'generateAllAnswers');
+  for (const l of await leagues()) {
+    await generateAnswers(l, now);
+  }
 }
 
 export async function active_puzzles({

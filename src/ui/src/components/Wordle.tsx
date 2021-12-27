@@ -39,7 +39,7 @@ const genUrl = (fn = '') => `${constants.BASE_URL}/api/games/wordle/${fn}`;
 
 export const Wordle = ({ puzzle }: { puzzle: ActivePuzzle }) => {
   const [leagues, setLeagues] = useGetAndSet<League[]>('leagues');
-  const [results, setResults] = React.useState<{ guess: string; result: string[] }[]>([]);
+  const [results, setResults] = React.useState<{ guess: string; result: string[]; correct: boolean }[]>([]);
   const [error, setError] = React.useState('');
 
   const gridIdx = React.useRef(0);
@@ -65,8 +65,13 @@ export const Wordle = ({ puzzle }: { puzzle: ActivePuzzle }) => {
       while (data.length < league.max_guesses) {
         data.push({ guess: '', result: [] });
       }
-      if (error.length) {
-        setError('');
+      const c = data.find((d: any) => d.correct);
+      if (c) {
+        setError('Correct answer!');
+      } else {
+        if (error.length) {
+          setError('');
+        }
       }
       setResults(data);
     } else {
@@ -93,8 +98,20 @@ export const Wordle = ({ puzzle }: { puzzle: ActivePuzzle }) => {
       // console.log('setting gridIdx', gridIdx.current, data.length);
       gridIdx.current = data.length;
       while (data.length < league.max_guesses) {
-        data.push({ guess: '', result: [] });
+        data.push({ guess: '', result: [], correct: false });
       }
+
+      console.log(data);
+      const c = data.find((d: any) => d.correct);
+      console.log('c', c);
+      if (c) {
+        setError('Correct answer!');
+      } else {
+        if (error.length) {
+          setError('');
+        }
+      }
+
       // console.log('setting results', data);
       setResults(data);
     }
@@ -197,7 +214,7 @@ export const Wordle = ({ puzzle }: { puzzle: ActivePuzzle }) => {
         <table css={style.table} style={{ margin: '0 auto' }}>
           <tbody>
             {[...Array(league.max_guesses).keys()].map(y => {
-              const result = results[y] || { guess: '', result: [] };
+              const result = results[y] || { guess: '', result: [], correct: false };
               return (
                 <tr key={y}>
                   {[...Array(league.letters).keys()].map(x => {
