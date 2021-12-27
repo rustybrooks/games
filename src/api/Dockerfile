@@ -12,10 +12,11 @@ RUN apt-get -y update \
 
 RUN mkdir logs
 
-COPY package*.json /srv/src/api/
+COPY api/package*.json /srv/src/api/
 RUN npm install
 
-COPY . /srv/src/api
+COPY api/ /srv/src/api
+COPY ui/types /srv/src/ui/types
+RUN npm run build
 
-
-
+ENTRYPOINT /srv/src/api/entrypoint.sh

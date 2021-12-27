@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.tsx",
   "scripts": {
-    "serve": "webpack serve --mode development --port 3000 --host 0.0.0.0",
-    "build": "webpack --mode production"
+    "serve": "webpack serve --mode development --port 3000 --host 0.0.0.0 --config webpack.config.dev.js",
+    "build": "webpack --mode production --config webpack.config.prod.js"
   },
   "keywords": [],
   "author": "",

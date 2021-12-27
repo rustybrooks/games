@@ -42,6 +42,7 @@
     "supertest": "latest"
   },
   "scripts": {
+    "build": "rm -rf dist ui && ./node_modules/.bin/tsc -p .",
     "test": "./node_modules/.bin/jest --config ./src/jest.config.ts",
     "serve": "nodemon src/index.ts",
     "migrate": "./node_modules/.bin/ts-node ./scripts/migrate.ts",

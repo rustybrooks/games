@@ -11,7 +11,9 @@ RUN apt-get -y update \
 
 COPY package*.json /srv/src/ui/
 RUN npm install
-
 COPY . /srv/src/ui
+RUN npm run build
+
+ENTRYPOINT /srv/src/ui/entrypoint.sh
 
 

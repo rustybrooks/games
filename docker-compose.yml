@@ -3,8 +3,8 @@ version: '2'
 services:
   games-api:
     build:
-      context: ./src/api
-      dockerfile: Dockerfile
+      context: ./src/
+      dockerfile: ./api/Dockerfile
     container_name: games-api
     ports:
       - 5000:5000
@@ -17,6 +17,7 @@ services:
       - ./src/api/env.local
     depends_on:
       - games-postgres
+    # entrypoint: /src/src/api/entrypoint-dev.sh
 
   games-ui:
     build:
@@ -28,7 +29,6 @@ services:
     volumes:
       - ./src/ui/src:/srv/src/ui/src
       - ./src/ui/types:/srv/src/ui/types
-    entrypoint: /srv/src/ui/entrypoint.sh
     depends_on:
       - games-postgres
 
