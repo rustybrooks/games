@@ -150,9 +150,10 @@ const WordleLeaguesX = () => {
   return (
     <Paper sx={{ width: '100%', mb: 2 }}>
       <div>
-        <Typography>
-          These are all the available leagues that you can join, along with details about the conditions of the league. Any league with a
-          checkbox is one you can join.
+        <Typography sx={{ padding: '10px' }}>
+          These are all the available leagues that you can join, along with details about the conditions of the league. You need to have an
+          account and be logged in to join a league. Once you join a league new puzzles will appear on the league's schedule and will remain
+          active for the period defined for the league.
         </Typography>
       </div>
       <eht.EnhancedTable

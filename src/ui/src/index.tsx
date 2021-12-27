@@ -84,7 +84,10 @@ const NavBar = ({ history }: { history: any }) => {
               Home
             </material.Button>
             <material.Button color="inherit" component={Link} to="/wordle">
-              Wordle
+              Wordle Puzzles
+            </material.Button>
+            <material.Button color="inherit" component={Link} to="/wordle/leagues">
+              Wordle Leagues
             </material.Button>
           </div>
           {user ? (

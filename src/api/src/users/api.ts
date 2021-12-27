@@ -68,8 +68,12 @@ const signup = async (request: Request, response: Response, next: NextFunction) 
 const login = async (request: Request, response: Response, next: NextFunction) => {
   const { username, password } = getParams(request);
 
+  console.log(username, password);
   if (username && password) {
     const user = await queries.user({ username });
+    if (!user) {
+      return next(new exceptions.HttpForbidden());
+    }
     if (await queries.checkPassword(password, user.password)) {
       return response.status(200).json(queries.generateToken(user.username));
     }

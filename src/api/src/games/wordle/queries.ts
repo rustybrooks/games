@@ -300,16 +300,18 @@ export async function addGuess({
 
 export async function guesses({
   wordle_answer_id = null,
+  user_id = null,
   page = null,
   limit = null,
   sort = null,
 }: {
   wordle_answer_id?: number;
+  user_id?: number;
   page?: number;
   limit?: number;
   sort?: string | string[];
 } = {}): Promise<Guess[]> {
-  const [where, bindvars] = SQL.autoWhere({ wordle_answer_id });
+  const [where, bindvars] = SQL.autoWhere({ wordle_answer_id, user_id });
   const query = `
       select *
       from wordle_answers

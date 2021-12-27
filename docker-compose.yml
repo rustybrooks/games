@@ -17,7 +17,7 @@ services:
       - ./src/api/env.local
     depends_on:
       - games-postgres
-    # entrypoint: /src/src/api/entrypoint-dev.sh
+    entrypoint: /srv/src/api/entrypoint-dev.sh
 
   games-ui:
     build:

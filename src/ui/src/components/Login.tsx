@@ -90,6 +90,7 @@ function LoginX({ classes, updateUser }: { classes?: any; updateUser: any }) {
       setErrors({});
       localStorage.setItem('api-key', await result.json());
       closeDrawer();
+      updateUser();
     }
   };
 

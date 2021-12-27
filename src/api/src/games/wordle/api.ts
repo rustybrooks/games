@@ -90,6 +90,7 @@ const check = async (request: Request, response: Response, next: NextFunction) =
   }
 
   const guessesList = await queries.guesses({
+    user_id: response.locals.user.user_id,
     wordle_answer_id: answer.wordle_answer_id,
     sort: 'wordle_guesses.create_date',
   });
@@ -147,6 +148,7 @@ const guesses = async (request: Request, response: Response, next: NextFunction)
   }
 
   const guesses = await queries.guesses({
+    user_id: response.locals.user.user_id,
     wordle_answer_id: answer.wordle_answer_id,
     sort: 'wordle_guesses.create_date',
   });
