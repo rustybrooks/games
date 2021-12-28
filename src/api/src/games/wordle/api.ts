@@ -99,6 +99,10 @@ const check = async (request: Request, response: Response, next: NextFunction) =
     return next(new exceptions.HttpBadRequest(`Already have a correct answer`));
   }
 
+  if (guessesList.find(g => g.guess === guess)) {
+    return next(new exceptions.HttpBadRequest(`Already mdae this guess`));
+  }
+
   const guesses = guessesList.map(g => g.guess);
 
   if (guesses.length >= league.max_guesses) {
@@ -121,13 +125,14 @@ const check = async (request: Request, response: Response, next: NextFunction) =
     correct: guess === answer.answer,
   });
 
-  return response.status(200).json(
-    guesses.map((g: string) => ({
+  return response.status(200).json({
+    guesses: guesses.map((g: string) => ({
       guess: g,
       result: utils.evaluateGuess(answer.answer, g),
-      correct: g === answer.answer,
     })),
-  );
+    correct: guess === answer.answer,
+    answer: guesses.length === league.max_guesses ? answer.answer : null,
+  });
 };
 
 const guesses = async (request: Request, response: Response, next: NextFunction) => {
@@ -153,13 +158,18 @@ const guesses = async (request: Request, response: Response, next: NextFunction)
     wordle_answer_id: answer.wordle_answer_id,
     sort: 'wordle_guesses.create_date',
   });
-  return response.status(200).json(
-    guesses.map((g: any) => ({
+
+  const correct = !!guesses.find(g => g.correct);
+
+  return response.status(200).json({
+    guesses: guesses.map((g: any) => ({
       guess: g.guess,
       result: utils.evaluateGuess(answer.answer, g.guess),
       correct: g.correct,
     })),
-  );
+    correct: correct,
+    answer: guesses.length === league.max_guesses ? answer.answer : null,
+  });
 };
 
 const activePuzzles = async (request: Request, response: Response, next: NextFunction) => {
@@ -170,7 +180,7 @@ const activePuzzles = async (request: Request, response: Response, next: NextFun
   }
   const {} = getParams(request);
 
-  const puzzles = await queries.active_puzzles({ user_id: response.locals.user.user_id });
+  const puzzles = await queries.activePuzzles({ user_id: response.locals.user.user_id });
   return response.status(200).json(puzzles);
 };
 

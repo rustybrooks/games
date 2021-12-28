@@ -276,7 +276,7 @@ export async function generateAllAnswers(now: Date) {
   }
 }
 
-export async function active_puzzles({
+export async function activePuzzles({
   user_id,
   page = null,
   limit = null,
@@ -297,15 +297,26 @@ export async function active_puzzles({
   const query = `
       select league_slug, league_name, 
              wordle_answer_id, active_after, active_before, 
-             s.start_date as series_start_date, s.end_date as series_end_date
+             s.start_date as series_start_date, s.end_date as series_end_date,
+             g.guesses, g.correct_answer, g.correct
       from wordle_league_members m
       join wordle_leagues l using (wordle_league_id)
       join wordle_league_series s using (wordle_league_id)
       join wordle_answers a using (wordle_league_series_id)
+      left join (
+          select wordle_answer_id, count(*) as guesses, 
+                 max(correct::varchar(5))::boolean as correct, 
+                 coalesce(max(case when correct then guess else null end), max(wa.answer)) as correct_answer
+          from wordle_answers wa 
+          join wordle_guesses wg using (wordle_answer_id)
+          where wg.user_id=$(user_id) and $(now) between active_after and active_before
+          group by wordle_answer_id
+      ) g using (wordle_answer_id)
       ${SQL.whereClause(where)}
       ${SQL.orderBy(sort)}
       ${SQL.limit(page, limit)}
   `;
+  console.log(query, bindvars);
   return SQL.select(query, bindvars);
 }
 

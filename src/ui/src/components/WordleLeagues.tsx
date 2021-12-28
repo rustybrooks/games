@@ -32,54 +32,13 @@ export async function getActivePuzzles(): Promise<ActivePuzzle[]> {
 }
 
 const ourheadCells: eht.HeadCell<League>[] = [
-  // {
-  //   id: 'league_slug',
-  //   numeric: false,
-  //   disablePadding: true,
-  //   label: 'slug',
-  // },
-  {
-    id: 'league_name',
-    numeric: false,
-    disablePadding: false,
-    label: 'League',
-  },
-  {
-    id: 'letters',
-    numeric: true,
-    disablePadding: false,
-    label: '# letters',
-  },
-  {
-    id: 'max_guesses',
-    numeric: true,
-    disablePadding: false,
-    label: '# guesses',
-  },
-  {
-    id: 'series_days',
-    numeric: true,
-    disablePadding: false,
-    label: 'Days in series',
-  },
-  {
-    id: 'time_to_live_hours',
-    numeric: true,
-    disablePadding: false,
-    label: 'TTL (hours)',
-  },
-  {
-    id: 'create_date',
-    numeric: false,
-    disablePadding: false,
-    label: 'Created',
-  },
-  {
-    id: 'start_date',
-    numeric: false,
-    disablePadding: false,
-    label: 'Starts',
-  },
+  { id: 'league_name', numeric: false, disablePadding: false, label: 'League' },
+  { id: 'letters', numeric: true, disablePadding: false, label: '# letters' },
+  { id: 'max_guesses', numeric: true, disablePadding: false, label: '# guesses' },
+  { id: 'series_days', numeric: true, disablePadding: false, label: 'Days in series' },
+  { id: 'time_to_live_hours', numeric: true, disablePadding: false, label: 'TTL (hours)' },
+  { id: 'create_date', numeric: false, disablePadding: false, label: 'Created' },
+  { id: 'start_date', numeric: false, disablePadding: false, label: 'Starts' },
 ];
 
 /// ///////////////////////
@@ -130,15 +89,6 @@ const WordleLeaguesX = () => {
   }
 
   React.useEffect(() => {
-    // async function fetchMyAPI() {
-    //   const l = await getLeagues();
-    //   console.log('leagues', l);
-    //   setLeagues(l);
-    // }
-    //
-    // if (leagues === null) {
-    //   fetchMyAPI();
-    // }
     (async () => {
       setLeagues(await getLeagues());
     })();

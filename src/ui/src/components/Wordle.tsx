@@ -39,8 +39,9 @@ const genUrl = (fn = '') => `${constants.BASE_URL}/api/games/wordle/${fn}`;
 
 export const Wordle = ({ puzzle }: { puzzle: ActivePuzzle }) => {
   const [leagues, setLeagues] = useGetAndSet<League[]>('leagues');
-  const [results, setResults] = React.useState<{ guess: string; result: string[]; correct: boolean }[]>([]);
+  const [results, setResults] = React.useState<{ guess: string; result: string[] }[]>([]);
   const [error, setError] = React.useState('');
+  const [answer, setAnswer] = React.useState('');
 
   const gridIdx = React.useRef(0);
   const league = leagues.find(l => l.league_name === puzzle.league_name);
@@ -61,19 +62,21 @@ export const Wordle = ({ puzzle }: { puzzle: ActivePuzzle }) => {
     if (r.status === 200) {
       const data = await r.json();
       // console.log('setting gridIdx', gridIdx.current, data.length);
-      gridIdx.current = data.length;
-      while (data.length < league.max_guesses) {
-        data.push({ guess: '', result: [] });
+      gridIdx.current = data.guesses.length;
+      while (data.guesses.length < league.max_guesses) {
+        data.guesses.push({ guess: '', result: [] });
       }
-      const c = data.find((d: any) => d.correct);
-      if (c) {
-        setError('Correct answer!');
+      if (data.correct) {
+        setAnswer('Correct answer!');
+      } else if (data.answer) {
+        setError(`Answer was: ${data.answer.toUpperCase()}`);
       } else {
         if (error.length) {
           setError('');
         }
       }
-      setResults(data);
+
+      setResults(data.guesses);
     } else {
       const data = await r.json();
       console.log('received error', data);
@@ -95,17 +98,16 @@ export const Wordle = ({ puzzle }: { puzzle: ActivePuzzle }) => {
     });
     if (r.status === 200) {
       const data = await r.json();
-      // console.log('setting gridIdx', gridIdx.current, data.length);
-      gridIdx.current = data.length;
-      while (data.length < league.max_guesses) {
-        data.push({ guess: '', result: [], correct: false });
+
+      gridIdx.current = data.guesses.length;
+      while (data.guesses.length < league.max_guesses) {
+        data.guesses.push({ guess: '', result: [] });
       }
 
-      console.log(data);
-      const c = data.find((d: any) => d.correct);
-      console.log('c', c);
-      if (c) {
-        setError('Correct answer!');
+      if (data.correct) {
+        setAnswer('Correct answer!');
+      } else if (data.answer) {
+        setError(`Answer was: ${data.answer.toUpperCase()}`);
       } else {
         if (error.length) {
           setError('');
@@ -113,11 +115,12 @@ export const Wordle = ({ puzzle }: { puzzle: ActivePuzzle }) => {
       }
 
       // console.log('setting results', data);
-      setResults(data);
+      setResults(data.guesses);
     }
   }
 
   const onKeyPress = async (button: string) => {
+    console.log('results', results);
     const buttonx = button.toLowerCase();
     const res = results[gridIdx.current];
     let word = res.guess;
@@ -214,7 +217,7 @@ export const Wordle = ({ puzzle }: { puzzle: ActivePuzzle }) => {
         <table css={style.table} style={{ margin: '0 auto' }}>
           <tbody>
             {[...Array(league.max_guesses).keys()].map(y => {
-              const result = results[y] || { guess: '', result: [], correct: false };
+              const result = results[y] || { guess: '', result: [] };
               return (
                 <tr key={y}>
                   {[...Array(league.letters).keys()].map(x => {
@@ -248,7 +251,7 @@ export const Wordle = ({ puzzle }: { puzzle: ActivePuzzle }) => {
             })}
             <tr>
               <td colSpan={league.letters}>
-                <Typography color="#d22">{error}&nbsp;</Typography>
+                {error ? <Typography color="#d22">{error}&nbsp;</Typography> : <Typography color="#2d2">{answer}&nbsp;</Typography>}
               </td>
             </tr>
           </tbody>

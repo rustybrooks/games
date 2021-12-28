@@ -15,8 +15,6 @@ import Paper from '@mui/material/Paper';
 import Checkbox from '@mui/material/Checkbox';
 import LoadingButton from '@mui/lab/LoadingButton';
 import Tooltip from '@mui/material/Tooltip';
-import DeleteIcon from '@mui/icons-material/Delete';
-import FilterListIcon from '@mui/icons-material/FilterList';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { visuallyHidden } from '@mui/utils';
 
@@ -58,6 +56,7 @@ export interface HeadCell<T> {
   id: keyof T;
   label: string;
   numeric: boolean;
+  formatter?: (row: T, input: any) => any;
 }
 
 interface EnhancedTableProps<T> {
@@ -182,7 +181,7 @@ export function EnhancedTable<T extends unknown>({
   const [orderBy, setOrderBy] = React.useState<keyof T>(initialSortColumn);
   const [selected, setSelected] = React.useState<readonly any[]>([]);
   const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [loading, setLoading] = React.useState(false);
 
   const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof T) => {
@@ -286,11 +285,11 @@ export function EnhancedTable<T extends unknown>({
                       {headCells.map(c =>
                         c.id === mainColumn ? (
                           <TableCell key={c.id.toString()} component="th" id={labelId} scope={'row'} padding={'none'}>
-                            {row[c.id]}
+                            {c.formatter ? c.formatter(row, row[c.id]) : row[c.id]}
                           </TableCell>
                         ) : (
                           <TableCell key={c.id.toString()} align={c.numeric ? 'right' : 'left'}>
-                            {row[c.id]}
+                            {c.formatter ? c.formatter(row, row[c.id]) : row[c.id]}
                           </TableCell>
                         ),
                       )}

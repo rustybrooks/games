@@ -8,6 +8,8 @@ import Paper from '@mui/material/Paper';
 import * as constants from '../constants';
 import { getActivePuzzles, getLeagues } from './WordleLeagues';
 import { Wordle } from './Wordle';
+import { formatDistance } from 'date-fns';
+import { Typography } from '@mui/material';
 
 const genUrl = (fn = '') => `${constants.BASE_URL}/api/games/wordle/${fn}`;
 
@@ -25,43 +27,22 @@ const style = {
   p: 4,
 };
 
+function dateFormatter(row: EnumeratedPuzzle, d: string) {
+  return formatDistance(new Date(d), new Date(), { addSuffix: true });
+}
+
+function answerFormatter(row: EnumeratedPuzzle, a: string) {
+  if (row.guesses === null) return '';
+
+  return <Typography color={row.correct ? 'green' : 'red'}>{row.correct_answer.toUpperCase()}</Typography>;
+}
+
 const ourheadCells: eht.HeadCell<EnumeratedPuzzle>[] = [
-  {
-    id: 'league_name',
-    numeric: false,
-    disablePadding: false,
-    label: 'League',
-  },
-  // {
-  //   id: 'letters',
-  //   numeric: true,
-  //   disablePadding: false,
-  //   label: '# letters',
-  // },
-  {
-    id: 'active_after',
-    numeric: true,
-    disablePadding: false,
-    label: 'Active after',
-  },
-  {
-    id: 'active_before',
-    numeric: true,
-    disablePadding: false,
-    label: 'Active until',
-  },
-  // {
-  //   id: 'series_start_date',
-  //   numeric: false,
-  //   disablePadding: false,
-  //   label: 'Series start',
-  // },
-  // {
-  //   id: 'series_end_date',
-  //   numeric: false,
-  //   disablePadding: false,
-  //   label: 'Series end',
-  // },
+  { id: 'league_name', numeric: false, disablePadding: false, label: 'League' },
+  { id: 'active_after', numeric: true, disablePadding: false, label: 'Active after', formatter: dateFormatter },
+  { id: 'active_before', numeric: true, disablePadding: false, label: 'Active until', formatter: dateFormatter },
+  { id: 'guesses', numeric: true, disablePadding: false, label: '# guesses' },
+  { id: 'correct_answer', numeric: false, disablePadding: false, label: 'Your solution', formatter: answerFormatter },
 ];
 
 export const WordleGames = () => {
@@ -71,14 +52,16 @@ export const WordleGames = () => {
   const [open, setOpen] = React.useState(false);
   const [puzzle, setPuzzle] = React.useState(null);
   const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const handleClose = async () => {
+    setPuzzles((await getActivePuzzles()).map((x, i) => ({ ...x, count: i })));
+    setOpen(false);
+  };
 
   React.useEffect(() => {
     (async () => {
       if (!leagues.length) setLeagues(await getLeagues());
       if (user) {
-        const p = (await getActivePuzzles()).map((x, i) => ({ ...x, count: i }));
-        setPuzzles(p);
+        setPuzzles((await getActivePuzzles()).map((x, i) => ({ ...x, count: i })));
       }
     })();
   }, [user]);

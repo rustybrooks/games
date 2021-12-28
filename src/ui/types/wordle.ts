@@ -31,4 +31,7 @@ export interface ActivePuzzle {
   active_before: Date;
   series_start_date: Date;
   series_end_date: Date;
+  guesses: number;
+  correct_answer: string;
+  correct: boolean;
 }
