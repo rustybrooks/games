@@ -10,6 +10,7 @@ import { getActivePuzzles, getLeagues } from './WordleLeagues';
 import { Wordle } from './Wordle';
 import { formatDistance } from 'date-fns';
 import { Typography } from '@mui/material';
+import { useNavigate } from 'react-router';
 
 const genUrl = (fn = '') => `${constants.BASE_URL}/api/games/wordle/${fn}`;
 
@@ -56,6 +57,7 @@ export const WordleGames = () => {
     setPuzzles((await getActivePuzzles()).map((x, i) => ({ ...x, count: i })));
     setOpen(false);
   };
+  const navigate = useNavigate();
 
   React.useEffect(() => {
     (async () => {
@@ -78,18 +80,19 @@ export const WordleGames = () => {
           [
             'Play',
             async row => {
-              setPuzzle(row);
-              handleOpen();
+              navigate(`/wordle/${row.league_slug}/${row.wordle_answer_id}`);
+              // setPuzzle(row);
+              // handleOpen();
             },
             () => true,
           ],
         ]}
       />
-      <Modal open={open} onClose={handleClose} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
-        <Box sx={style}>
-          <Wordle puzzle={puzzle} />
-        </Box>
-      </Modal>
+      {/*<Modal open={open} onClose={handleClose} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">*/}
+      {/*  <Box sx={style}>*/}
+      {/*    <Wordle puzzle={puzzle} />*/}
+      {/*  </Box>*/}
+      {/*</Modal>*/}
     </Paper>
   );
 };

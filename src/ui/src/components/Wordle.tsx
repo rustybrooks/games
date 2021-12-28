@@ -10,6 +10,10 @@ import { ActivePuzzle, League } from '../../types/wordle';
 import { useGetAndSet } from 'react-context-hook';
 import { Typography } from '@mui/material';
 
+import { useParams } from 'react-router-dom';
+
+import { getLeagues } from './WordleLeagues';
+
 let style: { [id: string]: any } = {
   cell: {
     width: '3rem',
@@ -37,14 +41,24 @@ style.sortaCell = { ...style.cell, backgroundColor: '#c9b458' };
 
 const genUrl = (fn = '') => `${constants.BASE_URL}/api/games/wordle/${fn}`;
 
-export const Wordle = ({ puzzle }: { puzzle: ActivePuzzle }) => {
+// { puzzle }: { puzzle: ActivePuzzle }
+export const Wordle = () => {
+  const { answerId, leagueSlug } = useParams();
+  console.log('RENDER answerId', answerId, leagueSlug);
+  // const puzzle = { league_name: 'foo', wordle_answer_id: answerId };
+
   const [leagues, setLeagues] = useGetAndSet<League[]>('leagues');
   const [results, setResults] = React.useState<{ guess: string; result: string[] }[]>([]);
   const [error, setError] = React.useState('');
   const [answer, setAnswer] = React.useState('');
 
   const gridIdx = React.useRef(0);
-  const league = leagues.find(l => l.league_name === puzzle.league_name);
+
+  let league: League = null;
+  if (leagues) {
+    league = leagues.find(l => l.league_slug === leagueSlug);
+    console.log('league', league);
+  }
 
   async function sendGuess(word: string) {
     const r = await fetch(genUrl('check'), {
@@ -55,7 +69,7 @@ export const Wordle = ({ puzzle }: { puzzle: ActivePuzzle }) => {
       },
       body: JSON.stringify({
         guess: word,
-        wordle_answer_id: puzzle.wordle_answer_id,
+        wordle_answer_id: answerId,
         league_slug: league.league_slug,
       }),
     });
@@ -92,7 +106,7 @@ export const Wordle = ({ puzzle }: { puzzle: ActivePuzzle }) => {
         'X-API-KEY': localStorage.getItem('api-key'),
       },
       body: JSON.stringify({
-        wordle_answer_id: puzzle.wordle_answer_id,
+        wordle_answer_id: answerId,
         league_slug: league.league_slug,
       }),
     });
@@ -159,11 +173,21 @@ export const Wordle = ({ puzzle }: { puzzle: ActivePuzzle }) => {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [results]);
+  }, []);
 
   React.useEffect(() => {
-    getGuesses();
-  }, [puzzle]);
+    if (!leagues || !leagues.length) {
+      (async () => {
+        console.log('before getLeagues');
+        setLeagues(await getLeagues());
+        console.log('after getLeagues');
+      })();
+    }
+  }, [answerId]);
+
+  React.useEffect(() => {
+    if (league) getGuesses();
+  }, [league]);
 
   if (!results.length) {
     return (

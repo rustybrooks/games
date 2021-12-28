@@ -10,6 +10,7 @@ import * as constants from './constants';
 import { Login } from './components/Login';
 import { WordleGames } from './components/WordleGames';
 import { WordleLeagues } from './components/WordleLeagues';
+import { Wordle } from './components/Wordle';
 import { Home } from './components/Home';
 
 const styles = {
@@ -123,15 +124,17 @@ const initialValue: { [id: string]: any } = {
   'active-puzzles': [],
 };
 
+/*
 const storeConfig = {
-  listener: (state: any, key: string, prevValue: any, nextValue: any) => {
-    console.log(`the key "${key}" changed in the store`);
-    console.log('the old value is', prevValue);
-    console.log('the current value is', nextValue);
-    console.log('the state is', state);
-  },
-  logging: process.env.NODE_ENV !== 'production',
+listener: (state: any, key: string, prevValue: any, nextValue: any) => {
+  console.log(`the key "${key}" changed in the store`);
+  console.log('the old value is', prevValue);
+  console.log('the current value is', nextValue);
+  console.log('the state is', state);
+},
+logging: process.env.NODE_ENV !== 'production',
 };
+*/
 
 function AppX({ history }: { history: any }) {
   return (
@@ -141,10 +144,11 @@ function AppX({ history }: { history: any }) {
         <Route path="/" element={<Home />} />
         <Route path="/wordle" element={<WordleGames />} />
         <Route path="/wordle/leagues" element={<WordleLeagues />} />
+        <Route path="/wordle/:leagueSlug/:answerId" element={<Wordle />} />
       </Routes>
     </BrowserRouter>
   );
 }
-const App = withStore(AppX, initialValue, storeConfig);
+const App = withStore(AppX, initialValue);
 
 ReactDOM.render(<App />, document.getElementById('root'));

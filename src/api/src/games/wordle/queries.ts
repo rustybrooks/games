@@ -307,7 +307,7 @@ export async function activePuzzles({
       left join (
           select wordle_answer_id, count(*) as guesses, 
                  max(correct::varchar(5))::boolean as correct, 
-                 coalesce(max(case when correct then guess else null end), max(wa.answer)) as correct_answer
+                 coalesce(max(case when correct then guess else null end), '---') as correct_answer
           from wordle_answers wa 
           join wordle_guesses wg using (wordle_answer_id)
           where wg.user_id=$(user_id) and $(now) between active_after and active_before
