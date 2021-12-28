@@ -173,7 +173,7 @@ export const Wordle = () => {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, []);
+  }, [results]);
 
   React.useEffect(() => {
     if (!leagues || !leagues.length) {
