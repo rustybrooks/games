@@ -340,6 +340,7 @@ export async function addGuess({
   correct: boolean;
 }) {
   const now = new Date();
+  // this needs to be a transaction
   SQL.insert('wordle_guesses', {
     user_id,
     wordle_answer_id,
@@ -355,6 +356,7 @@ export async function addGuess({
     {
       user_id,
       wordle_answer_id,
+      num_guesses: 1,
       correct_placement,
       correct_letters,
       correct,
@@ -366,11 +368,12 @@ export async function addGuess({
     `
        on conflict (user_id, wordle_answer_id) 
        do update set 
+       num_guesses=wordle_status.num_guesses+1,
        correct_placement=excluded.correct_placement,
        correct_letters=excluded.correct_letters,
        correct=excluded.correct,
        end_date=excluded.end_date,
-       completed=excluded.complete
+       completed=excluded.completed
 `,
   );
 }

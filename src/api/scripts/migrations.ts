@@ -1,4 +1,3 @@
-import * as pgexplorer from '@rustybrooks/pgexplorer';
 import { migrations } from '@rustybrooks/pgexplorer';
 import { SQL } from '../src/db';
 
@@ -101,6 +100,7 @@ m.addStatement(`
         wordle_status_id serial primary key,
         user_id bigint not null references users(user_id),
         wordle_answer_id bigint not null references wordle_answers(wordle_answer_id),
+        num_guesses smallint not null,
         correct_placement smallint not null,
         correct_letters smallint not null,
         correct boolean not null,
@@ -183,6 +183,6 @@ export async function migrateSimple({ apply = [], isInitial = false }: { apply?:
 export async function migrate({ apply = [], isInitial = false }: { apply?: number[]; isInitial?: boolean }) {
   await migrateSimple({ apply, isInitial });
 
-  // await bootstrapLeagues(new Date('2021-12-25'));
+  await bootstrapLeagues(new Date('2021-12-25'));
   await bootstrapAdmin();
 }

@@ -3,7 +3,6 @@ import * as jwt from 'jsonwebtoken';
 import { getParams } from '../utils';
 import * as queries from './queries';
 import * as exceptions from '../exceptions';
-import { HttpException } from '../exceptions';
 
 export const router = express.Router();
 
