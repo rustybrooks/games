@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 
-const words: { [id: number]: string[] } = {};
+const words: { [id: string]: string[] } = {};
 
 export function evaluateGuess(expected: string, guess: string) {
   const expectedl = expected.toLowerCase();
@@ -34,25 +34,38 @@ export function evaluateGuess(expected: string, guess: string) {
   return res;
 }
 
-export function wordList(length: number) {
-  if (!(length in words)) {
-    console.log('Loading words of length', length);
-    words[length] = fs
-      .readFileSync('./data/scrabble.txt', 'utf8')
-      .split('\r\n')
-      .filter(w => w.length === length)
-      .map(w => w.toLowerCase());
+export function wordList(length: number, source: string) {
+  const wkey: string = `${source}-${length}`;
+  if (!(wkey in words)) {
+    console.log('Loading words of length', wkey, length, source);
+
+    console.log(
+      fs
+        .readFileSync(`./data/${source}`, 'utf8')
+        .split('\n')
+        .filter(w => w.length === length),
+    );
+
+    try {
+      words[wkey] = fs
+        .readFileSync(`./data/${source}`, 'utf8')
+        .split('\n')
+        .filter(w => w.length === length);
+    } catch (e) {
+      console.log('error loading list', e);
+    }
   }
 
-  return words[length];
+  console.log('len words', words[wkey].length);
+  return words[wkey];
 }
 
 export function randomWord(length: number) {
-  const wl = wordList(length);
+  const wl = wordList(length, 'wiki-100k-scrabble.txt');
   return wl[Math.floor(Math.random() * wl.length)];
 }
 
 export function isWordInList(word: string) {
-  const wl = wordList(word.length);
+  const wl = wordList(word.length, 'scrabble.txt');
   return wl.includes(word);
 }

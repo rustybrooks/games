@@ -231,12 +231,13 @@ export async function generateAnswer(league: any, activeAfter: Date) {
   });
   if (a.length) return a[0];
 
-  console.log('Adding', activeAfter, activeBefore);
+  const rando = utils.randomWord(league.letters).toLowerCase();
+  console.log('Adding', activeAfter, activeBefore, rando);
   return SQL.insert(
     'wordle_answers',
     {
       wordle_league_series_id: series[0].wordle_league_series_id,
-      answer: utils.randomWord(league.letters).toLowerCase(),
+      answer: rando,
       create_date: new Date(),
       active_after: activeAfter,
       active_before: activeBefore,
@@ -316,7 +317,7 @@ export async function activePuzzles({
       ${SQL.orderBy(sort)}
       ${SQL.limit(page, limit)}
   `;
-  console.log(query, bindvars);
+  // console.log(query, bindvars);
   return SQL.select(query, bindvars);
 }
 

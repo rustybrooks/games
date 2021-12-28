@@ -10,9 +10,8 @@ services:
       - 5000:5000
     volumes:
       - ./src/api/src:/srv/src/api/src
-      - ./src/ui/types:/srv/src/ui/types
       - ./src/api/scripts:/srv/src/api/scripts
-    entrypoint: /srv/src/api/entrypoint.sh
+      - ./src/ui/types:/srv/src/ui/types
     env_file:
       - ./src/api/env.local
     depends_on:
