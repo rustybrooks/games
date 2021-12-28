@@ -1,6 +1,7 @@
+const path = require('path');
 const { merge } = require('webpack-merge');
-const baseConfig = require('./webpack.config.base.js');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const baseConfig = require('./webpack.config.base.js');
 
 module.exports = merge(baseConfig, {
   mode: 'development',
@@ -17,5 +18,11 @@ module.exports = merge(baseConfig, {
     // static: './public',
     hot: true,
     historyApiFallback: true,
+  },
+  output: {
+    filename: '[name].[contenthash].js',
+    path: path.resolve(__dirname, 'dist'),
+    clean: true,
+    publicPath: '/',
   },
 });

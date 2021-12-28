@@ -13,7 +13,13 @@
     "project": "./tsconfig.json"
   },
   "rules": {
-    "class-methods-use-this": "off",
+    "no-restricted-imports": [
+      "error",
+      {
+        "patterns": ["@mui/*/*/*", "!@mui/material/test-utils/*"]
+      }
+    ],
+  "class-methods-use-this": "off",
     "arrow-parens": "off",
     "no-console": "off",
     "max-len": "off",

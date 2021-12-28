@@ -1,19 +1,46 @@
 const { merge } = require('webpack-merge');
-const baseConfig = require('./webpack.config.base.js');
 const webpack = require('webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const path = require('path');
+const baseConfig = require('./webpack.config.base.js');
 // const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 module.exports = merge(baseConfig, {
   mode: 'production',
   plugins: [
+    new HtmlWebpackPlugin({
+      title: 'Caching',
+      filename: 'index.html',
+      hash: true,
+      template: 'src/index.html',
+    }),
     // Minify JS
-    //new UglifyJsPlugin({
+    // new UglifyJsPlugin({
     //  sourceMap: false,
     //  // compress: true,
-    //}),
+    // }),
     // Minify CSS
-    //new webpack.LoaderOptionsPlugin({
+    // new webpack.LoaderOptionsPlugin({
     //  minimize: true,
-    //}),
+    // }),
   ],
+  optimization: {
+    runtimeChunk: 'single',
+    moduleIds: 'deterministic',
+    splitChunks: {
+      cacheGroups: {
+        vendor: {
+          test: /[\\/]node_modules[\\/]/,
+          name: 'vendors',
+          chunks: 'all',
+        },
+      },
+    },
+  },
+  output: {
+    filename: '[name].[contenthash].js',
+    path: path.resolve(__dirname, 'dist'),
+    clean: true,
+    publicPath: '/',
+  },
 });

@@ -1,22 +1,22 @@
 import * as React from 'react';
 import { alpha } from '@mui/material/styles';
-import Box from '@mui/material/Box';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
-import TableSortLabel from '@mui/material/TableSortLabel';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import Paper from '@mui/material/Paper';
-import Checkbox from '@mui/material/Checkbox';
-import LoadingButton from '@mui/lab/LoadingButton';
-import Tooltip from '@mui/material/Tooltip';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { visuallyHidden } from '@mui/utils';
+import {
+  Button,
+  Box,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TablePagination,
+  TableRow,
+  TableSortLabel,
+  Toolbar,
+  Typography,
+  Paper,
+  Checkbox,
+} from '@mui/material';
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
@@ -150,11 +150,6 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
       <Typography sx={{ flex: '1 1 100%' }} color="inherit" variant="subtitle1" component="div">
         {numSelected > 0 ? `${numSelected} selected` : ''}
       </Typography>
-      <Tooltip title="Add">
-        <LoadingButton loading={loading} disabled={numSelected == 0} variant={'contained'} startIcon={<AddCircleOutlineIcon />}>
-          Join
-        </LoadingButton>
-      </Tooltip>
     </Toolbar>
   );
 };
@@ -169,14 +164,7 @@ interface Props<T> {
 }
 
 // eslint-disable-next-line import/no-default-export
-export function EnhancedTable<T extends unknown>({
-  rows,
-  headCells,
-  mainColumn,
-  initialSortColumn,
-  checkButtons = false,
-  rowButtons = null,
-}: Props<T>) {
+export function EnhancedTable<T>({ rows, headCells, mainColumn, initialSortColumn, checkButtons = false, rowButtons = null }: Props<T>) {
   const [order, setOrder] = React.useState<Order>('asc');
   const [orderBy, setOrderBy] = React.useState<keyof T>(initialSortColumn);
   const [selected, setSelected] = React.useState<readonly any[]>([]);
@@ -251,7 +239,7 @@ export function EnhancedTable<T extends unknown>({
               rowButtons={rowButtons}
             />
             <TableBody>
-              {/*getComparator(order, orderBy)*/}
+              {/* getComparator(order, orderBy) */}
               {rows
                 .slice()
                 .sort()
@@ -296,16 +284,15 @@ export function EnhancedTable<T extends unknown>({
                       {rowButtons && rowButtons.length ? (
                         <TableCell key="buttons">
                           {rowButtons.map(b => (
-                            <LoadingButton
+                            <Button
                               sx={{ marginLeft: '5px' }}
                               key={b[0]}
-                              loading={loading}
                               disabled={!b[2](row)}
                               variant={'contained'}
                               onClick={event => handleButtonClick(row, b[1])}
                             >
                               {b[0]}
-                            </LoadingButton>
+                            </Button>
                           ))}
                         </TableCell>
                       ) : null}

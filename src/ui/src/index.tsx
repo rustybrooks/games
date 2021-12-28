@@ -4,14 +4,12 @@ import { BrowserRouter, Route, Routes, Link } from 'react-router-dom';
 import { useGetAndSet, withStore } from 'react-context-hook';
 import { css } from '@emotion/react';
 
-import * as material from '@mui/material';
-
+import { AppBar, Button, Drawer, Typography, Toolbar } from '@mui/material';
 import * as constants from './constants';
 import { Login } from './components/Login';
 import { WordleGames } from './components/WordleGames';
 import { WordleLeagues } from './components/WordleLeagues';
-import { Wordle } from './components/Wordle';
-import { WordleBrowse } from './components/Wordle';
+import { Wordle, WordleBrowse } from './components/Wordle';
 import { Home } from './components/Home';
 
 const styles = {
@@ -79,40 +77,40 @@ const NavBar = ({ history }: { history: any }) => {
   console.log('user =', user);
   return (
     <div css={styles.root}>
-      <material.AppBar position="static" css={{ flexGrow: 1 }}>
-        <material.Toolbar>
+      <AppBar position="static" css={{ flexGrow: 1 }}>
+        <Toolbar>
           <div css={{ flexGrow: 1 }}>
-            <material.Button color="inherit" component={Link} to="/">
+            <Button color="inherit" component={Link} to="/">
               Home
-            </material.Button>
-            <material.Button color="inherit" component={Link} to="/wordle">
+            </Button>
+            <Button color="inherit" component={Link} to="/wordle">
               Wordle Puzzles
-            </material.Button>
-            <material.Button color="inherit" component={Link} to="/wordle/leagues">
+            </Button>
+            <Button color="inherit" component={Link} to="/wordle/leagues">
               Wordle Leagues
-            </material.Button>
+            </Button>
           </div>
           {user ? (
             <div>
-              <material.Typography>
+              <Typography>
                 ({user.username})
-                <material.Button color="inherit" onClick={logout}>
+                <Button color="inherit" onClick={logout}>
                   Logout
-                </material.Button>
-              </material.Typography>
+                </Button>
+              </Typography>
             </div>
           ) : (
-            <material.Button color="inherit" onClick={openDrawer}>
+            <Button color="inherit" onClick={openDrawer}>
               Login / Sign up
-            </material.Button>
+            </Button>
           )}
-        </material.Toolbar>
-      </material.AppBar>
-      <material.Drawer anchor="right" open={loginOpen} onClose={closeDrawer}>
+        </Toolbar>
+      </AppBar>
+      <Drawer anchor="right" open={loginOpen} onClose={closeDrawer}>
         <div role="presentation">
           <Login updateUser={updateUser} />
         </div>
-      </material.Drawer>
+      </Drawer>
     </div>
   );
 };

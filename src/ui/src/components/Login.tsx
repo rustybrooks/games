@@ -4,7 +4,7 @@ import * as React from 'react';
 import { useGetAndSet } from 'react-context-hook';
 import { css } from '@emotion/react';
 
-import * as material from '@mui/material';
+import { FormGroup, Tabs, Tab, Box, FormControl, TextField, Button } from '@mui/material';
 import * as constants from '../constants';
 
 const style = {
@@ -26,7 +26,7 @@ const style = {
 
 const genUrl = (fn = '') => `${constants.BASE_URL}/api/user/${fn}`;
 
-function LoginX({ classes, updateUser }: { classes?: any; updateUser: any }) {
+function LoginX({ updateUser }: { updateUser: any }) {
   const [tab, setTab] = React.useState('login');
   const [username, setUsername] = React.useState('');
   const [email, setEmail] = React.useState('');
@@ -96,35 +96,35 @@ function LoginX({ classes, updateUser }: { classes?: any; updateUser: any }) {
 
   return (
     <div css={style.root}>
-      <material.Tabs value={tab} onChange={handleTabChange}>
-        <material.Tab label="Login" value="login" />
-        <material.Tab label="Signup" value="signup" />
-      </material.Tabs>
+      <Tabs value={tab} onChange={handleTabChange}>
+        <Tab label="Login" value="login" />
+        <Tab label="Signup" value="signup" />
+      </Tabs>
 
-      <material.Box component="div" display={tab === 'signup' ? 'block' : 'none'}>
-        <material.FormGroup>
-          <material.FormControl css={style.formControl}>
-            <material.TextField
+      <Box component="div" display={tab === 'signup' ? 'block' : 'none'}>
+        <FormGroup>
+          <FormControl css={style.formControl}>
+            <TextField
               error={Boolean(errors.username)}
               helperText={errors.username}
               id="susername"
               label="Username"
               onChange={(event: any) => setUsername(event.target.value)}
             />
-          </material.FormControl>
+          </FormControl>
 
-          <material.FormControl css={style.formControl}>
-            <material.TextField
+          <FormControl css={style.formControl}>
+            <TextField
               error={Boolean(errors.email)}
               helperText={errors.email}
               id="semail"
               label="Email"
               onChange={(event: any) => setEmail(event.target.value)}
             />
-          </material.FormControl>
+          </FormControl>
 
-          <material.FormControl css={style.formControl}>
-            <material.TextField
+          <FormControl css={style.formControl}>
+            <TextField
               error={Boolean(errors.password)}
               helperText={errors.password}
               id="spassword"
@@ -132,10 +132,10 @@ function LoginX({ classes, updateUser }: { classes?: any; updateUser: any }) {
               type="password"
               onChange={(event: any) => setPassword(event.target.value)}
             />
-          </material.FormControl>
+          </FormControl>
 
-          <material.FormControl css={style.formControl}>
-            <material.TextField
+          <FormControl css={style.formControl}>
+            <TextField
               error={Boolean(errors.password2)}
               helperText={errors.password2}
               id="spassword2"
@@ -143,31 +143,31 @@ function LoginX({ classes, updateUser }: { classes?: any; updateUser: any }) {
               type="password"
               onChange={(event: any) => setPassword2(event.target.value)}
             />
-          </material.FormControl>
-        </material.FormGroup>
+          </FormControl>
+        </FormGroup>
 
-        <material.Button css={style.button} onClick={doCancel} variant="contained">
+        <Button css={style.button} onClick={doCancel} variant="contained">
           Cancel
-        </material.Button>
-        <material.Button css={style.button} onClick={doSignup} variant="contained" color="primary">
+        </Button>
+        <Button css={style.button} onClick={doSignup} variant="contained" color="primary">
           Sign up
-        </material.Button>
-      </material.Box>
+        </Button>
+      </Box>
 
-      <material.Box component="div" display={tab === 'login' ? 'block' : 'none'}>
-        <material.FormGroup>
-          <material.FormControl css={style.formControl}>
-            <material.TextField
+      <Box component="div" display={tab === 'login' ? 'block' : 'none'}>
+        <FormGroup>
+          <FormControl css={style.formControl}>
+            <TextField
               error={Boolean(errors.username)}
               helperText={errors.username}
               id="username"
               label="Username"
               onChange={(event: any) => setUsername(event.target.value)}
             />
-          </material.FormControl>
+          </FormControl>
 
-          <material.FormControl css={style.formControl}>
-            <material.TextField
+          <FormControl css={style.formControl}>
+            <TextField
               error={Boolean(errors.password)}
               helperText={errors.password}
               id="password"
@@ -175,16 +175,16 @@ function LoginX({ classes, updateUser }: { classes?: any; updateUser: any }) {
               type="password"
               onChange={(event: any) => setPassword(event.target.value)}
             />
-          </material.FormControl>
-        </material.FormGroup>
+          </FormControl>
+        </FormGroup>
 
-        <material.Button css={style.button} onClick={doCancel} variant="contained">
+        <Button css={style.button} onClick={doCancel} variant="contained">
           Cancel
-        </material.Button>
-        <material.Button css={style.button} onClick={doLogin} variant="contained" color="primary">
+        </Button>
+        <Button css={style.button} onClick={doLogin} variant="contained" color="primary">
           Login
-        </material.Button>
-      </material.Box>
+        </Button>
+      </Box>
     </div>
   );
 }

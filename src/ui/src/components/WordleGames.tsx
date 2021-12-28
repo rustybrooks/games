@@ -1,23 +1,19 @@
 import * as React from 'react';
 import { useGetAndSet } from 'react-context-hook';
+import { Paper, Typography } from '@mui/material';
+import { formatDistance } from 'date-fns';
+import { useNavigate } from 'react-router';
 import * as eht from './EnhancedTable';
 import { ActivePuzzle, League } from '../../types/wordle';
-import Box from '@mui/material/Box';
-import Modal from '@mui/material/Modal';
-import Paper from '@mui/material/Paper';
 import * as constants from '../constants';
 import { getActivePuzzles, getLeagues } from './WordleLeagues';
-import { Wordle } from './Wordle';
-import { formatDistance } from 'date-fns';
-import { Typography } from '@mui/material';
-import { useNavigate } from 'react-router';
 
 const genUrl = (fn = '') => `${constants.BASE_URL}/api/games/wordle/${fn}`;
 
 type EnumeratedPuzzle = ActivePuzzle & { count: number };
 
 const style = {
-  position: 'absolute' as 'absolute',
+  position: 'absolute' as const,
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
@@ -39,11 +35,39 @@ function answerFormatter(row: EnumeratedPuzzle, a: string) {
 }
 
 const ourheadCells: eht.HeadCell<EnumeratedPuzzle>[] = [
-  { id: 'league_name', numeric: false, disablePadding: false, label: 'League' },
-  { id: 'active_after', numeric: true, disablePadding: false, label: 'Active after', formatter: dateFormatter },
-  { id: 'active_before', numeric: true, disablePadding: false, label: 'Active until', formatter: dateFormatter },
-  { id: 'guesses', numeric: true, disablePadding: false, label: '# guesses' },
-  { id: 'correct_answer', numeric: false, disablePadding: false, label: 'Your solution', formatter: answerFormatter },
+  {
+    id: 'league_name',
+    numeric: false,
+    disablePadding: false,
+    label: 'League',
+  },
+  {
+    id: 'active_after',
+    numeric: true,
+    disablePadding: false,
+    label: 'Active after',
+    formatter: dateFormatter,
+  },
+  {
+    id: 'active_before',
+    numeric: true,
+    disablePadding: false,
+    label: 'Active until',
+    formatter: dateFormatter,
+  },
+  {
+    id: 'guesses',
+    numeric: true,
+    disablePadding: false,
+    label: '# guesses',
+  },
+  {
+    id: 'correct_answer',
+    numeric: false,
+    disablePadding: false,
+    label: 'Your solution',
+    formatter: answerFormatter,
+  },
 ];
 
 export const WordleGames = () => {
@@ -81,8 +105,6 @@ export const WordleGames = () => {
             'Play',
             async row => {
               navigate(`/wordle/${row.league_slug}/${row.wordle_answer_id}`);
-              // setPuzzle(row);
-              // handleOpen();
             },
             () => true,
           ],
@@ -90,18 +112,11 @@ export const WordleGames = () => {
             'Browse',
             async row => {
               navigate(`/wordle/${row.league_slug}/${row.wordle_answer_id}/browse`);
-              // setPuzzle(row);
-              // handleOpen();
             },
             row => row.correct || !!row.correct_answer,
           ],
         ]}
       />
-      {/*<Modal open={open} onClose={handleClose} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">*/}
-      {/*  <Box sx={style}>*/}
-      {/*    <Wordle puzzle={puzzle} />*/}
-      {/*  </Box>*/}
-      {/*</Modal>*/}
     </Paper>
   );
 };

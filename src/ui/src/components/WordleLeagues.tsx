@@ -1,11 +1,10 @@
 import * as React from 'react';
 import { useGetAndSet } from 'react-context-hook';
+import { Typography, Paper } from '@mui/material';
+import { formatDistance } from 'date-fns';
 import * as eht from './EnhancedTable';
 import { ActivePuzzle, League } from '../../types/wordle';
-import Typography from '@mui/material/Typography';
-import Paper from '@mui/material/Paper';
 import * as constants from '../constants';
-import { formatDistance } from 'date-fns';
 
 const genUrl = (fn = '') => `${constants.BASE_URL}/api/games/wordle/${fn}`;
 
@@ -37,13 +36,44 @@ export async function getActivePuzzles(): Promise<ActivePuzzle[]> {
 }
 
 const ourheadCells: eht.HeadCell<League>[] = [
-  { id: 'league_name', numeric: false, disablePadding: false, label: 'League' },
-  { id: 'letters', numeric: true, disablePadding: false, label: '# letters' },
-  { id: 'max_guesses', numeric: true, disablePadding: false, label: '# guesses' },
-  { id: 'series_days', numeric: true, disablePadding: false, label: 'Days in series' },
-  { id: 'time_to_live_hours', numeric: true, disablePadding: false, label: 'TTL (hours)' },
+  {
+    id: 'league_name',
+    numeric: false,
+    disablePadding: false,
+    label: 'League',
+  },
+  {
+    id: 'letters',
+    numeric: true,
+    disablePadding: false,
+    label: '# letters',
+  },
+  {
+    id: 'max_guesses',
+    numeric: true,
+    disablePadding: false,
+    label: '# guesses',
+  },
+  {
+    id: 'series_days',
+    numeric: true,
+    disablePadding: false,
+    label: 'Days in series',
+  },
+  {
+    id: 'time_to_live_hours',
+    numeric: true,
+    disablePadding: false,
+    label: 'TTL (hours)',
+  },
   // { id: 'create_date', numeric: false, disablePadding: false, label: 'Created', formatter: dateFormatter },
-  { id: 'start_date', numeric: false, disablePadding: false, label: 'Starts', formatter: dateFormatter },
+  {
+    id: 'start_date',
+    numeric: false,
+    disablePadding: false,
+    label: 'Starts',
+    formatter: dateFormatter,
+  },
 ];
 
 /// ///////////////////////
