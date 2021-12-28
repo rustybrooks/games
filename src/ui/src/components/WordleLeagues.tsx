@@ -5,8 +5,13 @@ import { ActivePuzzle, League } from '../../types/wordle';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import * as constants from '../constants';
+import { formatDistance } from 'date-fns';
 
 const genUrl = (fn = '') => `${constants.BASE_URL}/api/games/wordle/${fn}`;
+
+function dateFormatter(row: League, d: string) {
+  return formatDistance(new Date(d), new Date(), { addSuffix: true });
+}
 
 // move this to utils or something
 export async function getLeagues(): Promise<League[]> {
@@ -37,8 +42,8 @@ const ourheadCells: eht.HeadCell<League>[] = [
   { id: 'max_guesses', numeric: true, disablePadding: false, label: '# guesses' },
   { id: 'series_days', numeric: true, disablePadding: false, label: 'Days in series' },
   { id: 'time_to_live_hours', numeric: true, disablePadding: false, label: 'TTL (hours)' },
-  { id: 'create_date', numeric: false, disablePadding: false, label: 'Created' },
-  { id: 'start_date', numeric: false, disablePadding: false, label: 'Starts' },
+  // { id: 'create_date', numeric: false, disablePadding: false, label: 'Created', formatter: dateFormatter },
+  { id: 'start_date', numeric: false, disablePadding: false, label: 'Starts', formatter: dateFormatter },
 ];
 
 /// ///////////////////////
