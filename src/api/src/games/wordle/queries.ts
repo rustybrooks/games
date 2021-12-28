@@ -299,7 +299,8 @@ export async function activePuzzles({
       select league_slug, league_name, 
              wordle_answer_id, active_after, active_before, 
              s.start_date as series_start_date, s.end_date as series_end_date,
-             g.guesses, g.correct_answer, g.correct
+             g.guesses, g.correct,
+             case when g.correct or g.guesses = l.max_guesses then g.answer else null end as correct_answer
       from wordle_league_members m
       join wordle_leagues l using (wordle_league_id)
       join wordle_league_series s using (wordle_league_id)
@@ -307,7 +308,7 @@ export async function activePuzzles({
       left join (
           select wordle_answer_id, count(*) as guesses, 
                  max(correct::varchar(5))::boolean as correct, 
-                 coalesce(max(case when correct then guess else null end), '---') as correct_answer
+                 coalesce(max(case when correct then guess else null end), max(wa.answer)) as answer
           from wordle_answers wa 
           join wordle_guesses wg using (wordle_answer_id)
           where wg.user_id=$(user_id) and $(now) between active_after and active_before
