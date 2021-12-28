@@ -339,6 +339,7 @@ export async function addGuess({
   correct_letters: number;
   correct: boolean;
 }) {
+  const now = new Date();
   SQL.insert('wordle_guesses', {
     user_id,
     wordle_answer_id,
@@ -346,8 +347,32 @@ export async function addGuess({
     correct_placement,
     correct_letters,
     correct,
-    create_date: new Date(),
+    create_date: now,
   });
+
+  SQL.insert(
+    'wordle_status',
+    {
+      user_id,
+      wordle_answer_id,
+      correct_placement,
+      correct_letters,
+      correct,
+      start_date: now,
+      end_date: now,
+      completed: correct,
+    },
+    null,
+    `
+       on conflict (user_id, wordle_answer_id) 
+       do update set 
+       correct_placement=excluded.correct_placement,
+       correct_letters=excluded.correct_letters,
+       correct=excluded.correct,
+       end_date=excluded.end_date,
+       completed=excluded.complete
+`,
+  );
 }
 
 export async function guesses({

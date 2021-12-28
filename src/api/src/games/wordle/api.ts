@@ -100,7 +100,7 @@ const check = async (request: Request, response: Response, next: NextFunction) =
   }
 
   if (guessesList.find(g => g.guess === guess)) {
-    return next(new exceptions.HttpBadRequest(`Already mdae this guess`));
+    return next(new exceptions.HttpBadRequest(`Already made this guess`));
   }
 
   const guesses = guessesList.map(g => g.guess);

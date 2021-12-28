@@ -5,8 +5,8 @@ import { SQL } from '../src/db';
 import * as users from '../src/users/queries';
 
 const initial = new migrations.Migration(1, 'initial version');
-['wordle_guesses', 'wordle_answers', 'wordle_league_series', 'wordle_league_members', 'wordle_leagues', 'users'].forEach(t =>
-  initial.addStatement(`drop table if exists ${t}`),
+['wordle_status', 'wordle_guesses', 'wordle_answers', 'wordle_league_series', 'wordle_league_members', 'wordle_leagues', 'users'].forEach(
+  t => initial.addStatement(`drop table if exists ${t}`),
 );
 
 initial.addStatement(`
@@ -91,6 +91,26 @@ initial.addStatement(`
     )
 `);
 
+// -------------------------------------------------------
+let m = new migrations.Migration(2, 'Adding puzzle status');
+
+['wordle_status'].forEach(t => m.addStatement(`drop table if exists ${t}`));
+
+m.addStatement(`
+    create table wordle_status(
+        wordle_status_id serial primary key,
+        user_id bigint not null references users(user_id),
+        wordle_answer_id bigint not null references wordle_answers(wordle_answer_id),
+        correct_placement smallint not null,
+        correct_letters smallint not null,
+        correct boolean not null,
+        completed boolean not null,
+        start_date timestamp with time zone not null,
+        end_date timestamp with time zone 
+    )
+`);
+m.addStatement('create unique index wordle_status_u on wordle_status(user_id, wordle_answer_id)');
+
 export async function bootstrapLeagues(startDate: Date) {
   await SQL.insert('wordle_leagues', {
     league_name: 'Daily Play / Weekly Series / 5 letters',
@@ -143,7 +163,6 @@ export async function bootstrapLeagues(startDate: Date) {
 
 async function bootstrapAdmin() {
   const user = await users.user({ username: 'rbrooks' });
-  console.log('user', user);
   if (!user) {
     console.log('Adding bootstrapped admin user');
     await users.addUser({
@@ -163,6 +182,7 @@ export async function migrateSimple({ apply = [], isInitial = false }: { apply?:
 
 export async function migrate({ apply = [], isInitial = false }: { apply?: number[]; isInitial?: boolean }) {
   await migrateSimple({ apply, isInitial });
-  await bootstrapLeagues(new Date('2021-12-25'));
+
+  // await bootstrapLeagues(new Date('2021-12-25'));
   await bootstrapAdmin();
 }

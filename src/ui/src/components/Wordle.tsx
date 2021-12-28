@@ -41,6 +41,118 @@ style.sortaCell = { ...style.cell, backgroundColor: '#c9b458' };
 
 const genUrl = (fn = '') => `${constants.BASE_URL}/api/games/wordle/${fn}`;
 
+function wordleDisplay(
+  league: League,
+  results: { guess: string; result: string[] }[],
+  onKeyPress: any,
+  error: string,
+  answer: string,
+  showKeyboard: boolean,
+) {
+  const rightKeys: string[] = [];
+  const wrongKeys = [];
+  const sortaKeys = [];
+  for (const r of results) {
+    if (!r.guess.length) continue;
+    for (const i in r.result) {
+      if (r.result[i] === '+') {
+        rightKeys.push(r.guess[i]);
+      } else if (r.result[i] === '-') {
+        sortaKeys.push(r.guess[i]);
+      } else {
+        wrongKeys.push(r.guess[i]);
+      }
+    }
+  }
+
+  const sortaKeys2 = sortaKeys.filter(k => !rightKeys.includes(k));
+
+  const buttonTheme = [];
+  if (wrongKeys.length) {
+    buttonTheme.push({
+      class: 'hg-wrong',
+      buttons: wrongKeys.join(' '),
+    });
+  }
+  if (sortaKeys2.length) {
+    buttonTheme.push({
+      class: 'hg-sorta',
+      buttons: sortaKeys2.join(' '),
+    });
+  }
+  if (rightKeys.length) {
+    buttonTheme.push({
+      class: 'hg-right',
+      buttons: rightKeys.join(' '),
+    });
+  }
+
+  return (
+    <div style={{ height: '100%', display: 'flex', justifyContent: 'center' }}>
+      <div style={{ width: 500, padding: 20 }}>
+        <table css={style.table} style={{ margin: '0 auto' }}>
+          <tbody>
+            {[...Array(league.max_guesses).keys()].map(y => {
+              const result = results[y] || { guess: '', result: [] };
+              return (
+                <tr key={y}>
+                  {[...Array(league.letters).keys()].map(x => {
+                    const g = result.guess[x] || '';
+                    const r = result.result[x];
+                    let cn = 'cell';
+                    if (r) {
+                      switch (r) {
+                        case '+':
+                          cn = 'rightCell';
+                          break;
+                        case '-':
+                          cn = 'sortaCell';
+                          break;
+                        case ' ':
+                          cn = 'wrongCell';
+                          break;
+                        default:
+                          cn = 'cell';
+                      }
+                    }
+                    // console.log(result, x, r, cn, style[cn]);
+                    return (
+                      <td key={x} css={style[cn]}>
+                        {g.toUpperCase()}
+                      </td>
+                    );
+                  })}
+                </tr>
+              );
+            })}
+            <tr>
+              <td colSpan={league.letters}>
+                {error ? <Typography color="#d22">{error}&nbsp;</Typography> : <Typography color="#2d2">{answer}&nbsp;</Typography>}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        {showKeyboard ? (
+          <div style={{ width: 500 }}>
+            <Keyboard
+              display={{
+                '{enter}': 'enter',
+                '{bksp}': 'backspace',
+              }}
+              layout={{
+                default: ['q w e r t y u i o p', 'a s d f g h j k l', '{enter} z x c v b n m {bksp}'],
+              }}
+              buttonTheme={buttonTheme}
+              layoutName="default"
+              onKeyPress={onKeyPress}
+            />
+          </div>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
 // { puzzle }: { puzzle: ActivePuzzle }
 export const Wordle = () => {
   const { answerId, leagueSlug } = useParams();
@@ -197,104 +309,68 @@ export const Wordle = () => {
     );
   }
 
-  const rightKeys: string[] = [];
-  const wrongKeys = [];
-  const sortaKeys = [];
-  for (const r of results) {
-    if (!r.guess.length) continue;
-    for (const i in r.result) {
-      if (r.result[i] === '+') {
-        rightKeys.push(r.guess[i]);
-      } else if (r.result[i] === '-') {
-        sortaKeys.push(r.guess[i]);
-      } else {
-        wrongKeys.push(r.guess[i]);
+  return wordleDisplay(league, results, onKeyPress, error, answer, true);
+};
+
+export const WordleBrowse = () => {
+  const { answerId, leagueSlug } = useParams();
+
+  const [leagues, setLeagues] = useGetAndSet<League[]>('leagues');
+  const [results, setResults] = React.useState<{ guess: string; result: string[] }[]>([]);
+
+  let league: League = null;
+  if (leagues) {
+    league = leagues.find(l => l.league_slug === leagueSlug);
+    console.log('league', league);
+  }
+
+  async function getGuesses() {
+    const r = await fetch(genUrl('guesses'), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-API-KEY': localStorage.getItem('api-key'),
+      },
+      body: JSON.stringify({
+        wordle_answer_id: answerId,
+        league_slug: league.league_slug,
+      }),
+    });
+    if (r.status === 200) {
+      const data = await r.json();
+
+      while (data.guesses.length < league.max_guesses) {
+        data.guesses.push({ guess: '', result: [] });
       }
+
+      // console.log('setting results', data);
+      setResults(data.guesses);
     }
   }
 
-  const sortaKeys2 = sortaKeys.filter(k => !rightKeys.includes(k));
+  React.useEffect(() => {
+    if (!leagues || !leagues.length) {
+      (async () => {
+        console.log('before getLeagues');
+        setLeagues(await getLeagues());
+        console.log('after getLeagues');
+      })();
+    }
+  }, [answerId]);
 
-  const buttonTheme = [];
-  if (wrongKeys.length) {
-    buttonTheme.push({
-      class: 'hg-wrong',
-      buttons: wrongKeys.join(' '),
-    });
-  }
-  if (sortaKeys2.length) {
-    buttonTheme.push({
-      class: 'hg-sorta',
-      buttons: sortaKeys2.join(' '),
-    });
-  }
-  if (rightKeys.length) {
-    buttonTheme.push({
-      class: 'hg-right',
-      buttons: rightKeys.join(' '),
-    });
-  }
+  React.useEffect(() => {
+    if (league) getGuesses();
+  }, [league]);
 
-  return (
-    <div style={{ height: '100%', display: 'flex', justifyContent: 'center' }}>
-      <div style={{ width: 500, padding: 20 }}>
-        <table css={style.table} style={{ margin: '0 auto' }}>
-          <tbody>
-            {[...Array(league.max_guesses).keys()].map(y => {
-              const result = results[y] || { guess: '', result: [] };
-              return (
-                <tr key={y}>
-                  {[...Array(league.letters).keys()].map(x => {
-                    const g = result.guess[x] || '';
-                    const r = result.result[x];
-                    let cn = 'cell';
-                    if (r) {
-                      switch (r) {
-                        case '+':
-                          cn = 'rightCell';
-                          break;
-                        case '-':
-                          cn = 'sortaCell';
-                          break;
-                        case ' ':
-                          cn = 'wrongCell';
-                          break;
-                        default:
-                          cn = 'cell';
-                      }
-                    }
-                    // console.log(result, x, r, cn, style[cn]);
-                    return (
-                      <td key={x} css={style[cn]}>
-                        {g.toUpperCase()}
-                      </td>
-                    );
-                  })}
-                </tr>
-              );
-            })}
-            <tr>
-              <td colSpan={league.letters}>
-                {error ? <Typography color="#d22">{error}&nbsp;</Typography> : <Typography color="#2d2">{answer}&nbsp;</Typography>}
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <div style={{ width: 500 }}>
-          <Keyboard
-            display={{
-              '{enter}': 'enter',
-              '{bksp}': 'backspace',
-            }}
-            layout={{
-              default: ['q w e r t y u i o p', 'a s d f g h j k l', '{enter} z x c v b n m {bksp}'],
-            }}
-            buttonTheme={buttonTheme}
-            layoutName="default"
-            onKeyPress={onKeyPress}
-          />
-        </div>
+  if (!results.length) {
+    return (
+      <div>
+        <Typography variant="h3">Loading...</Typography>
       </div>
-    </div>
-  );
+    );
+  }
+
+  // return wordleDisplay(league, results, event => {}, null, null);
+
+  return <div>Browse ya boner</div>;
 };

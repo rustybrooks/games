@@ -19,8 +19,6 @@ export async function user({ username = null, apiKey = null }: { username?: stri
     bindvars.push(apiKey.toLowerCase());
   }
   const query = `select * from users ${SQL.whereClause(where)}`;
-  // const query = 'select * from users';
-  // console.log(query, bindvars, await SQL.select(query, bindvars));
   return SQL.selectZeroOrOne(query, bindvars);
 }
 

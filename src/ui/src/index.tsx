@@ -11,6 +11,7 @@ import { Login } from './components/Login';
 import { WordleGames } from './components/WordleGames';
 import { WordleLeagues } from './components/WordleLeagues';
 import { Wordle } from './components/Wordle';
+import { WordleBrowse } from './components/Wordle';
 import { Home } from './components/Home';
 
 const styles = {
@@ -145,6 +146,7 @@ function AppX({ history }: { history: any }) {
         <Route path="/wordle" element={<WordleGames />} />
         <Route path="/wordle/leagues" element={<WordleLeagues />} />
         <Route path="/wordle/:leagueSlug/:answerId" element={<Wordle />} />
+        <Route path="/wordle/:leagueSlug/:answerId/browse" element={<WordleBrowse />} />
       </Routes>
     </BrowserRouter>
   );

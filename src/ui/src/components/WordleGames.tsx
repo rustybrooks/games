@@ -86,6 +86,15 @@ export const WordleGames = () => {
             },
             () => true,
           ],
+          [
+            'Browse',
+            async row => {
+              navigate(`/wordle/${row.league_slug}/${row.wordle_answer_id}/browse`);
+              // setPuzzle(row);
+              // handleOpen();
+            },
+            row => row.correct || !!row.correct_answer,
+          ],
         ]}
       />
       {/*<Modal open={open} onClose={handleClose} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">*/}
