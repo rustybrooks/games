@@ -1,17 +1,16 @@
 import * as React from 'react';
 import './Wordle.css';
-import { useNavigate } from 'react-router';
 
 import Keyboard from 'react-simple-keyboard';
 import 'react-simple-keyboard/build/css/index.css';
 
 import * as constants from '../constants';
-import { ActivePuzzle, League } from '../../types/wordle';
+import { League } from '../../types/wordle';
 import { useGetAndSet } from 'react-context-hook';
-import { Button, Paper, Typography } from '@mui/material';
+import { Box, Button, Modal, Paper, Typography, Link } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 import { getLeagues } from './WordleLeagues';
 
@@ -47,6 +46,18 @@ let style: { [id: string]: any } = {
     height: { mobile: '500px', tablet: '100%', desktop: '30rem' },
     textAlign: 'center',
   },
+
+  modalBox: {
+    position: 'absolute' as 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 400,
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
+    p: 4,
+  },
 };
 
 style.wrongCell = { backgroundColor: '#787c7e' };
@@ -57,19 +68,32 @@ const genUrl = (fn = '') => `${constants.BASE_URL}/api/games/wordle/${fn}`;
 
 function WordleDisplay({
   league,
+  answerId,
   results,
   onKeyPress = null,
   error = null,
   answer = null,
   showKeyboard = true,
+  complete = false,
 }: {
   league: League;
+  answerId: string;
   results: { guess: string; result: string[] }[];
   onKeyPress?: (button: string) => Promise<void>;
   error?: string;
   answer?: string;
   showKeyboard?: boolean;
+  complete?: boolean;
 }) {
+  const [open, setOpen] = React.useState(false);
+
+  React.useEffect(() => {
+    if (complete && (answer || error) && !open) setOpen(true);
+  }, []);
+  const handleClose = () => setOpen(false);
+
+  console.log('render worddisplay', error, answer, complete);
+
   const rightKeys: string[] = [];
   const wrongKeys = [];
   const sortaKeys = [];
@@ -184,22 +208,34 @@ function WordleDisplay({
           </Div>
         ) : null}
       </Div>
+      <Modal open={open} onClose={handleClose} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
+        <Box sx={style.modalBox}>
+          <Typography id="modal-modal-title" variant="h6" component="h2" color={error && error.length ? 'red' : 'green'}>
+            {error && error.length ? error : answer}
+          </Typography>
+          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+            You have completed this puzzle.
+            <Link href={`/wordle/${league.league_slug}/${answerId}/browse`}>You can view other people's solutions here</Link>
+          </Typography>
+
+          <Div sx={{ textAlign: 'right' }}>
+            <Button onClick={() => setOpen(false)}>Close</Button>
+          </Div>
+        </Box>
+      </Modal>
     </Div>
   );
 }
 
 export const Wordle = () => {
   const { answerId, leagueSlug } = useParams();
-  console.log('RENDER WORDLE answerId', answerId, leagueSlug);
-  // const puzzle = { league_name: 'foo', wordle_answer_id: answerId };
 
+  const [status, setStatus] = React.useState({ answer: '', error: '', complete: false });
   const [leagues, setLeagues] = useGetAndSet<League[]>('leagues');
   const [results, setResults] = React.useState<{ guess: string; result: string[] }[]>([]);
-  const [error, setError] = React.useState('');
-  const [answer, setAnswer] = React.useState('');
-  const navigate = useNavigate();
-
   const gridIdx = React.useRef(0);
+
+  console.log('RENDER WORDLE answerId', answerId, leagueSlug, status);
 
   let league: League = null;
   if (leagues) {
@@ -226,14 +262,12 @@ export const Wordle = () => {
         data.guesses.push({ guess: '', result: [] });
       }
       if (data.correct) {
-        setAnswer('Correct answer!');
-        navigate(`/wordle/${league.league_slug}/${answerId}/browse`);
+        setStatus({ ...status, answer: 'Correct answer!', complete: true });
       } else if (data.answer) {
-        setError(`Answer was: ${data.answer.toUpperCase()}`);
-        navigate(`/wordle/${league.league_slug}/${answerId}/browse`);
+        setStatus({ ...status, error: `Answer was: ${data.answer.toUpperCase()}`, complete: true });
       } else {
-        if (error.length) {
-          setError('');
+        if (status.error.length) {
+          setStatus({ ...status, error: '' });
         }
       }
 
@@ -241,7 +275,7 @@ export const Wordle = () => {
     } else {
       const data = await r.json();
       console.log('received error', data);
-      setError(data.detail);
+      setStatus({ ...status, error: data.detail });
     }
   }
 
@@ -266,12 +300,12 @@ export const Wordle = () => {
       }
 
       if (data.correct) {
-        setAnswer('Correct answer!');
+        setStatus({ ...status, answer: 'Correct answer!', complete: true });
       } else if (data.answer) {
-        setError(`Answer was: ${data.answer.toUpperCase()}`);
+        setStatus({ ...status, error: `Answer was: ${data.answer.toUpperCase()}`, complete: true });
       } else {
-        if (error.length) {
-          setError('');
+        if (status.error.length) {
+          setStatus({ ...status, error: '' });
         }
       }
 
@@ -287,20 +321,20 @@ export const Wordle = () => {
     if (buttonx === '{bksp}' || buttonx === 'backspace') {
       let newResults = [...results];
       newResults[gridIdx.current].guess = word.slice(0, word.length - 1);
-      if (error.length) {
-        setError('');
+      if (status.error.length) {
+        setStatus({ ...status, error: '' });
       }
       setResults(newResults);
     } else if (buttonx === '{enter}' || buttonx === 'enter') {
       sendGuess(word);
-    } else if (word.length < league.letters && button.length === 1) {
+    } else if (word.length < league.letters && buttonx.length === 1) {
       const myre = /[a-z]/;
-      if (myre.test(button)) {
+      if (myre.test(buttonx)) {
         word += buttonx;
         let newResults = [...results];
         newResults[gridIdx.current].guess = word;
-        if (error.length) {
-          setError('');
+        if (status.error.length) {
+          setStatus({ ...status, error: '' });
         }
         setResults(newResults);
       }
@@ -340,7 +374,17 @@ export const Wordle = () => {
     );
   }
 
-  return <WordleDisplay league={league} results={results} onKeyPress={onKeyPress} error={error} answer={answer} />;
+  return (
+    <WordleDisplay
+      league={league}
+      answerId={answerId}
+      results={results}
+      onKeyPress={onKeyPress}
+      error={status.error}
+      answer={status.answer}
+      complete={status.complete}
+    />
+  );
 };
 
 export const WordleBrowse = () => {
@@ -459,7 +503,7 @@ export const WordleBrowse = () => {
           <div css={{ textAlign: 'center' }}>
             <Typography variant="h3">{user.username}</Typography>
           </div>
-          <WordleDisplay league={league} results={results} showKeyboard={false} />
+          <WordleDisplay league={league} answerId={answerId} results={results} showKeyboard={false} />
         </div>
       ) : null}
     </Paper>

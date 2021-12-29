@@ -110,7 +110,7 @@ export const WordleGames = () => {
             async row => {
               navigate(`/wordle/${row.league_slug}/${row.wordle_answer_id}`);
             },
-            () => true,
+            row => !row.completed,
           ],
           [
             'Browse',

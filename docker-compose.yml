@@ -10,6 +10,7 @@ services:
       - 5000:5000
     volumes:
       - ./src/api/src:/srv/src/api/src
+      - ./src/api/data:/srv/src/api/data
       - ./src/api/scripts:/srv/src/api/scripts
       - ./src/ui/types:/srv/src/ui/types
     env_file:
