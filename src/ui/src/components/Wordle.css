@@ -1,17 +1,54 @@
+
 .simple-keyboard.hg-layout-default .hg-button.hg-wrong {
-  background: #787c7e;
-  color: white;
+    background: #787c7e;
+    color: white;
 }
 
 .simple-keyboard.hg-layout-default .hg-button.hg-right {
-  background: #6aaa64;
-  color: white;
+    background: #6aaa64;
+    color: white;
 }
-
 
 .simple-keyboard.hg-layout-default .hg-button.hg-sorta {
-  background: #c9b458;
-  color: white;
+    background: #c9b458;
+    color: white;
 }
+
+@media only screen and (max-width: 800px) {
+    .simple-keyboard.myTheme .hg-button {
+        height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 200px;
+        color: green;
+    }
+}
+
+@media only screen and (max-width: 1200px) and (min-width: 800.1px)  {
+    .simple-keyboard.myTheme .hg-button {
+        height: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 30px;
+    }
+}
+
+@media only screen and (min-width: 1200.1px) {
+    .simple-keyboard.myTheme .hg-button {
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 16px;
+    }
+}
+
+
+
 
 

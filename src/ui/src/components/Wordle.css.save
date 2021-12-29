@@ -1,0 +1,83 @@
+@media only screen and (max-width: 800px) {
+  .simple-keyboard.hg-theme-default.myTheme {
+    font-size: 50px;
+    height: 50px;
+  }
+
+  .simple-keyboard.hg-layout-default .hg-button.hg-wrong {
+    font-size: 50px;
+    background: #787c7e;
+    color: white;
+    height: 50px;
+  }
+
+  .simple-keyboard.hg-layout-default .hg-button.hg-right {
+    font-size: 50px;
+    background: #6aaa64;
+    color: white;
+    height: 50px;
+  }
+
+  .simple-keyboard.hg-layout-default .hg-button.hg-sorta {
+    font-size: 50px;
+    background: #c9b458;
+    color: white;
+    height: 50px;
+  }
+}
+
+@media only screen and (max-width: 1200px) and (min-width: 800.1px)  {
+  .simple-keyboard.hg-layout-default .hg-button.hg-wrong {
+    font-size: 50px;
+    background: #787c7e;
+    color: white;
+  }
+
+  .simple-keyboard.hg-layout-default .hg-button.hg-right {
+    font-size: 50px;
+    background: #6aaa64;
+    color: white;
+  }
+
+  .simple-keyboard.hg-layout-default .hg-button.hg-sorta {
+    font-size: 50px;
+    background: #c9b458;
+    color: white;
+  }
+}
+
+@media only screen and (min-width: 1200.1px) {
+  .simple-keyboard.hg-layout-default .hg-button.hg-wrong {
+    font-size: 20px;
+    background: #787c7e;
+    color: white;
+  }
+
+  .simple-keyboard.hg-layout-default .hg-button.hg-right {
+    font-size: 20px;
+    background: #6aaa64;
+    color: white;
+  }
+
+  .simple-keyboard.hg-layout-default .hg-button.hg-sorta {
+    font-size: 20px;
+    background: #c9b458;
+    color: white;
+  }
+}
+
+
+
+
+
+
+
+.simple-keyboard.myTheme .hg-button {
+  height: 144px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+    font-size: 50px;
+}
+

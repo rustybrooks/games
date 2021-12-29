@@ -9,35 +9,49 @@ import * as constants from '../constants';
 import { ActivePuzzle, League } from '../../types/wordle';
 import { useGetAndSet } from 'react-context-hook';
 import { Button, Paper, Typography } from '@mui/material';
+import { styled } from '@mui/material/styles';
 
 import { Link, useParams } from 'react-router-dom';
 
 import { getLeagues } from './WordleLeagues';
 
+const Cell = styled('td')``;
+const Div = styled('div')``;
+
 let style: { [id: string]: any } = {
   cell: {
-    width: '3rem',
-    height: '3rem',
+    width: { mobile: '10rem', tablet: '7rem', desktop: '4rem' },
+    height: { mobile: '10rem', tablet: '7rem', desktop: '4rem' },
     background: 'white',
     padding: '5px',
     border: '2px solid #ccc',
     textAlign: 'center',
     verticalAlign: 'middle',
-    fontFamily: 'Arial, sans-serif',
     fontWeight: 'bold',
-    fontSize: '30px',
   },
 
   table: {
-    padding: '20px',
+    padding: '0px',
     borderSpacing: '6px',
     borderCollapse: 'separate',
   },
+
+  container: {
+    width: { mobile: '100%', tablet: '100%', desktop: '30rem' },
+    margin: '0 auto',
+    marginTop: { mobile: '20px', tablet: '20px', desktop: '20px' },
+  },
+
+  keyboard: {
+    width: '100%',
+    height: '100%',
+    textAlign: 'center',
+  },
 };
 
-style.wrongCell = { ...style.cell, backgroundColor: '#787c7e' };
-style.rightCell = { ...style.cell, backgroundColor: '#6aaa64' };
-style.sortaCell = { ...style.cell, backgroundColor: '#c9b458' };
+style.wrongCell = { backgroundColor: '#787c7e' };
+style.rightCell = { backgroundColor: '#6aaa64' };
+style.sortaCell = { backgroundColor: '#c9b458' };
 
 const genUrl = (fn = '') => `${constants.BASE_URL}/api/games/wordle/${fn}`;
 
@@ -95,8 +109,13 @@ function WordleDisplay({
   }
 
   return (
-    <div style={{ height: '100%', display: 'flex', justifyContent: 'center' }}>
-      <div style={{ width: 500, padding: 20 }}>
+    <Div
+      sx={{
+        width: '100%',
+        padding: '15px',
+      }}
+    >
+      <Div sx={style.container}>
         <table css={style.table} style={{ margin: '0 auto' }}>
           <tbody>
             {[...Array(league.max_guesses).keys()].map(y => {
@@ -124,9 +143,9 @@ function WordleDisplay({
                     }
                     // console.log(result, x, r, cn, style[cn]);
                     return (
-                      <td key={x} css={style[cn]}>
-                        {g.toUpperCase()}
-                      </td>
+                      <Cell key={x} sx={{ ...style.cell, ...style[cn] }}>
+                        <Typography variant="h1">{g.toUpperCase()}</Typography>
+                      </Cell>
                     );
                   })}
                 </tr>
@@ -134,13 +153,21 @@ function WordleDisplay({
             })}
             <tr>
               <td colSpan={league.letters}>
-                {error ? <Typography color="#d22">{error}&nbsp;</Typography> : <Typography color="#2d2">{answer}&nbsp;</Typography>}
+                {error ? (
+                  <Typography variant="h2" color="#d22">
+                    {error}&nbsp;
+                  </Typography>
+                ) : (
+                  <Typography variant="h2" color="#2d2">
+                    {answer}&nbsp;
+                  </Typography>
+                )}
               </td>
             </tr>
           </tbody>
         </table>
         {showKeyboard ? (
-          <div style={{ width: 500 }}>
+          <Div sx={style.keyboard}>
             <Keyboard
               display={{
                 '{enter}': 'enter',
@@ -151,12 +178,13 @@ function WordleDisplay({
               }}
               buttonTheme={buttonTheme}
               layoutName="default"
+              theme="hg-theme-default hg-layout-default myTheme"
               onKeyPress={onKeyPress}
             />
-          </div>
+          </Div>
         ) : null}
-      </div>
-    </div>
+      </Div>
+    </Div>
   );
 }
 

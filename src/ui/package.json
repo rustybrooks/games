@@ -13,6 +13,7 @@
   "dependencies": {
     "@emotion/react": "latest",
     "@emotion/styled": "latest",
+    "facepaint": "latest",
     "@mui/core": "latest",
     "@mui/icons-material": "latest",
     "@mui/lab": "latest",
