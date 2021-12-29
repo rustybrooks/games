@@ -20,8 +20,8 @@ const Div = styled('div')``;
 
 let style: { [id: string]: any } = {
   cell: {
-    width: { mobile: '10rem', tablet: '7rem', desktop: '4rem' },
-    height: { mobile: '10rem', tablet: '7rem', desktop: '4rem' },
+    width: { mobile: '7rem', tablet: '8rem', desktop: '4rem' },
+    height: { mobile: '7rem', tablet: '8rem', desktop: '4rem' },
     background: 'white',
     padding: '5px',
     border: '2px solid #ccc',
@@ -44,7 +44,7 @@ let style: { [id: string]: any } = {
 
   keyboard: {
     width: '100%',
-    height: '100%',
+    height: { mobile: '500px', tablet: '100%', desktop: '30rem' },
     textAlign: 'center',
   },
 };
@@ -112,7 +112,7 @@ function WordleDisplay({
     <Div
       sx={{
         width: '100%',
-        padding: '15px',
+        height: '100%',
       }}
     >
       <Div sx={style.container}>

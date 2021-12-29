@@ -143,8 +143,8 @@ const ff = ['Roboto', 'Arial', 'sans-serif'].join(',');
 const theme = createTheme({
   breakpoints: {
     values: {
-      mobile: 800,
-      tablet: 1040,
+      mobile: 350,
+      tablet: 1000,
       desktop: 1200,
     },
   },

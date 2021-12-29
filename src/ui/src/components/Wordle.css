@@ -14,30 +14,47 @@
     color: white;
 }
 
-@media only screen and (max-width: 800px) {
+
+
+@media only screen and (max-device-width: 650px) {
+    .react-simple-keyboard.simple-keyboard.hg-theme-default.hg-layout-default.myTheme.hg-layout-default {
+        height: 530px;
+    }
+
+    .react-simple-keyboard.simple-keyboard.hg-theme-default.hg-layout-default.myTheme.hg-layout-default .hg-rows {
+        height: 530px;
+    }
+
+    .react-simple-keyboard.simple-keyboard.hg-theme-default.hg-layout-default.myTheme.hg-layout-default .hg-rows .hg-row {
+        height: 170px;
+    }
+
+    .react-simple-keyboard.simple-keyboard.hg-theme-default.hg-layout-default.myTheme.hg-layout-default .hg-rows .hg-row .hg-button{
+        height: 170px;
+    }
+
     .simple-keyboard.myTheme .hg-button {
-        height: 200px;
+        height: 160px;
         display: flex;
         align-items: center;
         justify-content: center;
         font-weight: bold;
-        font-size: 200px;
-        color: green;
+        font-size: 3.3em;
     }
 }
 
-@media only screen and (max-width: 1200px) and (min-width: 800.1px)  {
+@media only screen and (max-device-width: 1200px) and (min-device-width: 651px)  {
     .simple-keyboard.myTheme .hg-button {
-        height: 100px;
+        height: 80px;
         display: flex;
         align-items: center;
         justify-content: center;
         font-weight: bold;
-        font-size: 30px;
+        font-size: 32px;
     }
 }
 
-@media only screen and (min-width: 1200.1px) {
+@media only screen and (min-device-width: 1200.1px) {
     .simple-keyboard.myTheme .hg-button {
         height: 44px;
         display: flex;
