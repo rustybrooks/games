@@ -123,6 +123,7 @@ const check = async (request: Request, response: Response, next: NextFunction) =
     correct_placement: result.reduce((c, n) => (c + n === '+' ? 1 : 0), 0),
     correct_letters: result.reduce((c, n) => (c + n === ' ' ? 0 : 1), 0),
     correct: guess === answer.answer,
+    completed: guess === answer.answer || guesses.length >= league.max_guesses,
   });
 
   return response.status(200).json({
@@ -141,7 +142,7 @@ const guesses = async (request: Request, response: Response, next: NextFunction)
   } catch (e) {
     return next(e);
   }
-  const { league_slug, wordle_answer_id } = getParams(request);
+  const { user_id, league_slug, wordle_answer_id } = getParams(request);
 
   const league = await queries.league({ league_slug, user_id: response.locals.user.user_id, isMemberOnly: true });
   if (!league) {
@@ -153,8 +154,17 @@ const guesses = async (request: Request, response: Response, next: NextFunction)
     return next(new exceptions.HttpNotFound('Wordle not found'));
   }
 
+  if (user_id) {
+    const ourStatus = await queries.wordleStatuses({ wordle_answer_id, completed: true, user_id: response.locals.user.user_id });
+    if (!ourStatus.length) {
+      return next(new exceptions.HttpBadRequest('You have not completed this Wordle'));
+    }
+  }
+
+  let effectiveUserId = user_id || response.locals.user.user_id;
+
   const guesses = await queries.guesses({
-    user_id: response.locals.user.user_id,
+    user_id: effectiveUserId,
     wordle_answer_id: answer.wordle_answer_id,
     sort: 'wordle_guesses.create_date',
   });
@@ -178,10 +188,36 @@ const activePuzzles = async (request: Request, response: Response, next: NextFun
   } catch (e) {
     return next(e);
   }
-  const {} = getParams(request);
 
   const puzzles = await queries.activePuzzles({ user_id: response.locals.user.user_id });
   return response.status(200).json(puzzles);
+};
+
+const completedUsers = async (request: Request, response: Response, next: NextFunction) => {
+  try {
+    users.requireLogin(response, next);
+  } catch (e) {
+    return next(e);
+  }
+  const { league_slug, wordle_answer_id } = getParams(request);
+
+  const league = await queries.league({ league_slug, user_id: response.locals.user.user_id, isMemberOnly: true });
+  if (!league) {
+    return next(new exceptions.HttpNotFound('League not found'));
+  }
+
+  const answer = await queries.answer({ league_slug, wordle_answer_id });
+  if (!answer) {
+    return next(new exceptions.HttpNotFound('Wordle not found'));
+  }
+
+  const ourStatus = await queries.wordleStatuses({ wordle_answer_id, user_id: response.locals.user.user_id, completed: true });
+  if (!ourStatus.length) {
+    return next(new exceptions.HttpBadRequest('You have not completed this Wordle'));
+  }
+
+  const data = await queries.wordleStatuses({ wordle_answer_id, completed: true, sort: ['-correct_letters,num_guesses,ws.end_date'] });
+  return response.status(200).json(data);
 };
 
 router.all('/check', check);
@@ -190,3 +226,4 @@ router.all('/leagues', leagues);
 router.all('/join_league', joinLeague);
 router.all('/leave_league', leaveLeague);
 router.all('/active_puzzles', activePuzzles);
+router.all('/completed_users', completedUsers);

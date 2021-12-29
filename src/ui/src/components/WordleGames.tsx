@@ -56,7 +56,7 @@ const ourheadCells: eht.HeadCell<EnumeratedPuzzle>[] = [
     formatter: dateFormatter,
   },
   {
-    id: 'guesses',
+    id: 'num_guesses',
     numeric: true,
     disablePadding: false,
     label: '# guesses',
@@ -113,7 +113,7 @@ export const WordleGames = () => {
             async row => {
               navigate(`/wordle/${row.league_slug}/${row.wordle_answer_id}/browse`);
             },
-            row => row.correct || !!row.correct_answer,
+            row => row.completed,
           ],
         ]}
       />

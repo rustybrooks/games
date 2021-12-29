@@ -1,6 +1,6 @@
 import * as React from 'react';
 import './Wordle.css';
-import { css } from '@emotion/react';
+import { useNavigate } from 'react-router';
 
 import Keyboard from 'react-simple-keyboard';
 import 'react-simple-keyboard/build/css/index.css';
@@ -8,9 +8,9 @@ import 'react-simple-keyboard/build/css/index.css';
 import * as constants from '../constants';
 import { ActivePuzzle, League } from '../../types/wordle';
 import { useGetAndSet } from 'react-context-hook';
-import { Typography } from '@mui/material';
+import { Button, Paper, Typography } from '@mui/material';
 
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 import { getLeagues } from './WordleLeagues';
 
@@ -41,14 +41,21 @@ style.sortaCell = { ...style.cell, backgroundColor: '#c9b458' };
 
 const genUrl = (fn = '') => `${constants.BASE_URL}/api/games/wordle/${fn}`;
 
-function wordleDisplay(
-  league: League,
-  results: { guess: string; result: string[] }[],
-  onKeyPress: any,
-  error: string,
-  answer: string,
-  showKeyboard: boolean,
-) {
+function WordleDisplay({
+  league,
+  results,
+  onKeyPress = null,
+  error = null,
+  answer = null,
+  showKeyboard = true,
+}: {
+  league: League;
+  results: { guess: string; result: string[] }[];
+  onKeyPress?: (button: string) => Promise<void>;
+  error?: string;
+  answer?: string;
+  showKeyboard?: boolean;
+}) {
   const rightKeys: string[] = [];
   const wrongKeys = [];
   const sortaKeys = [];
@@ -153,23 +160,22 @@ function wordleDisplay(
   );
 }
 
-// { puzzle }: { puzzle: ActivePuzzle }
 export const Wordle = () => {
   const { answerId, leagueSlug } = useParams();
-  console.log('RENDER answerId', answerId, leagueSlug);
+  console.log('RENDER WORDLE answerId', answerId, leagueSlug);
   // const puzzle = { league_name: 'foo', wordle_answer_id: answerId };
 
   const [leagues, setLeagues] = useGetAndSet<League[]>('leagues');
   const [results, setResults] = React.useState<{ guess: string; result: string[] }[]>([]);
   const [error, setError] = React.useState('');
   const [answer, setAnswer] = React.useState('');
+  const navigate = useNavigate();
 
   const gridIdx = React.useRef(0);
 
   let league: League = null;
   if (leagues) {
     league = leagues.find(l => l.league_slug === leagueSlug);
-    console.log('league', league);
   }
 
   async function sendGuess(word: string) {
@@ -187,15 +193,16 @@ export const Wordle = () => {
     });
     if (r.status === 200) {
       const data = await r.json();
-      // console.log('setting gridIdx', gridIdx.current, data.length);
       gridIdx.current = data.guesses.length;
       while (data.guesses.length < league.max_guesses) {
         data.guesses.push({ guess: '', result: [] });
       }
       if (data.correct) {
         setAnswer('Correct answer!');
+        navigate(`/wordle/${league.league_slug}/${answerId}/browse`);
       } else if (data.answer) {
         setError(`Answer was: ${data.answer.toUpperCase()}`);
+        navigate(`/wordle/${league.league_slug}/${answerId}/browse`);
       } else {
         if (error.length) {
           setError('');
@@ -240,13 +247,11 @@ export const Wordle = () => {
         }
       }
 
-      // console.log('setting results', data);
       setResults(data.guesses);
     }
   }
 
   const onKeyPress = async (button: string) => {
-    console.log('results', results);
     const buttonx = button.toLowerCase();
     const res = results[gridIdx.current];
     let word = res.guess;
@@ -290,9 +295,7 @@ export const Wordle = () => {
   React.useEffect(() => {
     if (!leagues || !leagues.length) {
       (async () => {
-        console.log('before getLeagues');
         setLeagues(await getLeagues());
-        console.log('after getLeagues');
       })();
     }
   }, [answerId]);
@@ -309,7 +312,7 @@ export const Wordle = () => {
     );
   }
 
-  return wordleDisplay(league, results, onKeyPress, error, answer, true);
+  return <WordleDisplay league={league} results={results} onKeyPress={onKeyPress} error={error} answer={answer} />;
 };
 
 export const WordleBrowse = () => {
@@ -317,15 +320,17 @@ export const WordleBrowse = () => {
 
   const [leagues, setLeagues] = useGetAndSet<League[]>('leagues');
   const [results, setResults] = React.useState<{ guess: string; result: string[] }[]>([]);
+  const [completed, setCompleted] = React.useState([]);
+  const [user, setUser] = React.useState(null);
+  const [error, setError] = React.useState(null);
 
   let league: League = null;
   if (leagues) {
     league = leagues.find(l => l.league_slug === leagueSlug);
-    console.log('league', league);
   }
 
-  async function getGuesses() {
-    const r = await fetch(genUrl('guesses'), {
+  async function getCompletedUsers() {
+    const r = await fetch(genUrl('completed_users'), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -336,6 +341,32 @@ export const WordleBrowse = () => {
         league_slug: league.league_slug,
       }),
     });
+
+    if (r.status === 200) {
+      const data = await r.json();
+      setCompleted(data);
+      if (data.length) {
+        setUser(data[0]);
+      }
+    } else {
+      const data = await r.json();
+      setError(data.detail);
+    }
+  }
+
+  async function getGuesses(userId: number) {
+    const r = await fetch(genUrl('guesses'), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-API-KEY': localStorage.getItem('api-key'),
+      },
+      body: JSON.stringify({
+        wordle_answer_id: answerId,
+        user_id: userId,
+        league_slug: league.league_slug,
+      }),
+    });
     if (r.status === 200) {
       const data = await r.json();
 
@@ -343,7 +374,6 @@ export const WordleBrowse = () => {
         data.guesses.push({ guess: '', result: [] });
       }
 
-      // console.log('setting results', data);
       setResults(data.guesses);
     }
   }
@@ -351,26 +381,59 @@ export const WordleBrowse = () => {
   React.useEffect(() => {
     if (!leagues || !leagues.length) {
       (async () => {
-        console.log('before getLeagues');
         setLeagues(await getLeagues());
-        console.log('after getLeagues');
       })();
     }
-  }, [answerId]);
+
+    if (league) {
+      getCompletedUsers();
+    }
+  }, [answerId, leagues]);
 
   React.useEffect(() => {
-    if (league) getGuesses();
-  }, [league]);
+    (async () => {
+      if (user) {
+        getGuesses(user.user_id);
+      }
+    })();
+  }, [user]);
 
-  if (!results.length) {
+  if (!completed.length) {
     return (
-      <div>
-        <Typography variant="h3">Loading...</Typography>
+      <div css={{ textAlign: 'center' }}>
+        <Typography variant="h3" color={error ? 'red' : 'black'}>
+          {error || 'Loading...'}
+        </Typography>
       </div>
     );
   }
 
-  // return wordleDisplay(league, results, event => {}, null, null);
-
-  return <div>Browse ya boner</div>;
+  return (
+    <Paper sx={{ padding: '10px' }}>
+      <div css={{ textAlign: 'center' }}>
+        {completed.map(c => (
+          <Button
+            key={c.username}
+            sx={{ marginRight: '4px' }}
+            color={c.correct ? 'success' : 'error'}
+            variant="outlined"
+            size="small"
+            onClick={event => {
+              setUser(c);
+            }}
+          >
+            {c.username} - {c.num_guesses}
+          </Button>
+        ))}
+      </div>
+      {user ? (
+        <div>
+          <div css={{ textAlign: 'center' }}>
+            <Typography variant="h3">{user.username}</Typography>
+          </div>
+          <WordleDisplay league={league} results={results} showKeyboard={false} />
+        </div>
+      ) : null}
+    </Paper>
+  );
 };

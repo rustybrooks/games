@@ -108,7 +108,7 @@ const NavBar = ({ history }: { history: any }) => {
       </AppBar>
       <Drawer anchor="right" open={loginOpen} onClose={closeDrawer}>
         <div role="presentation">
-          <Login updateUser={updateUser} />
+          <Login updateUser={updateUser} history={history} />
         </div>
       </Drawer>
     </div>

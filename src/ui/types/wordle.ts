@@ -31,7 +31,21 @@ export interface ActivePuzzle {
   active_before: Date;
   series_start_date: Date;
   series_end_date: Date;
-  guesses: number;
+  num_guesses: number;
   correct_answer: string;
   correct: boolean;
+  completed: boolean;
+}
+
+export interface WordleStatus {
+  username: string;
+  user_id: number;
+  wordle_answer_id: number;
+  completed: boolean;
+  correct: boolean;
+  correct_placement: number;
+  correct_letters: number;
+  num_guesses: number;
+  start_date: Date;
+  end_date: Date;
 }
