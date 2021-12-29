@@ -1,6 +1,11 @@
 import { SQL } from '../../db';
-import { ActivePuzzle, Guess, League } from '../../../../ui/types/wordle';
+import { ActivePuzzle, Guess, League, WordleStatus } from '../../../../ui/types/wordle';
+import { QueryParams } from '../../../../ui/types';
 import * as utils from './utils';
+
+function sleep(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 export function roundedNow() {
   const d = new Date();
@@ -297,23 +302,18 @@ export async function activePuzzles({
 
   const query = `
       select league_slug, league_name, 
-             wordle_answer_id, active_after, active_before, 
+             a.wordle_answer_id, active_after, active_before, 
              s.start_date as series_start_date, s.end_date as series_end_date,
-             g.guesses, g.correct,
-             case when g.correct or g.guesses = l.max_guesses then g.answer else null end as correct_answer
+             ws.num_guesses, ws.correct, ws.completed,
+             case 
+                 when ws.completed then a.answer 
+                 else null 
+             end as correct_answer
       from wordle_league_members m
       join wordle_leagues l using (wordle_league_id)
       join wordle_league_series s using (wordle_league_id)
       join wordle_answers a using (wordle_league_series_id)
-      left join (
-          select wordle_answer_id, count(*) as guesses, 
-                 max(correct::varchar(5))::boolean as correct, 
-                 coalesce(max(case when correct then guess else null end), max(wa.answer)) as answer
-          from wordle_answers wa 
-          join wordle_guesses wg using (wordle_answer_id)
-          where wg.user_id=$(user_id) and $(now) between active_after and active_before
-          group by wordle_answer_id
-      ) g using (wordle_answer_id)
+      left join wordle_status ws using (user_id, wordle_answer_id)
       ${SQL.whereClause(where)}
       ${SQL.orderBy(sort)}
       ${SQL.limit(page, limit)}
@@ -331,6 +331,7 @@ export async function addGuess({
   correct_placement,
   correct_letters,
   correct,
+  completed,
 }: {
   user_id: number;
   wordle_answer_id: number;
@@ -338,9 +339,11 @@ export async function addGuess({
   correct_placement: number;
   correct_letters: number;
   correct: boolean;
+  completed: boolean;
 }) {
   const now = new Date();
-  SQL.insert('wordle_guesses', {
+  // this needs to be a transaction
+  await SQL.insert('wordle_guesses', {
     user_id,
     wordle_answer_id,
     guess: guess.toLowerCase(),
@@ -350,27 +353,31 @@ export async function addGuess({
     create_date: now,
   });
 
-  SQL.insert(
+  await sleep(25);
+
+  await SQL.insert(
     'wordle_status',
     {
       user_id,
       wordle_answer_id,
+      num_guesses: 1,
       correct_placement,
       correct_letters,
       correct,
       start_date: now,
       end_date: now,
-      completed: correct,
+      completed: completed,
     },
     null,
     `
        on conflict (user_id, wordle_answer_id) 
        do update set 
+       num_guesses=(select count(*) from wordle_guesses wg where wg.wordle_answer_id=excluded.wordle_answer_id and wg.user_id=excluded.user_id),
        correct_placement=excluded.correct_placement,
        correct_letters=excluded.correct_letters,
        correct=excluded.correct,
        end_date=excluded.end_date,
-       completed=excluded.complete
+       completed=excluded.completed
 `,
   );
 }
@@ -452,4 +459,26 @@ export async function removeLeagueMember({ user_id, wordle_league_id }: { user_i
       leave_date: new Date(),
     },
   );
+}
+
+/* ******* wordle_status ******** */
+
+export async function wordleStatuses({
+  wordle_answer_id,
+  user_id,
+  completed = null,
+  page = null,
+  limit = null,
+  sort = null,
+}: { wordle_answer_id: number; user_id?: number; completed?: boolean } & QueryParams): Promise<WordleStatus[]> {
+  const [where, bindvars] = SQL.autoWhere({ wordle_answer_id, user_id, completed });
+  const query = `
+    select username, ws.*
+    from wordle_status ws 
+    join users u using (user_id)
+    ${SQL.whereClause(where)}
+    ${SQL.orderBy(sort)}
+    ${SQL.limit(page, limit)}
+  `;
+  return SQL.select(query, bindvars);
 }

@@ -18,7 +18,7 @@ export function evaluateGuess(expected: string, guess: string) {
     }
     return prev2;
   }, {});
-  const res = guessl.split('').map((l, i) => {
+  return guessl.split('').map((l, i) => {
     if (l !== expectedl[i]) {
       guessCounts[l] = (guessCounts[l] || 0) + 1;
     }
@@ -30,21 +30,12 @@ export function evaluateGuess(expected: string, guess: string) {
     }
     return ' ';
   });
-  // console.log('evaluateGuess', expectedl, guessl, res);
-  return res;
 }
 
 export function wordList(length: number, source: string) {
   const wkey: string = `${source}-${length}`;
   if (!(wkey in words)) {
     console.log('Loading words of length', wkey, length, source);
-
-    console.log(
-      fs
-        .readFileSync(`./data/${source}`, 'utf8')
-        .split('\n')
-        .filter(w => w.length === length),
-    );
 
     try {
       words[wkey] = fs

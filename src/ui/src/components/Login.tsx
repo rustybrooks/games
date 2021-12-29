@@ -26,7 +26,7 @@ const style = {
 
 const genUrl = (fn = '') => `${constants.BASE_URL}/api/user/${fn}`;
 
-function LoginX({ updateUser }: { updateUser: any }) {
+function LoginX({ updateUser, history }: { updateUser: any; history: any }) {
   const [tab, setTab] = React.useState('login');
   const [username, setUsername] = React.useState('');
   const [email, setEmail] = React.useState('');
@@ -41,7 +41,6 @@ function LoginX({ updateUser }: { updateUser: any }) {
   };
 
   function closeDrawer() {
-    console.log('closing drawer');
     setLoginOpen(false);
   }
 
@@ -107,8 +106,9 @@ function LoginX({ updateUser }: { updateUser: any }) {
             <TextField
               error={Boolean(errors.username)}
               helperText={errors.username}
-              id="susername"
+              id="username"
               label="Username"
+              autoFocus
               onChange={(event: any) => setUsername(event.target.value)}
             />
           </FormControl>
@@ -163,6 +163,7 @@ function LoginX({ updateUser }: { updateUser: any }) {
               id="username"
               label="Username"
               onChange={(event: any) => setUsername(event.target.value)}
+              autoFocus
             />
           </FormControl>
 

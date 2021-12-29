@@ -31,7 +31,11 @@ function dateFormatter(row: EnumeratedPuzzle, d: string) {
 function answerFormatter(row: EnumeratedPuzzle, a: string) {
   if (row.correct_answer === null) return '';
 
-  return <Typography color={row.correct ? 'green' : 'red'}>{row.correct_answer.toUpperCase()}</Typography>;
+  return (
+    <Typography variant="body2" color={row.correct ? 'green' : 'red'}>
+      {row.correct_answer.toUpperCase()}
+    </Typography>
+  );
 }
 
 const ourheadCells: eht.HeadCell<EnumeratedPuzzle>[] = [
@@ -56,7 +60,7 @@ const ourheadCells: eht.HeadCell<EnumeratedPuzzle>[] = [
     formatter: dateFormatter,
   },
   {
-    id: 'guesses',
+    id: 'num_guesses',
     numeric: true,
     disablePadding: false,
     label: '# guesses',
@@ -113,7 +117,7 @@ export const WordleGames = () => {
             async row => {
               navigate(`/wordle/${row.league_slug}/${row.wordle_answer_id}/browse`);
             },
-            row => row.correct || !!row.correct_answer,
+            row => row.completed,
           ],
         ]}
       />

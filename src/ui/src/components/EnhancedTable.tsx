@@ -282,10 +282,11 @@ export function EnhancedTable<T>({ rows, headCells, mainColumn, initialSortColum
                         ),
                       )}
                       {rowButtons && rowButtons.length ? (
-                        <TableCell key="buttons">
+                        <TableCell size="small" key="buttons">
                           {rowButtons.map(b => (
                             <Button
-                              sx={{ marginLeft: '5px' }}
+                              size="small"
+                              sx={{ margin: '5px' }}
                               key={b[0]}
                               disabled={!b[2](row)}
                               variant={'contained'}

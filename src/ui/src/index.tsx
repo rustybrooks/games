@@ -11,6 +11,8 @@ import { WordleGames } from './components/WordleGames';
 import { WordleLeagues } from './components/WordleLeagues';
 import { Wordle, WordleBrowse } from './components/Wordle';
 import { Home } from './components/Home';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { Test } from './components/Test';
 
 const styles = {
   root: css({
@@ -108,7 +110,7 @@ const NavBar = ({ history }: { history: any }) => {
       </AppBar>
       <Drawer anchor="right" open={loginOpen} onClose={closeDrawer}>
         <div role="presentation">
-          <Login updateUser={updateUser} />
+          <Login updateUser={updateUser} history={history} />
         </div>
       </Drawer>
     </div>
@@ -123,30 +125,134 @@ const initialValue: { [id: string]: any } = {
   'active-puzzles': [],
 };
 
-/*
-const storeConfig = {
-listener: (state: any, key: string, prevValue: any, nextValue: any) => {
-  console.log(`the key "${key}" changed in the store`);
-  console.log('the old value is', prevValue);
-  console.log('the current value is', nextValue);
-  console.log('the state is', state);
-},
-logging: process.env.NODE_ENV !== 'production',
+declare module '@mui/material/styles' {
+  interface BreakpointOverrides {
+    xs: false; // removes the `xs` breakpoint
+    sm: false;
+    md: false;
+    lg: false;
+    xl: false;
+    mobile: true;
+    tablet: true;
+    desktop: true;
+  }
+}
+
+const ff = ['Roboto', 'Arial', 'sans-serif'].join(',');
+
+const theme = createTheme({
+  breakpoints: {
+    values: {
+      mobile: 350,
+      tablet: 1000,
+      desktop: 1200,
+    },
+  },
+});
+
+theme.typography.body1 = {
+  fontSize: '1rem',
+  fontFamily: ff,
+  fontColor: 'red',
+
+  [theme.breakpoints.down('mobile')]: {
+    fontSize: '1rem',
+  },
+
+  [theme.breakpoints.between('mobile', 'tablet')]: {
+    fontSize: '1.8rem',
+  },
+
+  [theme.breakpoints.between('tablet', 'desktop')]: {
+    fontSize: '1.0rem',
+  },
+
+  [theme.breakpoints.up('desktop')]: {
+    fontSize: '1.0rem',
+  },
 };
-*/
+
+theme.typography.button = theme.typography.body1;
+
+theme.typography.body2 = {
+  fontSize: '1rem',
+  fontFamily: ff,
+  fontColor: 'red',
+
+  [theme.breakpoints.down('mobile')]: {
+    fontSize: '.8rem',
+  },
+
+  [theme.breakpoints.between('mobile', 'tablet')]: {
+    fontSize: '1.5rem',
+  },
+
+  [theme.breakpoints.between('tablet', 'desktop')]: {
+    fontSize: '.8rem',
+  },
+
+  [theme.breakpoints.up('desktop')]: {
+    fontSize: '.8rem',
+  },
+};
+
+theme.typography.h1 = {
+  fontSize: '1rem',
+  fontFamily: ff,
+
+  [theme.breakpoints.down('mobile')]: {
+    fontSize: '2rem',
+  },
+
+  [theme.breakpoints.between('mobile', 'tablet')]: {
+    fontSize: '3rem',
+  },
+
+  [theme.breakpoints.between('tablet', 'desktop')]: {
+    fontSize: '4rem',
+  },
+
+  [theme.breakpoints.up('desktop')]: {
+    fontSize: '1.8rem',
+  },
+};
+
+theme.typography.h2 = {
+  fontSize: '.9rem',
+  fontFamily: ff,
+
+  [theme.breakpoints.down('mobile')]: {
+    fontSize: '1.8rem',
+  },
+
+  [theme.breakpoints.between('mobile', 'tablet')]: {
+    fontSize: '2.6em',
+  },
+
+  [theme.breakpoints.between('tablet', 'desktop')]: {
+    fontSize: '2rem',
+  },
+
+  [theme.breakpoints.up('desktop')]: {
+    fontSize: '1.5em',
+  },
+};
 
 function AppX({ history }: { history: any }) {
   return (
-    <BrowserRouter>
-      <NavBar history={history} />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/wordle" element={<WordleGames />} />
-        <Route path="/wordle/leagues" element={<WordleLeagues />} />
-        <Route path="/wordle/:leagueSlug/:answerId" element={<Wordle />} />
-        <Route path="/wordle/:leagueSlug/:answerId/browse" element={<WordleBrowse />} />
-      </Routes>
-    </BrowserRouter>
+    <ThemeProvider theme={theme}>
+      <BrowserRouter>
+        <NavBar history={history} />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/test" element={<Test />} />
+          <Route path="/wordle" element={<WordleGames />} />
+          <Route path="/wordle/leagues" element={<WordleLeagues />} />
+          <Route path="/wordle/:leagueSlug/:answerId" element={<Wordle />} />
+          <Route path="/wordle/:leagueSlug/:answerId/browse" element={<WordleBrowse />} />
+        </Routes>
+      </BrowserRouter>
+    </ThemeProvider>
   );
 }
 const App = withStore(AppX, initialValue);

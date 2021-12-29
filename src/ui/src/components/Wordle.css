@@ -1,17 +1,71 @@
+
 .simple-keyboard.hg-layout-default .hg-button.hg-wrong {
-  background: #787c7e;
-  color: white;
+    background: #787c7e;
+    color: white;
 }
 
 .simple-keyboard.hg-layout-default .hg-button.hg-right {
-  background: #6aaa64;
-  color: white;
+    background: #6aaa64;
+    color: white;
 }
-
 
 .simple-keyboard.hg-layout-default .hg-button.hg-sorta {
-  background: #c9b458;
-  color: white;
+    background: #c9b458;
+    color: white;
 }
+
+
+
+@media only screen and (max-device-width: 650px) {
+    .react-simple-keyboard.simple-keyboard.hg-theme-default.hg-layout-default.myTheme.hg-layout-default {
+        height: 530px;
+    }
+
+    .react-simple-keyboard.simple-keyboard.hg-theme-default.hg-layout-default.myTheme.hg-layout-default .hg-rows {
+        height: 530px;
+    }
+
+    .react-simple-keyboard.simple-keyboard.hg-theme-default.hg-layout-default.myTheme.hg-layout-default .hg-rows .hg-row {
+        height: 170px;
+    }
+
+    .react-simple-keyboard.simple-keyboard.hg-theme-default.hg-layout-default.myTheme.hg-layout-default .hg-rows .hg-row .hg-button{
+        height: 170px;
+    }
+
+    .simple-keyboard.myTheme .hg-button {
+        height: 160px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 3.3em;
+    }
+}
+
+@media only screen and (max-device-width: 1200px) and (min-device-width: 651px)  {
+    .simple-keyboard.myTheme .hg-button {
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 32px;
+    }
+}
+
+@media only screen and (min-device-width: 1200.1px) {
+    .simple-keyboard.myTheme .hg-button {
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 16px;
+    }
+}
+
+
+
 
 
