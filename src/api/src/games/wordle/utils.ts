@@ -33,7 +33,7 @@ export function evaluateGuess(expected: string, guess: string) {
 }
 
 export function wordList(length: number, source: string) {
-  const wkey: string = `${source}-${length}`;
+  const wkey = `${source}-${length}`;
   if (!(wkey in words)) {
     console.log('Loading words of length', wkey, length, source);
 
@@ -52,11 +52,11 @@ export function wordList(length: number, source: string) {
 }
 
 export function randomWord(length: number) {
-  const wl = wordList(length, 'wiki-100k-scrabble.txt');
+  const wl = wordList(length, 'filtered/twl06.txt.filtered');
   return wl[Math.floor(Math.random() * wl.length)];
 }
 
 export function isWordInList(word: string) {
-  const wl = wordList(word.length, 'scrabble.txt');
+  const wl = wordList(word.length, 'sources/collins.2019.txt.clean');
   return wl.includes(word);
 }
