@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useEffect } from 'react';
 import { useGetAndSet } from 'react-context-hook';
 import { Typography, Paper, Link } from '@mui/material';
 import { formatDistance } from 'date-fns';
@@ -128,7 +128,7 @@ const WordleLeaguesX = () => {
     return !row.is_member && user !== null;
   }
 
-  React.useEffect(() => {
+  useEffect(() => {
     (async () => {
       setLeagues(await getLeagues());
     })();

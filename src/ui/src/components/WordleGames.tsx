@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useEffect } from 'react';
 import { useGetAndSet } from 'react-context-hook';
 import { Paper, Typography, Link } from '@mui/material';
 import { formatDistance } from 'date-fns';
@@ -80,16 +80,9 @@ export const WordleGames = () => {
   const [leagues, setLeagues] = useGetAndSet<League[]>('leagues');
   const [puzzles, setPuzzles] = useGetAndSet<EnumeratedPuzzle[]>('active-puzzles');
   const [user, setUser]: [{ username: string }, any] = useGetAndSet('user');
-  // const [open, setOpen] = React.useState(false);
-  // const [puzzle, setPuzzle] = React.useState(null);
-  // const handleOpen = () => setOpen(true);
-  // const handleClose = async () => {
-  //   setPuzzles((await getActivePuzzles()).map((x, i) => ({ ...x, count: i })));
-  //   setOpen(false);
-  // };
   const navigate = useNavigate();
 
-  React.useEffect(() => {
+  useEffect(() => {
     (async () => {
       if (!leagues.length) setLeagues(await getLeagues());
       if (user) {

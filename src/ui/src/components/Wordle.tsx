@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useState, useRef, useEffect } from 'react';
 import './Wordle.css';
 
 import Keyboard from 'react-simple-keyboard';
@@ -8,7 +8,6 @@ import * as constants from '../constants';
 import { League } from '../../types/wordle';
 import { useGetAndSet } from 'react-context-hook';
 import { Box, Button, Modal, Paper, Typography, Link } from '@mui/material';
-import { styled } from '@mui/material/styles';
 
 import { useParams } from 'react-router-dom';
 
@@ -207,11 +206,11 @@ function WordleDisplay({
 export const Wordle = () => {
   const { answerId, leagueSlug } = useParams();
 
-  const [status, setStatus] = React.useState({ answer: '', error: '', complete: false });
+  const [status, setStatus] = useState({ answer: '', error: '', complete: false });
   const [leagues, setLeagues] = useGetAndSet<League[]>('leagues');
-  const [results, setResults] = React.useState<{ guess: string; result: string[] }[]>([]);
-  const gridIdx = React.useRef(0);
-  const [open, setOpen] = React.useState(false);
+  const [results, setResults] = useState<{ guess: string; result: string[] }[]>([]);
+  const gridIdx = useRef(0);
+  const [open, setOpen] = useState(false);
 
   const handleClose = () => setOpen(false);
 
@@ -329,7 +328,7 @@ export const Wordle = () => {
     onKeyPress(event.key);
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     window.addEventListener('keydown', handleKeyDown, false);
 
     // cleanup this component
@@ -338,7 +337,7 @@ export const Wordle = () => {
     };
   }, [results]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!leagues || !leagues.length) {
       (async () => {
         setLeagues(await getLeagues());
@@ -346,7 +345,7 @@ export const Wordle = () => {
     }
   }, [answerId]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (league) getGuesses();
   }, [league]);
 
@@ -393,10 +392,10 @@ export const WordleBrowse = () => {
   const { answerId, leagueSlug } = useParams();
 
   const [leagues, setLeagues] = useGetAndSet<League[]>('leagues');
-  const [results, setResults] = React.useState<{ guess: string; result: string[] }[]>([]);
-  const [completed, setCompleted] = React.useState([]);
-  const [user, setUser] = React.useState(null);
-  const [error, setError] = React.useState(null);
+  const [results, setResults] = useState<{ guess: string; result: string[] }[]>([]);
+  const [completed, setCompleted] = useState([]);
+  const [user, setUser] = useState(null);
+  const [error, setError] = useState(null);
 
   let league: League = null;
   if (leagues) {
@@ -452,7 +451,7 @@ export const WordleBrowse = () => {
     }
   }
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!leagues || !leagues.length) {
       (async () => {
         setLeagues(await getLeagues());
@@ -464,7 +463,7 @@ export const WordleBrowse = () => {
     }
   }, [answerId, leagues]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     (async () => {
       if (user) {
         getGuesses(user.user_id);

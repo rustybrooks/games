@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useState } from 'react';
 
 // import { withStyles } from '@mui/core/styles';
 import { useGetAndSet } from 'react-context-hook';
@@ -27,12 +27,12 @@ const style = {
 const genUrl = (fn = '') => `${constants.BASE_URL}/api/user/${fn}`;
 
 function LoginX({ updateUser, history }: { updateUser: any; history: any }) {
-  const [tab, setTab] = React.useState('login');
-  const [username, setUsername] = React.useState('');
-  const [email, setEmail] = React.useState('');
-  const [password, setPassword] = React.useState('');
-  const [password2, setPassword2] = React.useState('');
-  const [errors, setErrors]: [{ username?: string; email?: string; password?: string; password2?: string }, any] = React.useState({});
+  const [tab, setTab] = useState('login');
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [password2, setPassword2] = useState('');
+  const [errors, setErrors]: [{ username?: string; email?: string; password?: string; password2?: string }, any] = useState({});
 
   const [loginOpen, setLoginOpen] = useGetAndSet('login-open');
 

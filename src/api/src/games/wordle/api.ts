@@ -227,6 +227,8 @@ const leagueInfo = async (request: Request, response: Response, next: NextFuncti
   if (!league) {
     return next(new exceptions.HttpNotFound('League not found'));
   }
+
+  return response.status(200).json(laegue);
 };
 
 const leagueSeries = async (request: Request, response: Response, next: NextFunction) => {

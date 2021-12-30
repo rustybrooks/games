@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useState, MouseEvent, ChangeEvent } from 'react';
 import { alpha } from '@mui/material/styles';
 import { visuallyHidden } from '@mui/utils';
 import {
@@ -64,8 +64,8 @@ interface EnhancedTableProps<T> {
   rowButtons: any[];
   headCells: HeadCell<T>[];
   numSelected: number;
-  onRequestSort: (event: React.MouseEvent<unknown>, property: keyof T) => void;
-  onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onRequestSort: (event: MouseEvent<unknown>, property: keyof T) => void;
+  onSelectAllClick: (event: ChangeEvent<HTMLInputElement>) => void;
   order: Order;
   orderBy: string;
   rowCount: number;
@@ -83,7 +83,7 @@ function EnhancedTableHead<T>(props: EnhancedTableProps<T>) {
     checkButtons = false,
     rowButtons = [],
   } = props;
-  const createSortHandler = (property: keyof T) => (event: React.MouseEvent<unknown>) => {
+  const createSortHandler = (property: keyof T) => (event: MouseEvent<unknown>) => {
     onRequestSort(event, property);
   };
 
@@ -172,20 +172,20 @@ export interface Props<T> {
 
 // eslint-disable-next-line import/no-default-export
 export function EnhancedTable<T>({ rows, headCells, mainColumn, initialSortColumn, checkButtons = false, rowButtons = null }: Props<T>) {
-  const [order, setOrder] = React.useState<Order>('asc');
-  const [orderBy, setOrderBy] = React.useState<keyof T>(initialSortColumn);
-  const [selected, setSelected] = React.useState<readonly any[]>([]);
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  const [loading, setLoading] = React.useState(false);
+  const [order, setOrder] = useState<Order>('asc');
+  const [orderBy, setOrderBy] = useState<keyof T>(initialSortColumn);
+  const [selected, setSelected] = useState<readonly any[]>([]);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [loading, setLoading] = useState(false);
 
-  const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof T) => {
+  const handleRequestSort = (event: MouseEvent<unknown>, property: keyof T) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
   };
 
-  const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSelectAllClick = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
       const newSelecteds = rows.map(n => n[mainColumn]);
       setSelected(newSelecteds);
@@ -194,7 +194,7 @@ export function EnhancedTable<T>({ rows, headCells, mainColumn, initialSortColum
     setSelected([]);
   };
 
-  const handleClick = (event: React.MouseEvent<unknown>, name: string) => {
+  const handleClick = (event: MouseEvent<unknown>, name: string) => {
     const selectedIndex = selected.indexOf(name);
     let newSelected: readonly string[] = [];
 
@@ -215,7 +215,7 @@ export function EnhancedTable<T>({ rows, headCells, mainColumn, initialSortColum
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangeRowsPerPage = (event: ChangeEvent<HTMLInputElement>) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };

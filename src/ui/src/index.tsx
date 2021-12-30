@@ -1,5 +1,5 @@
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
+import { useEffect } from 'react';
+import { render } from 'react-dom';
 import { BrowserRouter, Route, Routes, Link } from 'react-router-dom';
 import { useGetAndSet, withStore } from 'react-context-hook';
 import { css } from '@emotion/react';
@@ -66,7 +66,7 @@ const NavBar = ({ history }: { history: any }) => {
     }
   }
 
-  React.useEffect(() => {
+  useEffect(() => {
     setLoginWidget(this);
     updateUser();
   }, []);
@@ -253,4 +253,4 @@ function AppX({ history }: { history: any }) {
 }
 const App = withStore(AppX, initialValue);
 
-ReactDOM.render(<App />, document.getElementById('root'));
+render(<App />, document.getElementById('root'));
