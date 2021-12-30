@@ -14,8 +14,7 @@ import { useParams } from 'react-router-dom';
 
 import { getLeagues } from './WordleLeagues';
 
-const Cell = styled('td')``;
-const Div = styled('div')``;
+import { Cell, Div } from './Styled';
 
 let style: { [id: string]: any } = {
   cell: {
@@ -224,7 +223,7 @@ export const Wordle = () => {
   }
 
   async function sendGuess(word: string) {
-    const r = await fetch(genUrl('check'), {
+    const r = await fetch(genUrl('puzzles/check'), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -263,7 +262,7 @@ export const Wordle = () => {
   }
 
   async function getGuesses() {
-    const r = await fetch(genUrl('guesses'), {
+    const r = await fetch(genUrl('puzzles/guesses'), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -405,7 +404,7 @@ export const WordleBrowse = () => {
   }
 
   async function getCompletedUsers() {
-    const r = await fetch(genUrl('completed_users'), {
+    const r = await fetch(genUrl('puzzles/completed'), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -430,7 +429,7 @@ export const WordleBrowse = () => {
   }
 
   async function getGuesses(userId: number) {
-    const r = await fetch(genUrl('guesses'), {
+    const r = await fetch(genUrl('puzzles/guesses'), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

@@ -6,13 +6,8 @@ import { css } from '@emotion/react';
 
 import { AppBar, Button, Drawer, Typography, Toolbar } from '@mui/material';
 import * as constants from './constants';
-import { Login } from './components/Login';
-import { WordleGames } from './components/WordleGames';
-import { WordleLeagues } from './components/WordleLeagues';
-import { Wordle, WordleBrowse } from './components/Wordle';
-import { Home } from './components/Home';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { Test } from './components/Test';
+import { Wordle, WordleLeague, WordleLeagues, WordleGames, WordleBrowse, Login, Home, Test } from './components';
 
 const styles = {
   root: css({
@@ -248,8 +243,9 @@ function AppX({ history }: { history: any }) {
           <Route path="/test" element={<Test />} />
           <Route path="/wordle" element={<WordleGames />} />
           <Route path="/wordle/leagues" element={<WordleLeagues />} />
-          <Route path="/wordle/:leagueSlug/:answerId" element={<Wordle />} />
+          <Route path="/wordle/:leagueSlug/:answerId/play" element={<Wordle />} />
           <Route path="/wordle/:leagueSlug/:answerId/browse" element={<WordleBrowse />} />
+          <Route path="/wordle/leagues/:leagueSlug:" element={<WordleLeague />} />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>

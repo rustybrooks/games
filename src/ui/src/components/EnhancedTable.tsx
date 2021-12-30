@@ -154,13 +154,20 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
   );
 };
 
-interface Props<T> {
+export interface ButtonInfo<T> {
+  label: string;
+  callback: (row: T) => Promise<void>;
+  activeCallback: (row: T) => boolean;
+}
+type ButtonInfoFn<T> = (row: T) => ButtonInfo<T>;
+
+export interface Props<T> {
   rows: T[];
   headCells: HeadCell<T>[];
   mainColumn: keyof T;
   initialSortColumn: keyof T;
   checkButtons: boolean;
-  rowButtons: [string, (row: T) => Promise<void>, (row: T) => boolean][];
+  rowButtons: ButtonInfoFn<T>[];
 }
 
 // eslint-disable-next-line import/no-default-export
@@ -283,18 +290,22 @@ export function EnhancedTable<T>({ rows, headCells, mainColumn, initialSortColum
                       )}
                       {rowButtons && rowButtons.length ? (
                         <TableCell size="small" key="buttons">
-                          {rowButtons.map(b => (
-                            <Button
-                              size="small"
-                              sx={{ margin: '5px' }}
-                              key={b[0]}
-                              disabled={!b[2](row)}
-                              variant={'contained'}
-                              onClick={event => handleButtonClick(row, b[1])}
-                            >
-                              {b[0]}
-                            </Button>
-                          ))}
+                          {rowButtons.map(b => {
+                            const buttonInfo = b(row);
+
+                            return (
+                              <Button
+                                size="small"
+                                sx={{ margin: '5px' }}
+                                key={buttonInfo.label}
+                                disabled={!buttonInfo.activeCallback(row)}
+                                variant={'contained'}
+                                onClick={event => handleButtonClick(row, buttonInfo.callback)}
+                              >
+                                {buttonInfo.label}
+                              </Button>
+                            );
+                          })}
                         </TableCell>
                       ) : null}
                     </TableRow>

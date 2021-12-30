@@ -1,14 +1,11 @@
 import * as React from 'react';
 import { useGetAndSet } from 'react-context-hook';
-import { Paper, Typography } from '@mui/material';
+import { Paper, Typography, Link } from '@mui/material';
 import { formatDistance } from 'date-fns';
 import { useNavigate } from 'react-router';
 import * as eht from './EnhancedTable';
 import { ActivePuzzle, League } from '../../types/wordle';
-import * as constants from '../constants';
 import { getActivePuzzles, getLeagues } from './WordleLeagues';
-
-const genUrl = (fn = '') => `${constants.BASE_URL}/api/games/wordle/${fn}`;
 
 type EnumeratedPuzzle = ActivePuzzle & { count: number };
 
@@ -38,12 +35,17 @@ function answerFormatter(row: EnumeratedPuzzle, a: string) {
   );
 }
 
+function leagueFormatter(row: EnumeratedPuzzle, d: string) {
+  return <Link href={`/wordle/leagues/${row.league_slug}`}>{d}</Link>;
+}
+
 const ourheadCells: eht.HeadCell<EnumeratedPuzzle>[] = [
   {
     id: 'league_name',
     numeric: false,
     disablePadding: false,
     label: 'League',
+    formatter: leagueFormatter,
   },
   {
     id: 'active_after',
@@ -78,13 +80,13 @@ export const WordleGames = () => {
   const [leagues, setLeagues] = useGetAndSet<League[]>('leagues');
   const [puzzles, setPuzzles] = useGetAndSet<EnumeratedPuzzle[]>('active-puzzles');
   const [user, setUser]: [{ username: string }, any] = useGetAndSet('user');
-  const [open, setOpen] = React.useState(false);
-  const [puzzle, setPuzzle] = React.useState(null);
-  const handleOpen = () => setOpen(true);
-  const handleClose = async () => {
-    setPuzzles((await getActivePuzzles()).map((x, i) => ({ ...x, count: i })));
-    setOpen(false);
-  };
+  // const [open, setOpen] = React.useState(false);
+  // const [puzzle, setPuzzle] = React.useState(null);
+  // const handleOpen = () => setOpen(true);
+  // const handleClose = async () => {
+  //   setPuzzles((await getActivePuzzles()).map((x, i) => ({ ...x, count: i })));
+  //   setOpen(false);
+  // };
   const navigate = useNavigate();
 
   React.useEffect(() => {
@@ -96,6 +98,26 @@ export const WordleGames = () => {
     })();
   }, [user]);
 
+  async function navrow(row: EnumeratedPuzzle, postfix: string) {
+    navigate(`/wordle/${row.league_slug}/${row.wordle_answer_id}/${postfix}`);
+  }
+
+  async function navPlay(row: EnumeratedPuzzle): Promise<void> {
+    return navrow(row, 'play');
+  }
+
+  async function navBrowse(row: EnumeratedPuzzle): Promise<void> {
+    return navrow(row, 'browse');
+  }
+
+  function buttonCallback(row: EnumeratedPuzzle): eht.ButtonInfo<EnumeratedPuzzle> {
+    if (row.completed) {
+      return { label: 'Play', callback: navPlay, activeCallback: () => true };
+    } else {
+      return { label: 'Browse', callback: navBrowse, activeCallback: () => true };
+    }
+  }
+
   return (
     <Paper sx={{ mb: 2 }}>
       <eht.EnhancedTable
@@ -104,22 +126,7 @@ export const WordleGames = () => {
         mainColumn={'count'}
         initialSortColumn={'league_name'}
         checkButtons={false}
-        rowButtons={[
-          [
-            'Play',
-            async row => {
-              navigate(`/wordle/${row.league_slug}/${row.wordle_answer_id}`);
-            },
-            row => !row.completed,
-          ],
-          [
-            'Browse',
-            async row => {
-              navigate(`/wordle/${row.league_slug}/${row.wordle_answer_id}/browse`);
-            },
-            row => row.completed,
-          ],
-        ]}
+        rowButtons={[buttonCallback]}
       />
     </Paper>
   );

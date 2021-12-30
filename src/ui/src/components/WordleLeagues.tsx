@@ -1,12 +1,23 @@
 import * as React from 'react';
 import { useGetAndSet } from 'react-context-hook';
-import { Typography, Paper } from '@mui/material';
+import { Typography, Paper, Link } from '@mui/material';
 import { formatDistance } from 'date-fns';
 import * as eht from './EnhancedTable';
 import { ActivePuzzle, League } from '../../types/wordle';
 import * as constants from '../constants';
 
 const genUrl = (fn = '') => `${constants.BASE_URL}/api/games/wordle/${fn}`;
+
+export async function getActivePuzzles(): Promise<ActivePuzzle[]> {
+  const data = await fetch(genUrl('puzzles/active'), {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-API-KEY': localStorage.getItem('api-key'),
+    },
+  });
+  return data.json();
+}
 
 function dateFormatter(row: League, d: string) {
   return formatDistance(new Date(d), new Date(), { addSuffix: true });
@@ -24,15 +35,8 @@ export async function getLeagues(): Promise<League[]> {
   return data.json();
 }
 
-export async function getActivePuzzles(): Promise<ActivePuzzle[]> {
-  const data = await fetch(genUrl('active_puzzles'), {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-API-KEY': localStorage.getItem('api-key'),
-    },
-  });
-  return data.json();
+function leagueFormatter(row: League, d: string) {
+  return <Link href={`/wordle/leagues/${row.league_slug}`}>{d}</Link>;
 }
 
 const ourheadCells: eht.HeadCell<League>[] = [
@@ -41,6 +45,7 @@ const ourheadCells: eht.HeadCell<League>[] = [
     numeric: false,
     disablePadding: false,
     label: 'League',
+    formatter: leagueFormatter,
   },
   {
     id: 'letters',
@@ -84,7 +89,7 @@ const WordleLeaguesX = () => {
 
   async function joinLeague(row: League): Promise<void> {
     console.log('join', row);
-    const data = await fetch(genUrl('join_league'), {
+    const data = await fetch(genUrl('leagues/join'), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -101,7 +106,7 @@ const WordleLeaguesX = () => {
   async function leaveLeague(row: League): Promise<void> {
     console.log('leave', row);
     console.log('join', row);
-    const data = await fetch(genUrl('leave_league'), {
+    const data = await fetch(genUrl('leagues/leave'), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -132,6 +137,15 @@ const WordleLeaguesX = () => {
   if (!leagues) {
     return <Typography variant="h3">Loading...</Typography>;
   }
+
+  function buttonCallback(row: League): eht.ButtonInfo<League> {
+    if (canJoin(row)) {
+      return { label: 'Join', callback: joinLeague, activeCallback: () => true };
+    } else {
+      return { label: 'Leave', callback: leaveLeague, activeCallback: () => true };
+    }
+  }
+
   return (
     <Paper sx={{ width: '100%', mb: 2 }}>
       <div>
@@ -147,10 +161,7 @@ const WordleLeaguesX = () => {
         mainColumn={'league_slug'}
         initialSortColumn={'league_name'}
         checkButtons={false}
-        rowButtons={[
-          ['Join', joinLeague, canJoin],
-          ['Leave', leaveLeague, canLeave],
-        ]}
+        rowButtons={[buttonCallback]}
       />
     </Paper>
   );

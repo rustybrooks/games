@@ -220,10 +220,31 @@ const completedUsers = async (request: Request, response: Response, next: NextFu
   return response.status(200).json(data);
 };
 
-router.all('/check', check);
-router.all('/guesses', guesses);
+const leagueInfo = async (request: Request, response: Response, next: NextFunction) => {
+  const { league_slug } = getParams(request);
+
+  const league = await queries.league({ league_slug, user_id: response.locals.user.user_id, isMemberOnly: true });
+  if (!league) {
+    return next(new exceptions.HttpNotFound('League not found'));
+  }
+};
+
+const leagueSeries = async (request: Request, response: Response, next: NextFunction) => {
+  const { league_slug } = getParams(request);
+
+  const league = await queries.league({ league_slug, user_id: response.locals.user.user_id, isMemberOnly: true });
+  if (!league) {
+    return next(new exceptions.HttpNotFound('League not found'));
+  }
+};
+
+router.all('/puzzles/check', check);
+router.all('/puzzles/guesses', guesses);
+router.all('/puzzles/active', activePuzzles);
+router.all('/puzzlles/completed', completedUsers);
+
 router.all('/leagues', leagues);
-router.all('/join_league', joinLeague);
-router.all('/leave_league', leaveLeague);
-router.all('/active_puzzles', activePuzzles);
-router.all('/completed_users', completedUsers);
+router.all('/leagues/join', joinLeague);
+router.all('/leagues/leave', leaveLeague);
+router.all('/leagues/info', leagueInfo);
+router.all('/leagues/series', leagueSeries);
