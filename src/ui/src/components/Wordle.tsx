@@ -4,18 +4,18 @@ import './Wordle.css';
 import Keyboard from 'react-simple-keyboard';
 import 'react-simple-keyboard/build/css/index.css';
 
-import * as constants from '../constants';
-import { League } from '../../types/wordle';
 import { useGetAndSet } from 'react-context-hook';
 import { Box, Button, Modal, Paper, Typography, Link } from '@mui/material';
 
 import { useParams } from 'react-router-dom';
+import { League } from '../../types/wordle';
+import * as constants from '../constants';
 
 import { getLeagues } from './WordleLeagues';
 
 import { Cell, Div } from './Styled';
 
-let style: { [id: string]: any } = {
+const style: { [id: string]: any } = {
   cell: {
     width: { mobile: '7rem', tablet: '8rem', desktop: '4rem' },
     height: { mobile: '7rem', tablet: '8rem', desktop: '4rem' },
@@ -46,7 +46,7 @@ let style: { [id: string]: any } = {
   },
 
   modalBox: {
-    position: 'absolute' as 'absolute',
+    position: 'absolute',
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
@@ -66,7 +66,6 @@ const genUrl = (fn = '') => `${constants.BASE_URL}/api/games/wordle/${fn}`;
 
 function WordleDisplay({
   league,
-  answerId,
   results,
   onKeyPress = null,
   error = null,
@@ -75,7 +74,6 @@ function WordleDisplay({
   complete = false,
 }: {
   league: League;
-  answerId: string;
   results: { guess: string; result: string[] }[];
   onKeyPress?: (button: string) => Promise<void>;
   error?: string;
@@ -246,10 +244,8 @@ export const Wordle = () => {
       } else if (data.answer) {
         setStatus({ ...status, error: `Answer was: ${data.answer.toUpperCase()}`, complete: true });
         setOpen(true);
-      } else {
-        if (status.error.length) {
-          setStatus({ ...status, error: '' });
-        }
+      } else if (status.error.length) {
+        setStatus({ ...status, error: '' });
       }
 
       setResults(data.guesses);
@@ -286,10 +282,8 @@ export const Wordle = () => {
       } else if (data.answer) {
         setStatus({ ...status, error: `Answer was: ${data.answer.toUpperCase()}`, complete: true });
         setOpen(true);
-      } else {
-        if (status.error.length) {
-          setStatus({ ...status, error: '' });
-        }
+      } else if (status.error.length) {
+        setStatus({ ...status, error: '' });
       }
 
       setResults(data.guesses);
@@ -302,7 +296,7 @@ export const Wordle = () => {
     let word = res.guess;
 
     if (buttonx === '{bksp}' || buttonx === 'backspace') {
-      let newResults = [...results];
+      const newResults = [...results];
       newResults[gridIdx.current].guess = word.slice(0, word.length - 1);
       if (status.error.length) {
         setStatus({ ...status, error: '' });
@@ -314,7 +308,7 @@ export const Wordle = () => {
       const myre = /[a-z]/;
       if (myre.test(buttonx)) {
         word += buttonx;
-        let newResults = [...results];
+        const newResults = [...results];
         newResults[gridIdx.current].guess = word;
         if (status.error.length) {
           setStatus({ ...status, error: '' });
@@ -361,7 +355,6 @@ export const Wordle = () => {
     <div>
       <WordleDisplay
         league={league}
-        answerId={answerId}
         results={results}
         onKeyPress={onKeyPress}
         error={status.error}
@@ -491,7 +484,7 @@ export const WordleBrowse = () => {
             color={c.correct ? 'success' : 'error'}
             variant="outlined"
             size="small"
-            onClick={event => {
+            onClick={() => {
               setUser(c);
             }}
           >
@@ -504,7 +497,7 @@ export const WordleBrowse = () => {
           <div css={{ textAlign: 'center' }}>
             <Typography variant="h3">{user.username}</Typography>
           </div>
-          <WordleDisplay league={league} answerId={answerId} results={results} showKeyboard={false} />
+          <WordleDisplay league={league} results={results} showKeyboard={false} />
         </div>
       ) : null}
     </Paper>

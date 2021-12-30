@@ -5,9 +5,9 @@ import { useGetAndSet, withStore } from 'react-context-hook';
 import { css } from '@emotion/react';
 
 import { AppBar, Button, Drawer, Typography, Toolbar } from '@mui/material';
-import * as constants from './constants';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { Wordle, WordleLeague, WordleLeagues, WordleGames, WordleBrowse, Login, Home, Test } from './components';
+import * as constants from './constants';
+import { Wordle, WordleLeague, WordleLeagues, WordleGames, WordleBrowse, Login, Home, Test, JoinLeague } from './components';
 
 const styles = {
   root: css({
@@ -244,6 +244,7 @@ function AppX({ history }: { history: any }) {
           <Route path="/wordle" element={<WordleGames />} />
           <Route path="/wordle/leagues" element={<WordleLeagues />} />
           <Route path="/wordle/leagues/:leagueSlug" element={<WordleLeague />} />
+          <Route path="/wordle/leagues/:leagueSlug/join/:inviteCode" element={<JoinLeague />} />
           <Route path="/wordle/puzzles/:leagueSlug/:answerId/play" element={<Wordle />} />
           <Route path="/wordle/puzzles/:leagueSlug/:answerId/browse" element={<WordleBrowse />} />
         </Routes>

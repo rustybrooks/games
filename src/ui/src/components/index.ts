@@ -5,3 +5,4 @@ export * from './Wordle';
 export * from './WordleGames';
 export * from './WordleLeagues';
 export * from './WordleLeague';
+export * from './JoinLeague';

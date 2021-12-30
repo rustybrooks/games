@@ -11,7 +11,7 @@ export const router = express.Router();
 
 const leagues = async (request: Request, response: Response, next: NextFunction) => {
   const { sort = 'league_name' } = getParams(request);
-  const lg = await queries.leagues({ sort, user_id: response.locals.user ? response.locals.user.user_id : null, isMemberOnly: false });
+  const lg = await queries.getLeagues({ sort, user_id: response.locals.user ? response.locals.user.user_id : null, isMemberOnly: false });
   // console.log('lg', lg);
   const cols: (keyof League)[] = [
     'league_slug',
@@ -31,18 +31,23 @@ const joinLeague = async (request: Request, response: Response, next: NextFuncti
   try {
     users.requireLogin(response, next);
   } catch (e) {
+    console.log('returning..');
     return next(e);
   }
-  const { league_slug } = getParams(request);
+  const { league_slug, invite_code } = getParams(request);
 
-  const league = await queries.getLeague({ league_slug, user_id: response.locals.user.user_id });
+  const league = await queries.getLeague({ league_slug });
   if (!league) {
     return next(new exceptions.HttpNotFound('League not found'));
   }
 
+  if (league.is_private && invite_code !== league.invite_code) {
+    return next(new exceptions.HttpNotFound('League not found?'));
+  }
+
   await queries.addLeagueMember({ user_id: response.locals.user.user_id, wordle_league_id: league.wordle_league_id });
 
-  return response.status(200).json({ details: 'ok' });
+  return response.status(200).json(league);
 };
 
 const leaveLeague = async (request: Request, response: Response, next: NextFunction) => {
@@ -89,7 +94,7 @@ const check = async (request: Request, response: Response, next: NextFunction) =
     return next(new exceptions.HttpBadRequest(`guess must be ${league.letters} letters`));
   }
 
-  const guessesList = await queries.guesses({
+  const guessesList = await queries.getGuesses({
     user_id: response.locals.user.user_id,
     wordle_answer_id: answer.wordle_answer_id,
     sort: 'wordle_guesses.create_date',
@@ -163,7 +168,7 @@ const guesses = async (request: Request, response: Response, next: NextFunction)
 
   const effectiveUserId = user_id || response.locals.user.user_id;
 
-  const guesses = await queries.guesses({
+  const guesses = await queries.getGuesses({
     user_id: effectiveUserId,
     wordle_answer_id: answer.wordle_answer_id,
     sort: 'wordle_guesses.create_date',
@@ -223,7 +228,7 @@ const completedUsers = async (request: Request, response: Response, next: NextFu
 const leagueInfo = async (request: Request, response: Response, next: NextFunction) => {
   const { league_slug } = getParams(request);
 
-  const league = await queries.getLeague({ league_slug, user_id: response.locals.user.user_id, isMemberOnly: true });
+  const league = await queries.getLeague({ league_slug, user_id: response.locals.user.user_id });
   if (!league) {
     return next(new exceptions.HttpNotFound('League not found'));
   }
@@ -234,10 +239,12 @@ const leagueInfo = async (request: Request, response: Response, next: NextFuncti
 const leagueSeries = async (request: Request, response: Response, next: NextFunction) => {
   const { league_slug } = getParams(request);
 
-  const league = await queries.getLeague({ league_slug, user_id: response.locals.user.user_id, isMemberOnly: true });
+  const league = await queries.getLeague({ league_slug, user_id: response.locals.user.user_id });
   if (!league) {
     return next(new exceptions.HttpNotFound('League not found'));
   }
+
+  return response.status(200).json({});
 };
 
 router.all('/puzzles/check', check);

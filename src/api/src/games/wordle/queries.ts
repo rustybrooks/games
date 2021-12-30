@@ -5,7 +5,9 @@ import { QueryParams } from '../../../../ui/types';
 import * as utils from './utils';
 
 function sleep(ms: number) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise(resolve => {
+    setTimeout(resolve, ms);
+  });
 }
 
 export function roundedNow() {
@@ -17,7 +19,7 @@ export function roundedNow() {
 }
 
 /* ******* leagues ******** */
-export async function leagues({
+export async function getLeagues({
   wordle_league_id = null,
   league_slug = null,
   user_id = null,
@@ -39,6 +41,7 @@ export async function leagues({
   const joins = [];
   const extraCols = [];
   if (user_id) {
+    where.push('(not is_private or (user_id is not null and active))');
     bindvars.user_id = user_id;
     extraCols.push('case when user_id is null or not active then false else true end as is_member');
     joins.push(
@@ -56,12 +59,12 @@ export async function leagues({
       ${SQL.orderBy(sort)}
       ${SQL.limit(page, limit)}
   `;
-  // console.log(query);
+  console.log(query, bindvars);
   return SQL.select(query, bindvars);
 }
 
 export async function getLeague(args: any) {
-  const l = await leagues(args);
+  const l = await getLeagues(args);
   if (l.length > 1) {
     throw new Error(`Expected only one league entry, found ${l.length}`);
   }
@@ -121,11 +124,7 @@ export async function leagueSeries({
 }
 
 export async function addLeagueSeries(data: { [id: string]: any }) {
-  const thisData = { ...data };
-  if (data.is_private && !('invite_code' in data)) {
-    thisData.invite_code = randomBytes(32);
-  }
-  return SQL.insert('wordle_league_series', thisData, 200, false, true);
+  return SQL.insert('wordle_league_series', data, 200, false, true);
 }
 
 export async function generateSeries(league: League, now: Date) {
@@ -161,14 +160,14 @@ export async function generateSeries(league: League, now: Date) {
 
 export async function generateAllSeries(now: Date) {
   console.log(new Date(), 'generateAllSeries');
-  for (const l of await leagues()) {
+  for (const l of await getLeagues()) {
     await generateSeries(l, now);
   }
 }
 
 /* ******* answers ******** */
 
-export async function answers({
+export async function getAnswers({
   wordle_league_id = null,
   wordle_answer_id = null,
   league_slug = null,
@@ -213,7 +212,7 @@ export async function answers({
 }
 
 export async function answer(args: any) {
-  const l = await answers(args);
+  const l = await getAnswers(args);
   if (l.length > 1) {
     throw new Error(`Expected only one answer entry, found ${l.length}`);
   }
@@ -238,7 +237,7 @@ export async function generateAnswer(league: any, activeAfter: Date) {
     return null;
   }
 
-  const a = await answers({
+  const a = await getAnswers({
     wordle_league_id: league.wordle_league_id,
     active_after: activeAfter,
     page: 1,
@@ -262,7 +261,7 @@ export async function generateAnswer(league: any, activeAfter: Date) {
 }
 
 export async function generateAnswers(league: League, now: Date) {
-  const lastAnswer = await answers({
+  const lastAnswer = await getAnswers({
     wordle_league_id: league.wordle_league_id,
     page: 1,
     limit: 1,
@@ -287,7 +286,7 @@ export async function generateAnswers(league: League, now: Date) {
 
 export async function generateAllAnswers(now: Date) {
   console.log(new Date(), 'generateAllAnswers');
-  for (const l of await leagues()) {
+  for (const l of await getLeagues()) {
     await generateAnswers(l, now);
   }
 }
@@ -392,7 +391,7 @@ export async function addGuess({
   );
 }
 
-export async function guesses({
+export async function getGuesses({
   wordle_answer_id = null,
   user_id = null,
   page = null,

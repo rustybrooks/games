@@ -21,6 +21,8 @@ export interface League {
   create_date: Date;
   start_date: Date;
   is_member: boolean;
+  is_private: boolean;
+  invite_code: string;
 }
 
 export interface ActivePuzzle {

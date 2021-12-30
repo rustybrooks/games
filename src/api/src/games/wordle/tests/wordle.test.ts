@@ -7,7 +7,7 @@ import * as db from '../../../db';
 import * as migrations from '../../../../scripts/migrations';
 import * as users from '../../../users';
 import { app } from '../../../app';
-import { leagues } from '../queries';
+import { getLeagues } from '../queries';
 
 pgexplorer.setupDb(null, db.SQL.writeUrl); // this is kinda lame, fix pgexplorer
 
@@ -63,30 +63,30 @@ describe('Cron stuff', () => {
 
   it('test_generateAnswer', async () => {
     await migrations.bootstrapLeagues(new Date('2022-01-01'));
-    const league = (await queries.leagues({ league_slug: 'every_6h_weekly_5' }))[0];
+    const league = (await queries.getLeagues({ league_slug: 'every_6h_weekly_5' }))[0];
 
-    expect(await queries.answers()).toStrictEqual([]);
+    expect(await queries.getAnswers()).toStrictEqual([]);
 
     // nothing will happen because no series exist yet
     await queries.generateAnswer(league, new Date('2022-01-01'));
-    expect((await queries.answers()).length).toBe(0);
+    expect((await queries.getAnswers()).length).toBe(0);
 
     // generate series but use date not appropriate for it, so still nothing
     await queries.generateAllSeries(new Date('2022-01-01'));
     await queries.generateAnswer(league, new Date('2021-12-31'));
-    expect((await queries.answers()).length).toBe(0);
+    expect((await queries.getAnswers()).length).toBe(0);
 
     // now use appropriate date, should get new answer
     await queries.generateAnswer(league, new Date('2022-01-01'));
-    expect((await queries.answers()).length).toBe(1);
+    expect((await queries.getAnswers()).length).toBe(1);
 
     // now use same date, should get nothing new
     await queries.generateAnswer(league, new Date('2022-01-01'));
-    expect((await queries.answers()).length).toBe(1);
+    expect((await queries.getAnswers()).length).toBe(1);
 
     // now use another date, should get new answer
     await queries.generateAnswer(league, new Date('2022-01-01T06:00'));
-    expect((await queries.answers()).length).toBe(2);
+    expect((await queries.getAnswers()).length).toBe(2);
   });
 });
 
@@ -100,7 +100,7 @@ describe('Join/leave leagues', () => {
       api_key: apiKey,
     });
     await migrations.bootstrapLeagues(new Date('2022-01-01'));
-    [league] = await queries.leagues({ league_slug: 'every_6h_weekly_5' });
+    [league] = await queries.getLeagues({ league_slug: 'every_6h_weekly_5' });
   });
 
   afterEach(async () => {
@@ -224,7 +224,7 @@ describe('Answer submission', () => {
     const answerMock = jest.spyOn(utils, 'randomWord');
     answerMock.mockReturnValue('train');
     await migrations.bootstrapLeagues(new Date('2022-01-01'));
-    [league] = await queries.leagues({ league_slug: 'every_6h_weekly_5' });
+    [league] = await queries.getLeagues({ league_slug: 'every_6h_weekly_5' });
     await queries.generateAllSeries(new Date('2022-01-01'));
     const answer = await queries.generateAnswer(league, new Date('2022-01-01'));
   });

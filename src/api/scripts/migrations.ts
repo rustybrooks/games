@@ -1,4 +1,5 @@
 import { migrations } from '@rustybrooks/pgexplorer';
+import { randomBytes } from 'crypto';
 import { SQL } from '../src/db';
 
 import * as users from '../src/users/queries';
@@ -183,6 +184,7 @@ export async function bootstrapLeagues(startDate: Date) {
     start_date: startDate,
     create_date: new Date(),
     is_private: true,
+    invite_code: randomBytes(16).toString('hex'),
   });
 }
 
