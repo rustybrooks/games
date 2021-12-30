@@ -1,3 +1,4 @@
+import { randomBytes } from 'crypto';
 import { SQL } from '../../db';
 import { ActivePuzzle, Guess, League, WordleStatus } from '../../../../ui/types/wordle';
 import { QueryParams } from '../../../../ui/types';
@@ -59,7 +60,7 @@ export async function leagues({
   return SQL.select(query, bindvars);
 }
 
-export async function league(args: any) {
+export async function getLeague(args: any) {
   const l = await leagues(args);
   if (l.length > 1) {
     throw new Error(`Expected only one league entry, found ${l.length}`);
@@ -120,7 +121,11 @@ export async function leagueSeries({
 }
 
 export async function addLeagueSeries(data: { [id: string]: any }) {
-  return SQL.insert('wordle_league_series', data, 200, false, true);
+  const thisData = { ...data };
+  if (data.is_private && !('invite_code' in data)) {
+    thisData.invite_code = randomBytes(32);
+  }
+  return SQL.insert('wordle_league_series', thisData, 200, false, true);
 }
 
 export async function generateSeries(league: League, now: Date) {
@@ -182,7 +187,12 @@ export async function answers({
   limit?: number;
   sort?: string | string[];
 } = {}) {
-  const [where, bindvars] = SQL.autoWhere({ wordle_league_id, wordle_answer_id, league_slug, active_after });
+  const [where, bindvars] = SQL.autoWhere({
+    wordle_league_id,
+    wordle_answer_id,
+    league_slug,
+    active_after,
+  });
 
   if (active_between) {
     where.push('$(active_between) between active_after and active_before');
@@ -263,7 +273,7 @@ export async function generateAnswers(league: League, now: Date) {
   let start = league.start_date;
   if (lastAnswer.length) {
     start = lastAnswer[0].active_after;
-    start.setHours(start.getHours() + league.answer_interval_hours);
+    start.setMinutes(start.getMinutes() + league.answer_interval_minutes);
   }
 
   const startCutoff = new Date(now);
@@ -271,7 +281,7 @@ export async function generateAnswers(league: League, now: Date) {
   while (start < startCutoff) {
     console.log('genAnswer', league.league_slug, start, startCutoff);
     await generateAnswer(league, start);
-    start.setHours(start.getHours() + league.answer_interval_hours);
+    start.setMinutes(start.getMinutes() + league.answer_interval_minutes);
   }
 }
 
@@ -366,7 +376,7 @@ export async function addGuess({
       correct,
       start_date: now,
       end_date: now,
-      completed: completed,
+      completed,
     },
     null,
     `

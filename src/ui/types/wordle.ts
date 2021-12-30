@@ -17,7 +17,7 @@ export interface League {
   max_guesses: number;
   series_days: number;
   time_to_live_hours: number;
-  answer_interval_hours: number;
+  answer_interval_minutes: number;
   create_date: Date;
   start_date: Date;
   is_member: boolean;

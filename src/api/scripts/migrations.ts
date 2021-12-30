@@ -27,7 +27,7 @@ initial.addStatement(`
         create_date timestamp with time zone not null,
         start_date timestamp with time zone not null,
         series_days smallint not null,
-        answer_interval_hours int not null,
+        answer_interval_minutes int not null,
         letters smallint not null default 5,
         max_guesses smallint not null default 6,
         time_to_live_hours int not null default 24*60,
@@ -111,12 +111,24 @@ m.addStatement(`
 `);
 m.addStatement('create unique index wordle_status_u on wordle_status(user_id, wordle_answer_id)');
 
+// -------------------------------------------------------
+m = new migrations.Migration(3, 'Modifying leagues');
+
+m.addStatement(`
+    alter table wordle_leagues 
+    add column is_private boolean not null default false,
+    add column accept_word_list varchar(255),
+    add column source_word_list varchar(255)
+`);
+
+m.addStatement('create unique index wordle_leagues_invite_code on wordle_leagues(invite_code)');
+
 export async function bootstrapLeagues(startDate: Date) {
   await SQL.insert('wordle_leagues', {
     league_name: 'Daily Play / Weekly Series / 5 letters',
     league_slug: 'daily_weekly_5',
     series_days: 7,
-    answer_interval_hours: 24,
+    answer_interval_minutes: 24 * 60,
     letters: 5,
     max_guesses: 6,
     time_to_live_hours: 24,
@@ -128,7 +140,7 @@ export async function bootstrapLeagues(startDate: Date) {
     league_name: 'Daily Play / Weekly Series / 6 letters',
     league_slug: 'daily_weekly_6',
     series_days: 7,
-    answer_interval_hours: 24,
+    answer_interval_minutes: 24 * 60,
     letters: 6,
     max_guesses: 7,
     time_to_live_hours: 24,
@@ -140,7 +152,7 @@ export async function bootstrapLeagues(startDate: Date) {
     league_name: 'Daily Play / Weekly Series / 7 letters',
     league_slug: 'daily_weekly_7',
     series_days: 7,
-    answer_interval_hours: 24,
+    answer_interval_minutes: 24 * 60,
     letters: 7,
     max_guesses: 7,
     time_to_live_hours: 24,
@@ -152,12 +164,25 @@ export async function bootstrapLeagues(startDate: Date) {
     league_name: 'Every 6h Play / Weekly Series / 5 letters',
     league_slug: 'every_6h_weekly_5',
     series_days: 7,
-    answer_interval_hours: 6,
+    answer_interval_minutes: 6 * 60,
     letters: 5,
     max_guesses: 6,
     time_to_live_hours: 24,
     start_date: startDate,
     create_date: new Date(),
+  });
+
+  await SQL.insert('wordle_leagues', {
+    league_name: 'Bot League - 5 letters - 5m',
+    league_slug: 'bot_league_5l_5m',
+    series_days: 7,
+    answer_interval_minutes: 5,
+    letters: 5,
+    max_guesses: 6,
+    time_to_live_hours: 24,
+    start_date: startDate,
+    create_date: new Date(),
+    is_private: true,
   });
 }
 
