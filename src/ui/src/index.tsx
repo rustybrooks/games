@@ -243,9 +243,9 @@ function AppX({ history }: { history: any }) {
           <Route path="/test" element={<Test />} />
           <Route path="/wordle" element={<WordleGames />} />
           <Route path="/wordle/leagues" element={<WordleLeagues />} />
-          <Route path="/wordle/:leagueSlug/:answerId/play" element={<Wordle />} />
-          <Route path="/wordle/:leagueSlug/:answerId/browse" element={<WordleBrowse />} />
-          <Route path="/wordle/leagues/:leagueSlug:" element={<WordleLeague />} />
+          <Route path="/wordle/leagues/:leagueSlug" element={<WordleLeague />} />
+          <Route path="/wordle/puzzles/:leagueSlug/:answerId/play" element={<Wordle />} />
+          <Route path="/wordle/puzzles/:leagueSlug/:answerId/browse" element={<WordleBrowse />} />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>

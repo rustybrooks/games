@@ -376,7 +376,7 @@ export const Wordle = () => {
           </Typography>
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>
             You have completed this puzzle.
-            <Link href={`/wordle/${league.league_slug}/${answerId}/browse`}>You can view other people's solutions here</Link>
+            <Link href={`/wordle/puzzles/${league.league_slug}/${answerId}/browse`}>You can view other people's solutions here</Link>
           </Typography>
 
           <Div sx={{ textAlign: 'right' }}>

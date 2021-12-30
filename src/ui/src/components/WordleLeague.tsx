@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import * as constants from '../constants';
 import { League } from '../../types/wordle';
@@ -12,10 +12,12 @@ const genUrl = (fn = '') => `${constants.BASE_URL}/api/games/wordle/${fn}`;
 
 export function WordleLeague({}) {
   const { leagueSlug } = useParams();
-  const [league, setLeague] = useState<League>();
+  const [league, setLeague] = useState<League>(null);
 
-  async function getLeague(leagueSlug: string) {
-    const r = await fetch(genUrl('league/info'), {
+  console.log('render wordleleague', leagueSlug, league);
+
+  async function getLeague() {
+    const r = await fetch(genUrl('leagues/info'), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -27,15 +29,21 @@ export function WordleLeague({}) {
     });
     if (r.status === 200) {
       const data = await r.json();
+      setLeague(data);
     }
   }
+
+  useEffect(() => {
+    getLeague();
+  }, [leagueSlug]);
+
   if (!league) {
     return <Div>Loading</Div>;
   }
 
   return (
     <Div>
-      {Object.keys(league).map(k => (
+      {Object.keys(league).map((k: keyof League) => (
         <div>{[k, league[k]]}</div>
       ))}
     </Div>

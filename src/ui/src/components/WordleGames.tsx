@@ -92,7 +92,7 @@ export const WordleGames = () => {
   }, [user]);
 
   async function navrow(row: EnumeratedPuzzle, postfix: string) {
-    navigate(`/wordle/${row.league_slug}/${row.wordle_answer_id}/${postfix}`);
+    navigate(`/wordle/puzzles/${row.league_slug}/${row.wordle_answer_id}/${postfix}`);
   }
 
   async function navPlay(row: EnumeratedPuzzle): Promise<void> {
