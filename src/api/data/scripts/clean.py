@@ -9,7 +9,7 @@ outfile = f'{infile}.clean'
 
 clear_re = re.compile(r'^#?\w*[a-z]$')
 
-out = []
+out = set()
 with open(infile) as f, open(outfile, 'w') as fo:
    for line in f:
        line = line.strip()
@@ -17,7 +17,7 @@ with open(infile) as f, open(outfile, 'w') as fo:
        line = line.lower()
 
        if not clear_re.match(line): continue
-       out.append(line)
+       out.add(line)
 
    fo.write('\n'.join(sorted(out)))
  

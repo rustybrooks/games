@@ -85,13 +85,6 @@ function WordleDisplay({
   showKeyboard?: boolean;
   complete?: boolean;
 }) {
-  const [open, setOpen] = React.useState(false);
-
-  React.useEffect(() => {
-    if (complete && (answer || error) && !open) setOpen(true);
-  }, []);
-  const handleClose = () => setOpen(false);
-
   console.log('render worddisplay', error, answer, complete);
 
   const rightKeys: string[] = [];
@@ -208,21 +201,6 @@ function WordleDisplay({
           </Div>
         ) : null}
       </Div>
-      <Modal open={open} onClose={handleClose} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
-        <Box sx={style.modalBox}>
-          <Typography id="modal-modal-title" variant="h6" component="h2" color={error && error.length ? 'red' : 'green'}>
-            {error && error.length ? error : answer}
-          </Typography>
-          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            You have completed this puzzle.
-            <Link href={`/wordle/${league.league_slug}/${answerId}/browse`}>You can view other people's solutions here</Link>
-          </Typography>
-
-          <Div sx={{ textAlign: 'right' }}>
-            <Button onClick={() => setOpen(false)}>Close</Button>
-          </Div>
-        </Box>
-      </Modal>
     </Div>
   );
 }
@@ -234,6 +212,9 @@ export const Wordle = () => {
   const [leagues, setLeagues] = useGetAndSet<League[]>('leagues');
   const [results, setResults] = React.useState<{ guess: string; result: string[] }[]>([]);
   const gridIdx = React.useRef(0);
+  const [open, setOpen] = React.useState(false);
+
+  const handleClose = () => setOpen(false);
 
   console.log('RENDER WORDLE answerId', answerId, leagueSlug, status);
 
@@ -263,8 +244,10 @@ export const Wordle = () => {
       }
       if (data.correct) {
         setStatus({ ...status, answer: 'Correct answer!', complete: true });
+        setOpen(true);
       } else if (data.answer) {
         setStatus({ ...status, error: `Answer was: ${data.answer.toUpperCase()}`, complete: true });
+        setOpen(true);
       } else {
         if (status.error.length) {
           setStatus({ ...status, error: '' });
@@ -301,8 +284,10 @@ export const Wordle = () => {
 
       if (data.correct) {
         setStatus({ ...status, answer: 'Correct answer!', complete: true });
+        setOpen(true);
       } else if (data.answer) {
         setStatus({ ...status, error: `Answer was: ${data.answer.toUpperCase()}`, complete: true });
+        setOpen(true);
       } else {
         if (status.error.length) {
           setStatus({ ...status, error: '' });
@@ -375,15 +360,33 @@ export const Wordle = () => {
   }
 
   return (
-    <WordleDisplay
-      league={league}
-      answerId={answerId}
-      results={results}
-      onKeyPress={onKeyPress}
-      error={status.error}
-      answer={status.answer}
-      complete={status.complete}
-    />
+    <div>
+      <WordleDisplay
+        league={league}
+        answerId={answerId}
+        results={results}
+        onKeyPress={onKeyPress}
+        error={status.error}
+        answer={status.answer}
+        complete={status.complete}
+      />
+      ,
+      <Modal open={open} onClose={handleClose} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
+        <Box sx={style.modalBox}>
+          <Typography id="modal-modal-title" variant="h6" component="h2" color={status.error && status.error.length ? 'red' : 'green'}>
+            {status.error && status.error.length ? status.error : status.answer}
+          </Typography>
+          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+            You have completed this puzzle.
+            <Link href={`/wordle/${league.league_slug}/${answerId}/browse`}>You can view other people's solutions here</Link>
+          </Typography>
+
+          <Div sx={{ textAlign: 'right' }}>
+            <Button onClick={() => setOpen(false)}>Close</Button>
+          </Div>
+        </Box>
+      </Modal>
+    </div>
   );
 };
 

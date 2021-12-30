@@ -189,7 +189,7 @@ const activePuzzles = async (request: Request, response: Response, next: NextFun
     return next(e);
   }
 
-  const puzzles = await queries.activePuzzles({ user_id: response.locals.user.user_id });
+  const puzzles = await queries.activePuzzles({ user_id: response.locals.user.user_id, sort: 'active_after' });
   return response.status(200).json(puzzles);
 };
 
