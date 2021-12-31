@@ -24,6 +24,8 @@ export interface League {
   is_private: boolean;
   is_hard_mode: boolean;
   invite_code: string;
+  source_word_list: string;
+  accept_word_list: string;
 }
 
 export interface LeagueSeries {

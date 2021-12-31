@@ -178,7 +178,7 @@ export async function bootstrapLeagues(startDate: Date) {
       league_name: 'Bot League - 5 letters - 5m',
       league_slug: 'bot_league_5l_5m',
       series_days: 7,
-      answer_interval_minutes: 5,
+      answer_interval_minutes: 15,
       letters: 5,
       max_guesses: 6,
       time_to_live_hours: 24,
@@ -186,8 +186,8 @@ export async function bootstrapLeagues(startDate: Date) {
       create_date: new Date(),
       is_private: true,
       invite_code: randomBytes(16).toString('hex'),
-      accept_word_list: '',
-      source_word_list: '',
+      accept_word_list: 'sources/collins.2019.txt.clean',
+      source_word_list: 'sources/collins.2019.txt.clean',
     },
   ]) {
     await SQL.insert('wordle_leagues', d, false, 'on conflict (league_slug) do nothing');

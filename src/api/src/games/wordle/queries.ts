@@ -4,6 +4,9 @@ import { ActivePuzzle, Guess, League, WordleStatus } from '../../../../ui/types/
 import { QueryParams } from '../../../../ui/types';
 import * as utils from './utils';
 
+const defaultSourceWordList = 'filtered/twl06.txt.filtered';
+export const defaultAnswerWordList = 'sources/collins.2019.txt.clean';
+
 function sleep(ms: number) {
   return new Promise(resolve => {
     setTimeout(resolve, ms);
@@ -56,7 +59,7 @@ export async function getLeagues({
       ${SQL.orderBy(sort)}
       ${SQL.limit(page, limit)}
   `;
-  console.log(query, bindvars);
+  // console.log(query, bindvars);
   return SQL.select(query, bindvars);
 }
 
@@ -171,14 +174,12 @@ export async function addLeagueSeries(data: { [id: string]: any }) {
 }
 
 export async function generateSeries(league: League, now: Date) {
-  console.log('generateSeries', league.league_slug, now);
   const lastSeries = await getleagueSeries({
     wordle_league_id: league.wordle_league_id,
     page: 1,
     limit: 1,
     sort: '-start_date',
   });
-  console.log('found last series', lastSeries);
 
   let start = league.start_date;
   if (lastSeries.length) {
@@ -263,7 +264,6 @@ export async function answer(args: any) {
 }
 
 export async function generateAnswer(league: any, activeAfter: Date) {
-  console.log(new Date(), 'Generate answer', activeAfter, league);
   const activeBefore = new Date(activeAfter);
   activeBefore.setHours(activeBefore.getHours() + league.time_to_live_hours);
   const series = await getleagueSeries({
@@ -274,7 +274,6 @@ export async function generateAnswer(league: any, activeAfter: Date) {
     limit: 1,
     sort: '-start_date',
   });
-  console.log('answer found series', series);
   if (!series.length) {
     // console.log('No series for league, not creating answer', league);
     return null;
@@ -288,7 +287,7 @@ export async function generateAnswer(league: any, activeAfter: Date) {
   });
   if (a.length) return a[0];
 
-  const rando = utils.randomWord(league.letters).toLowerCase();
+  const rando = utils.randomWord(league.letters, league.source_word_list || defaultSourceWordList).toLowerCase();
   console.log('Adding', activeAfter, activeBefore, rando);
   return SQL.insert(
     'wordle_answers',
@@ -310,7 +309,6 @@ export async function generateAnswers(league: League, now: Date) {
     limit: 1,
     sort: '-active_after',
   });
-  console.log('last answer', league.wordle_league_id, league.league_slug, lastAnswer);
 
   let start = league.start_date;
   if (lastAnswer.length) {
@@ -321,7 +319,6 @@ export async function generateAnswers(league: League, now: Date) {
   const startCutoff = new Date(now);
   startCutoff.setDate(startCutoff.getDate() + 7);
   while (start < startCutoff) {
-    console.log('genAnswer', league.league_slug, start, startCutoff);
     await generateAnswer(league, start);
     start.setMinutes(start.getMinutes() + league.answer_interval_minutes);
   }

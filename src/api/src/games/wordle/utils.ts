@@ -45,18 +45,18 @@ export function wordList(length: number, source: string) {
     } catch (e) {
       console.log('error loading list', e);
     }
+    console.log('len words', words[wkey].length);
   }
 
-  console.log('len words', words[wkey].length);
   return words[wkey];
 }
 
-export function randomWord(length: number) {
-  const wl = wordList(length, 'filtered/twl06.txt.filtered');
+export function randomWord(length: number, wordFile: string) {
+  const wl = wordList(length, wordFile);
   return wl[Math.floor(Math.random() * wl.length)];
 }
 
-export function isWordInList(word: string) {
-  const wl = wordList(word.length, 'sources/collins.2019.txt.clean');
+export function isWordInList(word: string, wordFile: string) {
+  const wl = wordList(word.length, wordFile);
   return wl.includes(word);
 }

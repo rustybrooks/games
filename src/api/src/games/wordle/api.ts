@@ -114,7 +114,7 @@ const check = async (request: Request, response: Response, next: NextFunction) =
     return next(new exceptions.HttpBadRequest('Already reached maximum number of quesses for this puzzle'));
   }
 
-  if (!utils.isWordInList(guess)) {
+  if (!utils.isWordInList(guess, league.accept_word_list || queries.defaultAnswerWordList)) {
     return next(new exceptions.HttpBadRequest('Invalid word'));
   }
 
