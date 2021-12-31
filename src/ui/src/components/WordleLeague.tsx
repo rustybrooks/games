@@ -39,15 +39,15 @@ function dateFormatter(row: any, d: string) {
 }
 
 function floatFormatter2(row: any, d: any) {
-  return d ? d.toFixed(2) : null;
+  return d !== null ? d.toFixed(2) : null;
 }
 
 function intFormatter(row: any, d: any) {
-  return d ? d.toFixed(0) : null;
+  return d !== null ? d.toFixed(0) : null;
 }
 
 function pctFormatter(row: any, d: any) {
-  return d ? `${(d * 100).toFixed(1)}%` : null;
+  return d !== null ? `${(d * 100).toFixed(1)}%` : null;
 }
 
 const seriesHeadCells: eht.HeadCell<LeagueSeries>[] = [
