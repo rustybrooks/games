@@ -168,15 +168,24 @@ export interface Props<T> {
   initialSortColumn: keyof T;
   checkButtons: boolean;
   rowButtons: ButtonInfoFn<T>[];
+  initialRowsPerPage?: number;
 }
 
 // eslint-disable-next-line import/no-default-export
-export function EnhancedTable<T>({ rows, headCells, mainColumn, initialSortColumn, checkButtons = false, rowButtons = null }: Props<T>) {
+export function EnhancedTable<T>({
+  rows,
+  headCells,
+  mainColumn,
+  initialSortColumn,
+  checkButtons = false,
+  rowButtons = null,
+  initialRowsPerPage = 10,
+}: Props<T>) {
   const [order, setOrder] = useState<Order>('asc');
   const [orderBy, setOrderBy] = useState<keyof T>(initialSortColumn);
   const [selected, setSelected] = useState<readonly any[]>([]);
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(initialRowsPerPage);
   const [loading, setLoading] = useState(false);
 
   const handleRequestSort = (event: MouseEvent<unknown>, property: keyof T) => {

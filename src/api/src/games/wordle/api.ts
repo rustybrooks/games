@@ -228,7 +228,7 @@ const completedUsers = async (request: Request, response: Response, next: NextFu
 const leagueInfo = async (request: Request, response: Response, next: NextFunction) => {
   const { league_slug } = getParams(request);
 
-  const league = await queries.getLeague({ league_slug, user_id: response.locals.user.user_id });
+  const league = await queries.getLeague({ league_slug, user_id: response.locals.user ? response.locals.user.user_id : null });
   if (!league) {
     return next(new exceptions.HttpNotFound('League not found'));
   }
@@ -239,7 +239,7 @@ const leagueInfo = async (request: Request, response: Response, next: NextFuncti
 const leagueSeries = async (request: Request, response: Response, next: NextFunction) => {
   const { league_slug } = getParams(request);
 
-  const league = await queries.getLeague({ league_slug, user_id: response.locals.user.user_id });
+  const league = await queries.getLeague({ league_slug, user_id: response.locals.user ? response.locals.user.user_id : null });
   if (!league) {
     return next(new exceptions.HttpNotFound('League not found'));
   }
@@ -255,7 +255,7 @@ const leagueSeries = async (request: Request, response: Response, next: NextFunc
 const leagueSeriesStats = async (request: Request, response: Response, next: NextFunction) => {
   const { league_slug, wordle_league_series_id } = getParams(request);
 
-  const league = await queries.getLeague({ league_slug, user_id: response.locals.user.user_id });
+  const league = await queries.getLeague({ league_slug, user_id: response.locals.user ? response.locals.user.user_id : null });
   if (!league) {
     return next(new exceptions.HttpNotFound('League not found'));
   }

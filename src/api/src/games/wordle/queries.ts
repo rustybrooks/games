@@ -96,7 +96,7 @@ export async function getLeagueSeriesStats({
       avg(num_guesses)::float as avg_guesses,
       avg(case when correct then num_guesses else null end)::float as avg_guesses_correct,
       max(num_guesses)::integer as max_guesses,
-      max(case when correct then num_guesses else null end)::integer as min_guesses_correct,
+      min(case when correct then num_guesses else null end)::integer as min_guesses_correct,
       ${done}::integer as done,
       ${wins}::integer as wins,
       ${wins}::float/nullif(${done}, 0) as win_pct,

@@ -203,6 +203,7 @@ export function WordleLeagueSeries({ league, seriesCallback }: { league: League;
         initialSortColumn={'start_date'}
         checkButtons={false}
         rowButtons={[buttonCallback]}
+        initialRowsPerPage={10}
       />
     </Div>
   );
@@ -247,6 +248,7 @@ export function WordleLeagueSeriesStats({ league, series }: { league: League; se
       initialSortColumn={'score'}
       checkButtons={false}
       rowButtons={[]}
+      initialRowsPerPage={25}
     />
   );
 }
