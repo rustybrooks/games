@@ -32,10 +32,7 @@ export async function getLeagues({
   league_slug?: string;
   user_id?: number;
   isMemberOnly?: boolean;
-  page?: number;
-  limit?: number;
-  sort?: string[] | string;
-} = {}): Promise<League[]> {
+} & QueryParams = {}): Promise<League[]> {
   const [where, bindvars] = SQL.autoWhere({ wordle_league_id, league_slug });
 
   const joins = [];
@@ -71,8 +68,54 @@ export async function getLeague(args: any) {
   return l.length ? l[0] : null;
 }
 
+export async function getLeagueSeriesStats({
+  league_slug,
+  wordle_league_series_id,
+  page = null,
+  limit = null,
+  sort = null,
+}: {
+  league_slug: string;
+  wordle_league_series_id: number;
+} & QueryParams) {
+  const [where, bindvars] = SQL.autoWhere({ league_slug, wordle_league_series_id });
+
+  const possible = 'sum(case when a.active_after < now() then 1 else 0 end)';
+  const wins = 'sum(case when correct then 1 else 0 end)';
+  const done = 'sum(case when not completed or wordle_status_id is null then 0 else 1 end)';
+  const raw_score = 'sum(case when correct then l.max_guesses-num_guesses else 0 end)';
+
+  const query = `
+      select
+      user_id::integer, username, s.start_date, s.end_date, 
+      ${raw_score}::integer as raw_score,
+      ${raw_score}::float/nullif(${possible}, 0) as score,
+      avg(num_guesses)::float as avg_guesses,
+      avg(case when correct then num_guesses else null end)::float as avg_guesses_correct,
+      max(num_guesses)::integer as max_guesses,
+      max(case when correct then num_guesses else null end)::integer as min_guesses_correct,
+      ${done}::integer as done,
+      ${wins}::integer as wins,
+      ${wins}::float/nullif(${done}, 0) as win_pct,
+      ${wins}::float/nullif(${possible}, 0) as win_pct_possible,
+      ${possible}::integer as possible      
+      from wordle_leagues l
+      join wordle_league_series s using(wordle_league_id)
+      join wordle_league_members m using (wordle_league_id)
+      join users u using (user_id)
+      join wordle_answers a using (wordle_league_series_id)
+      left join wordle_status ws using (wordle_answer_id, user_id)
+      ${SQL.whereClause(where)}
+      group by 1, 2, 3, 4
+      order by 3,2 ;
+      ${SQL.orderBy(sort)}
+      ${SQL.limit(page, limit)}
+  `;
+  return SQL.select(query, bindvars);
+}
+
 /* ******* series ******** */
-export async function leagueSeries({
+export async function getleagueSeries({
   wordle_league_id = null,
   start_date_before = null,
   start_date_after = null,
@@ -129,7 +172,7 @@ export async function addLeagueSeries(data: { [id: string]: any }) {
 
 export async function generateSeries(league: League, now: Date) {
   console.log('generateSeries', league.league_slug, now);
-  const lastSeries = await leagueSeries({
+  const lastSeries = await getleagueSeries({
     wordle_league_id: league.wordle_league_id,
     page: 1,
     limit: 1,
@@ -223,7 +266,7 @@ export async function generateAnswer(league: any, activeAfter: Date) {
   console.log(new Date(), 'Generate answer', activeAfter, league);
   const activeBefore = new Date(activeAfter);
   activeBefore.setHours(activeBefore.getHours() + league.time_to_live_hours);
-  const series = await leagueSeries({
+  const series = await getleagueSeries({
     wordle_league_id: league.wordle_league_id,
     start_date_before: activeAfter,
     end_date_after: activeAfter,

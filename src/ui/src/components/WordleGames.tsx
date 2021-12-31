@@ -105,9 +105,9 @@ export const WordleGames = () => {
 
   function buttonCallback(row: EnumeratedPuzzle): eht.ButtonInfo<EnumeratedPuzzle> {
     if (row.completed) {
-      return { label: 'Play', callback: navPlay, activeCallback: () => true };
-    } else {
       return { label: 'Browse', callback: navBrowse, activeCallback: () => true };
+    } else {
+      return { label: 'Play', callback: navPlay, activeCallback: () => true };
     }
   }
 

@@ -22,7 +22,16 @@ export interface League {
   start_date: Date;
   is_member: boolean;
   is_private: boolean;
+  is_hard_mode: boolean;
   invite_code: string;
+}
+
+export interface LeagueSeries {
+  wordle_league_series_id: number;
+  wordle_league_id: number;
+  create_date: Date;
+  start_date: Date;
+  end_date: Date;
 }
 
 export interface ActivePuzzle {
@@ -50,4 +59,20 @@ export interface WordleStatus {
   num_guesses: number;
   start_date: Date;
   end_date: Date;
+}
+
+export interface LeagueStats {
+  user_id: number;
+  username: string;
+  raw_score: number;
+  score: number;
+  avg_guesses: number;
+  avg_guesses_correct: number;
+  min_guesses_correct: number;
+  max_guesses: number;
+  done: number;
+  wins: number;
+  win_pct: number;
+  win_pct_possible: number;
+  possible: number;
 }

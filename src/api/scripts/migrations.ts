@@ -125,67 +125,73 @@ m.addStatement(`
 m.addStatement('create unique index wordle_leagues_invite_code on wordle_leagues(invite_code)');
 
 export async function bootstrapLeagues(startDate: Date) {
-  await SQL.insert('wordle_leagues', {
-    league_name: 'Daily Play / Weekly Series / 5 letters',
-    league_slug: 'daily_weekly_5',
-    series_days: 7,
-    answer_interval_minutes: 24 * 60,
-    letters: 5,
-    max_guesses: 6,
-    time_to_live_hours: 24,
-    start_date: startDate,
-    create_date: new Date(),
-  });
+  for (const d of [
+    {
+      league_name: 'Daily Play / Weekly Series / 5 letters',
+      league_slug: 'daily_weekly_5',
+      series_days: 7,
+      answer_interval_minutes: 24 * 60,
+      letters: 5,
+      max_guesses: 6,
+      time_to_live_hours: 24,
+      start_date: startDate,
+      create_date: new Date(),
+    },
 
-  await SQL.insert('wordle_leagues', {
-    league_name: 'Daily Play / Weekly Series / 6 letters',
-    league_slug: 'daily_weekly_6',
-    series_days: 7,
-    answer_interval_minutes: 24 * 60,
-    letters: 6,
-    max_guesses: 7,
-    time_to_live_hours: 24,
-    start_date: startDate,
-    create_date: new Date(),
-  });
+    {
+      league_name: 'Daily Play / Weekly Series / 6 letters',
+      league_slug: 'daily_weekly_6',
+      series_days: 7,
+      answer_interval_minutes: 24 * 60,
+      letters: 6,
+      max_guesses: 7,
+      time_to_live_hours: 24,
+      start_date: startDate,
+      create_date: new Date(),
+    },
 
-  await SQL.insert('wordle_leagues', {
-    league_name: 'Daily Play / Weekly Series / 7 letters',
-    league_slug: 'daily_weekly_7',
-    series_days: 7,
-    answer_interval_minutes: 24 * 60,
-    letters: 7,
-    max_guesses: 7,
-    time_to_live_hours: 24,
-    start_date: startDate,
-    create_date: new Date(),
-  });
+    {
+      league_name: 'Daily Play / Weekly Series / 7 letters',
+      league_slug: 'daily_weekly_7',
+      series_days: 7,
+      answer_interval_minutes: 24 * 60,
+      letters: 7,
+      max_guesses: 7,
+      time_to_live_hours: 24,
+      start_date: startDate,
+      create_date: new Date(),
+    },
 
-  await SQL.insert('wordle_leagues', {
-    league_name: 'Every 6h Play / Weekly Series / 5 letters',
-    league_slug: 'every_6h_weekly_5',
-    series_days: 7,
-    answer_interval_minutes: 6 * 60,
-    letters: 5,
-    max_guesses: 6,
-    time_to_live_hours: 24,
-    start_date: startDate,
-    create_date: new Date(),
-  });
+    {
+      league_name: 'Every 6h Play / Weekly Series / 5 letters',
+      league_slug: 'every_6h_weekly_5',
+      series_days: 7,
+      answer_interval_minutes: 6 * 60,
+      letters: 5,
+      max_guesses: 6,
+      time_to_live_hours: 24,
+      start_date: startDate,
+      create_date: new Date(),
+    },
 
-  await SQL.insert('wordle_leagues', {
-    league_name: 'Bot League - 5 letters - 5m',
-    league_slug: 'bot_league_5l_5m',
-    series_days: 7,
-    answer_interval_minutes: 5,
-    letters: 5,
-    max_guesses: 6,
-    time_to_live_hours: 24,
-    start_date: startDate,
-    create_date: new Date(),
-    is_private: true,
-    invite_code: randomBytes(16).toString('hex'),
-  });
+    {
+      league_name: 'Bot League - 5 letters - 5m',
+      league_slug: 'bot_league_5l_5m',
+      series_days: 7,
+      answer_interval_minutes: 5,
+      letters: 5,
+      max_guesses: 6,
+      time_to_live_hours: 24,
+      start_date: startDate,
+      create_date: new Date(),
+      is_private: true,
+      invite_code: randomBytes(16).toString('hex'),
+      accept_word_list: '',
+      source_word_list: '',
+    },
+  ]) {
+    await SQL.insert('wordle_leagues', d, false, 'on conflict (league_slug) do nothing');
+  }
 }
 
 async function bootstrapAdmin() {
