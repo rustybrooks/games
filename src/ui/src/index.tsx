@@ -7,7 +7,7 @@ import { css } from '@emotion/react';
 import { AppBar, Button, Drawer, Typography, Toolbar } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import * as constants from './constants';
-import { Wordle, WordleLeague, WordleLeagues, WordleGames, WordleBrowse, Login, Home, Test, JoinLeague } from './components';
+import { WWM, WWMLeague, WWMLeagues, WWMGames, WWMBrowse, Login, Home, Test, JoinLeague } from './components';
 
 const styles = {
   root: css({
@@ -81,10 +81,10 @@ const NavBar = ({ history }: { history: any }) => {
               Home
             </Button>
             <Button color="inherit" component={Link} to="/wordle">
-              Wordle Puzzles
+              WWM Puzzles
             </Button>
-            <Button color="inherit" component={Link} to="/wordle/leagues">
-              Wordle Leagues
+            <Button color="inherit" component={Link} to="/wwm/leagues">
+              WWM Leagues
             </Button>
           </div>
           {user ? (
@@ -241,12 +241,12 @@ function AppX({ history }: { history: any }) {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/test" element={<Test />} />
-          <Route path="/wordle" element={<WordleGames />} />
-          <Route path="/wordle/leagues" element={<WordleLeagues />} />
-          <Route path="/wordle/leagues/:leagueSlug" element={<WordleLeague />} />
-          <Route path="/wordle/leagues/:leagueSlug/join/:inviteCode" element={<JoinLeague />} />
-          <Route path="/wordle/puzzles/:leagueSlug/:answerId/play" element={<Wordle />} />
-          <Route path="/wordle/puzzles/:leagueSlug/:answerId/browse" element={<WordleBrowse />} />
+          <Route path="/wordle" element={<WWMGames />} />
+          <Route path="/wwm/leagues" element={<WWMLeagues />} />
+          <Route path="/wwm/leagues/:leagueSlug" element={<WWMLeague />} />
+          <Route path="/wwm/leagues/:leagueSlug/join/:inviteCode" element={<JoinLeague />} />
+          <Route path="/wwm/puzzles/:leagueSlug/:answerId/play" element={<WWM />} />
+          <Route path="/wwm/puzzles/:leagueSlug/:answerId/browse" element={<WWMBrowse />} />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>

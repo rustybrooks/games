@@ -3,10 +3,10 @@ import { useGetAndSet } from 'react-context-hook';
 import { Typography, Paper, Link } from '@mui/material';
 import { formatDistance } from 'date-fns';
 import * as eht from './EnhancedTable';
-import { ActivePuzzle, League } from '../../types/wordle';
+import { ActivePuzzle, League } from '../../types/wwm';
 import * as constants from '../constants';
 
-const genUrl = (fn = '') => `${constants.BASE_URL}/api/games/wordle/${fn}`;
+const genUrl = (fn = '') => `${constants.BASE_URL}/api/games/wwm/${fn}`;
 
 export async function getActivePuzzles(): Promise<ActivePuzzle[]> {
   const data = await fetch(genUrl('puzzles/active'), {
@@ -36,7 +36,7 @@ export async function getLeagues(): Promise<League[]> {
 }
 
 function leagueFormatter(row: League, d: string) {
-  return <Link href={`/wordle/leagues/${row.league_slug}`}>{d}</Link>;
+  return <Link href={`/wwm/leagues/${row.league_slug}`}>{d}</Link>;
 }
 
 const ourheadCells: eht.HeadCell<League>[] = [
@@ -83,7 +83,7 @@ const ourheadCells: eht.HeadCell<League>[] = [
 
 /// ///////////////////////
 
-const WordleLeaguesX = () => {
+const WWMLeaguesX = () => {
   const [leagues, setLeagues] = useGetAndSet<League[]>('leagues');
   const [user, setUser]: [{ username: string }, any] = useGetAndSet('user');
 
@@ -167,4 +167,4 @@ const WordleLeaguesX = () => {
   );
 };
 
-export const WordleLeagues = WordleLeaguesX;
+export const WWMLeagues = WWMLeaguesX;

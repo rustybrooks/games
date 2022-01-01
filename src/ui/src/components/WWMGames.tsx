@@ -4,8 +4,8 @@ import { Paper, Typography, Link } from '@mui/material';
 import { formatDistance } from 'date-fns';
 import { useNavigate } from 'react-router';
 import * as eht from './EnhancedTable';
-import { ActivePuzzle, League } from '../../types/wordle';
-import { getActivePuzzles, getLeagues } from './WordleLeagues';
+import { ActivePuzzle, League } from '../../types/wwm';
+import { getActivePuzzles, getLeagues } from './WWMLeagues';
 
 type EnumeratedPuzzle = ActivePuzzle & { count: number };
 
@@ -36,7 +36,7 @@ function answerFormatter(row: EnumeratedPuzzle, a: string) {
 }
 
 function leagueFormatter(row: EnumeratedPuzzle, d: string) {
-  return <Link href={`/wordle/leagues/${row.league_slug}`}>{d}</Link>;
+  return <Link href={`/wwm/leagues/${row.league_slug}`}>{d}</Link>;
 }
 
 const ourheadCells: eht.HeadCell<EnumeratedPuzzle>[] = [
@@ -76,7 +76,7 @@ const ourheadCells: eht.HeadCell<EnumeratedPuzzle>[] = [
   },
 ];
 
-export const WordleGames = () => {
+export const WWMGames = () => {
   const [leagues, setLeagues] = useGetAndSet<League[]>('leagues');
   const [puzzles, setPuzzles] = useGetAndSet<EnumeratedPuzzle[]>('active-puzzles');
   const [user, setUser]: [{ username: string }, any] = useGetAndSet('user');
@@ -92,7 +92,7 @@ export const WordleGames = () => {
   }, [user]);
 
   async function navrow(row: EnumeratedPuzzle, postfix: string) {
-    navigate(`/wordle/puzzles/${row.league_slug}/${row.wordle_answer_id}/${postfix}`);
+    navigate(`/wwm/puzzles/${row.league_slug}/${row.wordle_answer_id}/${postfix}`);
   }
 
   async function navPlay(row: EnumeratedPuzzle): Promise<void> {

@@ -3,7 +3,7 @@ import cors from 'cors';
 import { HttpException, HaltException } from './exceptions';
 import * as users from './users/api';
 import * as admin from './admin/api';
-import * as wordle from './games/wordle/api';
+import * as wordle from './games/wwm/api';
 
 export const app = express();
 
@@ -40,7 +40,7 @@ app.use(beforeRequest);
 app.use(cors(corsOptions));
 app.options('*', cors()); // include before other routes
 
-app.use('/api/games/wordle', wordle.router);
+app.use('/api/games/wwm', wordle.router);
 app.use('/api/admin', admin.router);
 app.use('/api/user', users.router);
 

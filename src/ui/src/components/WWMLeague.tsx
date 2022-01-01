@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import * as eht from './EnhancedTable';
 
 import * as constants from '../constants';
-import { League, LeagueSeries, LeagueStats } from '../../types/wordle';
+import { League, LeagueSeries, LeagueStats } from '../../types/wwm';
 import { useGetAndSet } from 'react-context-hook';
 import { Box, Button, Modal, Paper, Typography, Link } from '@mui/material';
 
@@ -10,7 +10,7 @@ import { useParams } from 'react-router-dom';
 import { Div, Table, Tr, Td } from './Styled';
 import { formatDistance } from 'date-fns';
 
-const genUrl = (fn = '') => `${constants.BASE_URL}/api/games/wordle/${fn}`;
+const genUrl = (fn = '') => `${constants.BASE_URL}/api/games/wwm/${fn}`;
 
 const ff = ['Roboto', 'Arial', 'sans-serif'].join(',');
 
@@ -153,7 +153,7 @@ const statsHeadCells: eht.HeadCell<LeagueStats>[] = [
   },
 ];
 
-export function WordleLeagueSeries({ league, seriesCallback }: { league: League; seriesCallback: any }) {
+export function WWMLeagueSeries({ league, seriesCallback }: { league: League; seriesCallback: any }) {
   const [series, setSeries] = useState<LeagueSeries[]>(null);
 
   async function getLeagueSeries() {
@@ -209,7 +209,7 @@ export function WordleLeagueSeries({ league, seriesCallback }: { league: League;
   );
 }
 
-export function WordleLeagueSeriesStats({ league, series }: { league: League; series: LeagueSeries }) {
+export function WWMLeagueSeriesStats({ league, series }: { league: League; series: LeagueSeries }) {
   const [stats, setStats] = useState<LeagueStats[]>(null);
 
   async function getLeagueStats() {
@@ -253,8 +253,8 @@ export function WordleLeagueSeriesStats({ league, series }: { league: League; se
   );
 }
 
-export function WordleLeagueInfo({ league }: { league: League }) {
-  const inviteLink = `${constants.BASE_URL}/wordle/leagues/${league.league_slug}/join${league.is_private ? `/${league.invite_code}` : ''}`;
+export function WWMLeagueInfo({ league }: { league: League }) {
+  const inviteLink = `${constants.BASE_URL}/wwm/leagues/${league.league_slug}/join${league.is_private ? `/${league.invite_code}` : ''}`;
 
   return (
     <Div>
@@ -307,13 +307,11 @@ export function WordleLeagueInfo({ league }: { league: League }) {
   );
 }
 
-export function WordleLeague() {
+export function WWMLeague() {
   const { leagueSlug } = useParams();
   const [league, setLeague] = useState<League>(null);
   const [series, setSeries] = useState<LeagueSeries>(null);
-  const [user, setUser] = useState(null);
-
-  console.log('render wordleleague', leagueSlug, league);
+  const [user, setUser] = useGetAndSet('user');
 
   async function getLeague() {
     const r = await fetch(genUrl('leagues/info'), {
@@ -349,15 +347,15 @@ export function WordleLeague() {
         <tbody>
           <tr>
             <td valign="top" width="400px">
-              <WordleLeagueInfo league={league} />
+              <WWMLeagueInfo league={league} />
             </td>
             <td rowSpan={2} valign="top">
-              <WordleLeagueSeriesStats league={league} series={series} />
+              <WWMLeagueSeriesStats league={league} series={series} />
             </td>
           </tr>
           <tr>
             <td valign="top" width="400px">
-              <WordleLeagueSeries league={league} seriesCallback={setSeries} />
+              <WWMLeagueSeries league={league} seriesCallback={setSeries} />
             </td>
           </tr>
         </tbody>

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import './Wordle.css';
+import './WWM.css';
 
 import Keyboard from 'react-simple-keyboard';
 import 'react-simple-keyboard/build/css/index.css';
@@ -8,10 +8,10 @@ import { useGetAndSet } from 'react-context-hook';
 import { Box, Button, Modal, Paper, Typography, Link } from '@mui/material';
 
 import { useParams } from 'react-router-dom';
-import { League } from '../../types/wordle';
+import { League } from '../../types/wwm';
 import * as constants from '../constants';
 
-import { getLeagues } from './WordleLeagues';
+import { getLeagues } from './WWMLeagues';
 
 import { Cell, Div } from './Styled';
 
@@ -62,9 +62,9 @@ style.wrongCell = { backgroundColor: '#787c7e' };
 style.rightCell = { backgroundColor: '#6aaa64' };
 style.sortaCell = { backgroundColor: '#c9b458' };
 
-const genUrl = (fn = '') => `${constants.BASE_URL}/api/games/wordle/${fn}`;
+const genUrl = (fn = '') => `${constants.BASE_URL}/api/games/wwm/${fn}`;
 
-function WordleDisplay({
+function WWMDisplay({
   league,
   results,
   onKeyPress = null,
@@ -201,7 +201,7 @@ function WordleDisplay({
   );
 }
 
-export const Wordle = () => {
+export const WWM = () => {
   const { answerId, leagueSlug } = useParams();
 
   const [status, setStatus] = useState({ answer: '', error: '', complete: false });
@@ -353,7 +353,7 @@ export const Wordle = () => {
 
   return (
     <div>
-      <WordleDisplay
+      <WWMDisplay
         league={league}
         results={results}
         onKeyPress={onKeyPress}
@@ -369,7 +369,7 @@ export const Wordle = () => {
           </Typography>
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>
             You have completed this puzzle.
-            <Link href={`/wordle/puzzles/${league.league_slug}/${answerId}/browse`}>You can view other people's solutions here</Link>
+            <Link href={`/wwm/puzzles/${league.league_slug}/${answerId}/browse`}>You can view other people's solutions here</Link>
           </Typography>
 
           <Div sx={{ textAlign: 'right' }}>
@@ -381,7 +381,7 @@ export const Wordle = () => {
   );
 };
 
-export const WordleBrowse = () => {
+export const WWMBrowse = () => {
   const { answerId, leagueSlug } = useParams();
 
   const [leagues, setLeagues] = useGetAndSet<League[]>('leagues');
@@ -497,7 +497,7 @@ export const WordleBrowse = () => {
           <div css={{ textAlign: 'center' }}>
             <Typography variant="h3">{user.username}</Typography>
           </div>
-          <WordleDisplay league={league} results={results} showKeyboard={false} />
+          <WWMDisplay league={league} results={results} showKeyboard={false} />
         </div>
       ) : null}
     </Paper>

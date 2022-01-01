@@ -5,7 +5,7 @@ import { getParams } from '../../utils';
 import * as exceptions from '../../exceptions';
 import * as users from '../../users';
 import * as queries from './queries';
-import { League } from '../../../../ui/types/wordle';
+import { League } from '../../../../ui/types/wwm';
 
 export const router = express.Router();
 
@@ -84,7 +84,7 @@ const check = async (request: Request, response: Response, next: NextFunction) =
   const abDate = new Date();
   const answer = await queries.answer({ league_slug, wordle_answer_id, active_between: abDate });
   if (!answer) {
-    return next(new exceptions.HttpNotFound('Wordle not found'));
+    return next(new exceptions.HttpNotFound('Puzzle not found'));
   }
 
   if (!guess) {
@@ -99,7 +99,6 @@ const check = async (request: Request, response: Response, next: NextFunction) =
     wordle_answer_id: answer.wordle_answer_id,
     sort: 'wordle_guesses.create_date',
   });
-
   if (guessesList.find(g => g.correct)) {
     return next(new exceptions.HttpBadRequest('Already have a correct answer'));
   }
@@ -156,13 +155,13 @@ const guesses = async (request: Request, response: Response, next: NextFunction)
 
   const answer = await queries.answer({ league_slug, wordle_answer_id });
   if (!answer) {
-    return next(new exceptions.HttpNotFound('Wordle not found'));
+    return next(new exceptions.HttpNotFound('Puzzle not found'));
   }
 
   if (user_id) {
     const ourStatus = await queries.wordleStatuses({ wordle_answer_id, completed: true, user_id: response.locals.user.user_id });
     if (!ourStatus.length) {
-      return next(new exceptions.HttpBadRequest('You have not completed this Wordle'));
+      return next(new exceptions.HttpBadRequest('You have not completed this puzzle'));
     }
   }
 
@@ -213,12 +212,12 @@ const completedUsers = async (request: Request, response: Response, next: NextFu
 
   const answer = await queries.answer({ league_slug, wordle_answer_id });
   if (!answer) {
-    return next(new exceptions.HttpNotFound('Wordle not found'));
+    return next(new exceptions.HttpNotFound('Puzzle not found'));
   }
 
   const ourStatus = await queries.wordleStatuses({ wordle_answer_id, user_id: response.locals.user.user_id, completed: true });
   if (!ourStatus.length) {
-    return next(new exceptions.HttpBadRequest('You have not completed this Wordle'));
+    return next(new exceptions.HttpBadRequest('You have not completed this puzzle'));
   }
 
   const data = await queries.wordleStatuses({ wordle_answer_id, completed: true, sort: ['-correct_letters,num_guesses,ws.end_date'] });

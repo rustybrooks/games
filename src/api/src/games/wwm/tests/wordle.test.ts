@@ -19,7 +19,7 @@ afterAll(async () => {
   pgexplorer.SQL.db.$pool.end();
 });
 
-describe('Wordle Utilities', () => {
+describe('WWM Utilities', () => {
   it('test_evaluateGuess', async () => {
     expect(utils.evaluateGuess('masse', 'basse')).toStrictEqual([' ', '+', '+', '+', '+']);
     expect(utils.evaluateGuess('masse', 'masse')).toStrictEqual(['+', '+', '+', '+', '+']);
@@ -242,11 +242,11 @@ describe('Answer submission', () => {
     MockDate.set(d1);
 
     // not logged in, forbidden
-    await supertest(app).post('/api/games/wordle/check').send({ league_slug: 'every_6h_weekly_5', guess: 'xxx' }).expect(403);
+    await supertest(app).post('/api/games/wwm/check').send({ league_slug: 'every_6h_weekly_5', guess: 'xxx' }).expect(403);
 
     // logged in, but league doesn't exist
     await supertest(app)
-      .post('/api/games/wordle/check')
+      .post('/api/games/wwm/check')
       .set('X-API-KEY', apiKey)
       .send({ league_slug: 'xxx', guess: 'xxx' })
       .expect(404)
@@ -256,7 +256,7 @@ describe('Answer submission', () => {
 
     // logged in, but not part of league
     await supertest(app)
-      .post('/api/games/wordle/check')
+      .post('/api/games/wwm/check')
       .set('X-API-KEY', apiKey)
       .send({ league_slug: 'every_6h_weekly_5', guess: 'xxx' })
       .expect(404)
@@ -267,7 +267,7 @@ describe('Answer submission', () => {
     // invalid guess
     await queries.addLeagueMember({ user_id: user.user_id, wordle_league_id: league.wordle_league_id });
     await supertest(app)
-      .post('/api/games/wordle/check')
+      .post('/api/games/wwm/check')
       .set('X-API-KEY', apiKey)
       .send({ league_slug: 'every_6h_weekly_5', guess: 'xxx' })
       .expect(400)
@@ -277,7 +277,7 @@ describe('Answer submission', () => {
 
     // missing guess
     await supertest(app)
-      .post('/api/games/wordle/check')
+      .post('/api/games/wwm/check')
       .set('X-API-KEY', apiKey)
       .send({ league_slug: 'every_6h_weekly_5' })
       .expect(400)
@@ -288,12 +288,12 @@ describe('Answer submission', () => {
     // no answer for some reason
     MockDate.set(d2);
     await supertest(app)
-      .post('/api/games/wordle/check')
+      .post('/api/games/wwm/check')
       .set('X-API-KEY', apiKey)
       .send({ league_slug: 'every_6h_weekly_5' })
       .expect(404)
       .then(response => {
-        expect(response.body.detail === 'Wordle not found');
+        expect(response.body.detail === 'WWM not found');
       });
   });
 });

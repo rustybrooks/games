@@ -1,6 +1,5 @@
-import { randomBytes } from 'crypto';
 import { SQL } from '../../db';
-import { ActivePuzzle, Guess, League, WordleStatus } from '../../../../ui/types/wordle';
+import { ActivePuzzle, Guess, League, WWMStatus } from '../../../../ui/types/wwm';
 import { QueryParams } from '../../../../ui/types';
 import * as utils from './utils';
 
@@ -519,7 +518,7 @@ export async function wordleStatuses({
   page = null,
   limit = null,
   sort = null,
-}: { wordle_answer_id: number; user_id?: number; completed?: boolean } & QueryParams): Promise<WordleStatus[]> {
+}: { wordle_answer_id: number; user_id?: number; completed?: boolean } & QueryParams): Promise<WWMStatus[]> {
   const [where, bindvars] = SQL.autoWhere({ wordle_answer_id, user_id, completed });
   const query = `
     select username, ws.*

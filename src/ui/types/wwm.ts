@@ -50,7 +50,7 @@ export interface ActivePuzzle {
   completed: boolean;
 }
 
-export interface WordleStatus {
+export interface WWMStatus {
   username: string;
   user_id: number;
   wordle_answer_id: number;

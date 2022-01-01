@@ -1,5 +1,5 @@
 import * as cron from 'node-cron';
-import * as wordle from './games/wordle';
+import * as wordle from './games/wwm';
 
 export async function init() {
   cron.getTasks().forEach(c => c.stop());
