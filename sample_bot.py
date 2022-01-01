@@ -73,8 +73,9 @@ def make_one_puzzle_guess(league, puzzle):
 
 def solve_one_puzzle(league, puzzle):
     while True:
-        guess_result = make_one_puzzle_guess(league, puzzle)
-        if guess_result['completed']:
+        gr = make_one_puzzle_guess(league, puzzle)
+        print(gr['correct'], gr['completed'], gr['guesses'][-1], gr['answer'])
+        if gr['completed']:
             break
 
         # This is just to make sure if there's a problem or a bug you don't slam the server too hard.
