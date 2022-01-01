@@ -87,9 +87,9 @@ const NavBar = ({ history }: { history: any }) => {
               WWM Leagues
             </Button>
             {
-              //<Button color="inherit" component={Link} to="/wwm/bots">
-              //  WWM Bots
-              //</Button>
+              <Button color="inherit" component={Link} to="/wwm/bots">
+                WWM Bots
+              </Button>
             }
           </div>
           {user ? (
