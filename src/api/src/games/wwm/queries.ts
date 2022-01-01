@@ -109,6 +109,7 @@ export async function getLeagueSeriesStats({
       left join wordle_status ws using (wordle_answer_id, user_id)
       ${SQL.whereClause(where)}
       group by 1, 2, 3, 4
+      having ${done} > 0
       order by 3,2 ;
       ${SQL.orderBy(sort)}
       ${SQL.limit(page, limit)}

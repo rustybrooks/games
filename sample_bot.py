@@ -4,6 +4,7 @@ import json
 import os
 import random
 import requests
+import time
 
 session = requests.Session()
 session.headers = {
@@ -76,6 +77,9 @@ def solve_one_puzzle(league, puzzle):
         print(json.dumps(guess_result, indent=2))
         if guess_result['completed']:
             break
+
+        # This is just to make sure if there's a problem or a bug you don't slam the server too hard.
+        time.sleep(1)
 
 
 # This is the name of the current only bot league
