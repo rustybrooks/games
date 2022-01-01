@@ -2,6 +2,7 @@ export * from './Home';
 export * from './Login';
 export * from './Test';
 export * from './WWM';
+export * from './WWMBots';
 export * from './WWMGames';
 export * from './WWMLeagues';
 export * from './WWMLeague';

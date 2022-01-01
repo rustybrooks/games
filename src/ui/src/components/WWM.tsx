@@ -212,8 +212,6 @@ export const WWM = () => {
 
   const handleClose = () => setOpen(false);
 
-  console.log('RENDER WORDLE answerId', answerId, leagueSlug, status);
-
   let league: League = null;
   if (leagues) {
     league = leagues.find(l => l.league_slug === leagueSlug);
@@ -251,7 +249,6 @@ export const WWM = () => {
       setResults(data.guesses);
     } else {
       const data = await r.json();
-      console.log('received error', data);
       setStatus({ ...status, error: data.detail });
     }
   }

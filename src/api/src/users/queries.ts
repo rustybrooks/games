@@ -67,6 +67,6 @@ export async function checkPassword(password: string, bcryptedPassword: string) 
 
 export function generateToken(username: string) {
   return jwt.sign({ username }, process.env.TOKEN_KEY, {
-    expiresIn: '7d',
+    expiresIn: '14d',
   });
 }

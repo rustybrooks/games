@@ -31,7 +31,6 @@ const joinLeague = async (request: Request, response: Response, next: NextFuncti
   try {
     users.requireLogin(response, next);
   } catch (e) {
-    console.log('returning..');
     return next(e);
   }
   const { league_slug, invite_code } = getParams(request);
@@ -136,6 +135,7 @@ const check = async (request: Request, response: Response, next: NextFunction) =
       result: utils.evaluateGuess(answer.answer, g),
     })),
     correct: guess === answer.answer,
+    completed: guesses.length === league.max_guesses,
     answer: guesses.length === league.max_guesses ? answer.answer : null,
   });
 };
@@ -191,6 +191,14 @@ const activePuzzles = async (request: Request, response: Response, next: NextFun
     users.requireLogin(response, next);
   } catch (e) {
     return next(e);
+  }
+
+  const { league_slug } = getParams(request);
+  if (league_slug) {
+    const league = await queries.getLeague({ league_slug, user_id: response.locals.user.user_id, isMemberOnly: true });
+    if (!league) {
+      return next(new exceptions.HttpNotFound('League not found'));
+    }
   }
 
   const puzzles = await queries.activePuzzles({ user_id: response.locals.user.user_id, sort: 'active_after' });

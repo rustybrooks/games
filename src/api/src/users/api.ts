@@ -80,6 +80,16 @@ const login = async (request: Request, response: Response, next: NextFunction) =
   return next(new exceptions.HttpForbidden());
 };
 
+const apiKey = async (request: Request, response: Response, next: NextFunction) => {
+  try {
+    requireLogin(response, next);
+  } catch (e) {
+    return next(e);
+  }
+
+  response.status(200).json(response.locals.user.api_key);
+};
+
 const changePassword = async (request: Request, response: Response, next: NextFunction) => {
   requireLogin(response, next);
   const { new_password } = getParams(request);
@@ -97,4 +107,5 @@ const user = (request: Request, response: Response, next: NextFunction) => {
 router.all('/', user);
 router.all('/signup', signup);
 router.all('/login', login);
+router.all('/api_key', apiKey);
 router.all('/change_password', changePassword);

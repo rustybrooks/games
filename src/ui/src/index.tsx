@@ -7,7 +7,7 @@ import { css } from '@emotion/react';
 import { AppBar, Button, Drawer, Typography, Toolbar } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import * as constants from './constants';
-import { WWM, WWMLeague, WWMLeagues, WWMGames, WWMBrowse, Login, Home, Test, JoinLeague } from './components';
+import { WWM, WWMBots, WWMLeague, WWMLeagues, WWMGames, WWMBrowse, Login, Home, Test, JoinLeague } from './components';
 
 const styles = {
   root: css({
@@ -80,12 +80,17 @@ const NavBar = ({ history }: { history: any }) => {
             <Button color="inherit" component={Link} to="/">
               Home
             </Button>
-            <Button color="inherit" component={Link} to="/wordle">
+            <Button color="inherit" component={Link} to="/wwm">
               WWM Puzzles
             </Button>
             <Button color="inherit" component={Link} to="/wwm/leagues">
               WWM Leagues
             </Button>
+            {
+              //<Button color="inherit" component={Link} to="/wwm/bots">
+              //  WWM Bots
+              //</Button>
+            }
           </div>
           {user ? (
             <div>
@@ -241,7 +246,8 @@ function AppX({ history }: { history: any }) {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/test" element={<Test />} />
-          <Route path="/wordle" element={<WWMGames />} />
+          <Route path="/wwm" element={<WWMGames />} />
+          <Route path="/wwm/bots" element={<WWMBots />} />
           <Route path="/wwm/leagues" element={<WWMLeagues />} />
           <Route path="/wwm/leagues/:leagueSlug" element={<WWMLeague />} />
           <Route path="/wwm/leagues/:leagueSlug/join/:inviteCode" element={<JoinLeague />} />

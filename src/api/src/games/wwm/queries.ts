@@ -332,16 +332,18 @@ export async function generateAllAnswers(now: Date) {
 
 export async function activePuzzles({
   user_id,
+  wordle_league_id = null,
   page = null,
   limit = null,
   sort = null,
 }: {
   user_id: number;
+  wordle_league_id?: number;
   page?: number;
   limit?: number;
   sort?: string | string[];
 }): Promise<ActivePuzzle> {
-  const [where, bindvars] = SQL.autoWhere({ user_id });
+  const [where, bindvars] = SQL.autoWhere({ user_id, wordle_league_id });
 
   where.push('m.active');
 
