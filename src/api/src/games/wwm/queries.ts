@@ -110,7 +110,6 @@ export async function getLeagueSeriesStats({
       ${SQL.whereClause(where)}
       group by 1, 2, 3, 4
       having ${done} > 0
-      order by 3,2 ;
       ${SQL.orderBy(sort)}
       ${SQL.limit(page, limit)}
   `;
