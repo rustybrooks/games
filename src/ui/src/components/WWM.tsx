@@ -62,6 +62,9 @@ function WWMDisplay({
   error = null,
   answer = null,
   showKeyboard = true,
+  onTouchStart = null,
+  onTouchMove = null,
+  onTouchEnd = null,
 }: {
   league: League;
   results: { guess: string; result: string[] }[];
@@ -69,6 +72,9 @@ function WWMDisplay({
   error?: string;
   answer?: string;
   showKeyboard?: boolean;
+  onTouchStart?: any;
+  onTouchMove?: any;
+  onTouchEnd?: any;
 }) {
   const rightKeys: string[] = [];
   const wrongKeys = [];
@@ -115,7 +121,7 @@ function WWMDisplay({
         height: '100%',
       }}
     >
-      <Div sx={style.container}>
+      <Div sx={style.container} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}>
         <table css={style.table} style={{ margin: '0 auto' }}>
           <tbody>
             {[...Array(league.max_guesses).keys()].map(y => {
@@ -392,6 +398,36 @@ export const WWMBrowse = () => {
   const [browseUser, setBrowseUser] = useState(null);
   const [error, setError] = useState(null);
   const [user, setUser] = useGetAndSet('user');
+  const [touchStart, setTouchStart] = useState(0);
+  const [touchEnd, setTouchEnd] = useState(0);
+
+  function swipeUser(amt: number) {
+    const idx = completed.findIndex(c => c.username == browseUser.username);
+
+    let newidx = (((idx + amt) % completed.length) + completed.length) % completed.length;
+    console.log('idx', idx, newidx);
+    const newUser = completed[newidx];
+    navigate(genPuzzleBrowse(leagueSlug, answerId, newUser.username));
+    setBrowseUser(newUser);
+  }
+
+  function handleTouchStart(e: any) {
+    setTouchStart(e.targetTouches[0].clientX);
+  }
+
+  function handleTouchMove(e: any) {
+    setTouchEnd(e.targetTouches[0].clientX);
+  }
+
+  function handleTouchEnd() {
+    if (touchStart - touchEnd > 150) {
+      swipeUser(1);
+    }
+
+    if (touchStart - touchEnd < -150) {
+      swipeUser(-1);
+    }
+  }
 
   let league: League = null;
   if (leagues) {
@@ -453,6 +489,15 @@ export const WWMBrowse = () => {
     }
   }
 
+  function handleKeyDown(event: any) {
+    const key = event.key.toLowerCase();
+    if (key == 'arrowright') {
+      swipeUser(1);
+    } else if (key == 'arrowleft') {
+      swipeUser(-1);
+    }
+  }
+
   useEffect(() => {
     if (!leagues || !leagues.length) {
       (async () => {
@@ -472,6 +517,15 @@ export const WWMBrowse = () => {
       }
     })();
   }, [browseUser]);
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown, false);
+
+    // cleanup this component
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [results]);
 
   if (!completed.length) {
     return (
@@ -507,7 +561,14 @@ export const WWMBrowse = () => {
           <div css={{ textAlign: 'center' }}>
             <Typography variant="h3">{browseUser.username}</Typography>
           </div>
-          <WWMDisplay league={league} results={results} showKeyboard={false} />
+          <WWMDisplay
+            league={league}
+            results={results}
+            showKeyboard={false}
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+            onTouchMove={handleTouchMove}
+          />
         </div>
       ) : null}
     </Paper>
