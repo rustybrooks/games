@@ -18,6 +18,32 @@ import { Cell, Div } from './Styled';
 import { ModalBox } from './ModalBox';
 import { genActivePuzzles, genPuzzleBrowse } from '../routes';
 
+function guessesToCategories(results: any) {
+  const rightKeys: string[] = [];
+  const wrongKeys = [];
+  const sortaKeys = [];
+  for (const r of results) {
+    if (!r.guess.length) continue;
+    for (const i in r.result) {
+      if (r.result[i] === '+') {
+        rightKeys.push(r.guess[i]);
+      } else if (r.result[i] === '-') {
+        sortaKeys.push(r.guess[i]);
+      } else {
+        wrongKeys.push(r.guess[i]);
+      }
+    }
+  }
+
+  const sortaKeys2 = sortaKeys.filter(k => !rightKeys.includes(k));
+
+  return {
+    sorta: sortaKeys2,
+    right: rightKeys,
+    wrong: wrongKeys,
+  };
+}
+
 const style: { [id: string]: any } = {
   cell: {
     width: { mobile: '7rem', tablet: '8rem', desktop: '4rem' },
@@ -49,9 +75,15 @@ const style: { [id: string]: any } = {
   },
 };
 
-style.wrongCell = { backgroundColor: '#787c7e' };
-style.rightCell = { backgroundColor: '#6aaa64' };
-style.sortaCell = { backgroundColor: '#c9b458' };
+const colors = {
+  wrong: '#787c7e',
+  right: '#6aaa64',
+  sorta: '#c9b458',
+};
+
+style.wrongCell = { backgroundColor: colors.wrong };
+style.rightCell = { backgroundColor: colors.right };
+style.sortaCell = { backgroundColor: colors.sorta };
 
 const genUrl = (fn = '') => `${constants.BASE_URL}/api/games/wwm/${fn}`;
 
@@ -76,41 +108,25 @@ function WWMDisplay({
   onTouchMove?: any;
   onTouchEnd?: any;
 }) {
-  const rightKeys: string[] = [];
-  const wrongKeys = [];
-  const sortaKeys = [];
-  for (const r of results) {
-    if (!r.guess.length) continue;
-    for (const i in r.result) {
-      if (r.result[i] === '+') {
-        rightKeys.push(r.guess[i]);
-      } else if (r.result[i] === '-') {
-        sortaKeys.push(r.guess[i]);
-      } else {
-        wrongKeys.push(r.guess[i]);
-      }
-    }
-  }
-
-  const sortaKeys2 = sortaKeys.filter(k => !rightKeys.includes(k));
+  const { sorta, right, wrong } = guessesToCategories(results);
 
   const buttonTheme = [];
-  if (wrongKeys.length) {
+  if (wrong.length) {
     buttonTheme.push({
       class: 'hg-wrong',
-      buttons: wrongKeys.join(' '),
+      buttons: wrong.join(' '),
     });
   }
-  if (sortaKeys2.length) {
+  if (sorta.length) {
     buttonTheme.push({
       class: 'hg-sorta',
-      buttons: sortaKeys2.join(' '),
+      buttons: sorta.join(' '),
     });
   }
-  if (rightKeys.length) {
+  if (right.length) {
     buttonTheme.push({
       class: 'hg-right',
-      buttons: rightKeys.join(' '),
+      buttons: right.join(' '),
     });
   }
 
@@ -549,7 +565,7 @@ export const WWMBrowse = () => {
             size="small"
             onClick={() => {
               setBrowseUser(c);
-              navigate(genPuzzleBrowse(leagueSlug, answerId, username));
+              navigate(genPuzzleBrowse(leagueSlug, answerId, c.username));
             }}
           >
             {c.username} - {c.num_guesses}
