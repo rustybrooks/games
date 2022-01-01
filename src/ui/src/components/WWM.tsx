@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import './WWM.css';
+import { useNavigate } from 'react-router';
 
 import Keyboard from 'react-simple-keyboard';
 import 'react-simple-keyboard/build/css/index.css';
@@ -14,6 +15,8 @@ import * as constants from '../constants';
 import { getLeagues } from './WWMLeagues';
 
 import { Cell, Div } from './Styled';
+import { ModalBox } from './ModalBox';
+import { genActivePuzzles, genPuzzleBrowse } from '../routes';
 
 const style: { [id: string]: any } = {
   cell: {
@@ -44,18 +47,6 @@ const style: { [id: string]: any } = {
     height: { mobile: '500px', tablet: '100%', desktop: '30rem' },
     textAlign: 'center',
   },
-
-  modalBox: {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 400,
-    bgcolor: 'background.paper',
-    border: '2px solid #000',
-    boxShadow: 24,
-    p: 4,
-  },
 };
 
 style.wrongCell = { backgroundColor: '#787c7e' };
@@ -71,7 +62,6 @@ function WWMDisplay({
   error = null,
   answer = null,
   showKeyboard = true,
-  complete = false,
 }: {
   league: League;
   results: { guess: string; result: string[] }[];
@@ -79,10 +69,7 @@ function WWMDisplay({
   error?: string;
   answer?: string;
   showKeyboard?: boolean;
-  complete?: boolean;
 }) {
-  console.log('render worddisplay', error, answer, complete);
-
   const rightKeys: string[] = [];
   const wrongKeys = [];
   const sortaKeys = [];
@@ -154,7 +141,6 @@ function WWMDisplay({
                           cn = 'cell';
                       }
                     }
-                    // console.log(result, x, r, cn, style[cn]);
                     return (
                       <Cell key={x} sx={{ ...style.cell, ...style[cn] }}>
                         <Typography variant="h1">{g.toUpperCase()}</Typography>
@@ -203,6 +189,7 @@ function WWMDisplay({
 
 export const WWM = () => {
   const { answerId, leagueSlug } = useParams();
+  const navigate = useNavigate();
 
   const [status, setStatus] = useState({ answer: '', error: '', complete: false });
   const [leagues, setLeagues] = useGetAndSet<League[]>('leagues');
@@ -227,7 +214,7 @@ export const WWM = () => {
       body: JSON.stringify({
         guess: word,
         wordle_answer_id: answerId,
-        league_slug: league.league_slug,
+        league_slug: leagueSlug,
       }),
     });
     if (r.status === 200) {
@@ -262,7 +249,7 @@ export const WWM = () => {
       },
       body: JSON.stringify({
         wordle_answer_id: answerId,
-        league_slug: league.league_slug,
+        league_slug: leagueSlug,
       }),
     });
     if (r.status === 200) {
@@ -284,11 +271,28 @@ export const WWM = () => {
       }
 
       setResults(data.guesses);
+    } else {
+      const data = await r.json();
+      console.log('set error', data);
+      setStatus({ ...status, error: data.detail });
     }
   }
 
   const onKeyPress = async (button: string) => {
     const buttonx = button.toLowerCase();
+
+    console.log('onkey', status);
+    if (status.complete) {
+      console.log('puzzle complete', buttonx);
+
+      if (buttonx == 'enter') {
+        navigate(genActivePuzzles());
+        setOpen(false);
+      }
+
+      return;
+    }
+
     const res = results[gridIdx.current];
     let word = res.guess;
 
@@ -340,52 +344,54 @@ export const WWM = () => {
     if (league) getGuesses();
   }, [league]);
 
-  if (!results.length) {
+  if (!results.length || (!results.length && status.error)) {
     return (
-      <div>
-        <Typography variant="h3">Loading...</Typography>
+      <div css={{ textAlign: 'center', padding: '10px' }}>
+        <Typography variant="h3" color={status.error ? 'red' : 'black'}>
+          {status.error || 'Loading...'}
+        </Typography>
       </div>
     );
   }
 
   return (
     <div>
-      <WWMDisplay
-        league={league}
-        results={results}
-        onKeyPress={onKeyPress}
-        error={status.error}
-        answer={status.answer}
-        complete={status.complete}
-      />
-      ,
+      <WWMDisplay league={league} results={results} onKeyPress={onKeyPress} error={status.error} answer={status.answer} />,
       <Modal open={open} onClose={handleClose} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
-        <Box sx={style.modalBox}>
+        <ModalBox width="30rem">
           <Typography id="modal-modal-title" variant="h6" component="h2" color={status.error && status.error.length ? 'red' : 'green'}>
             {status.error && status.error.length ? status.error : status.answer}
           </Typography>
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>
             You have completed this puzzle.
-            <Link href={`/wwm/puzzles/${league.league_slug}/${answerId}/browse`}>You can view other people's solutions here</Link>
+            <br />
+            <Link href={genPuzzleBrowse(leagueSlug, answerId)}>You can view other people's solutions here</Link>
           </Typography>
 
           <Div sx={{ textAlign: 'right' }}>
-            <Button onClick={() => setOpen(false)}>Close</Button>
+            <Button sx={{ margin: '.5rem' }} onClick={() => setOpen(false)} variant="outlined">
+              Close
+            </Button>
+            <Button sx={{ margin: '.5rem' }} onClick={() => navigate(genActivePuzzles())} variant="contained">
+              Back to Puzzles
+            </Button>
           </Div>
-        </Box>
+        </ModalBox>
       </Modal>
     </div>
   );
 };
 
 export const WWMBrowse = () => {
-  const { answerId, leagueSlug } = useParams();
+  const { answerId, leagueSlug, username } = useParams();
+  const navigate = useNavigate();
 
   const [leagues, setLeagues] = useGetAndSet<League[]>('leagues');
   const [results, setResults] = useState<{ guess: string; result: string[] }[]>([]);
   const [completed, setCompleted] = useState([]);
-  const [user, setUser] = useState(null);
+  const [browseUser, setBrowseUser] = useState(null);
   const [error, setError] = useState(null);
+  const [user, setUser] = useGetAndSet('user');
 
   let league: League = null;
   if (leagues) {
@@ -401,7 +407,7 @@ export const WWMBrowse = () => {
       },
       body: JSON.stringify({
         wordle_answer_id: answerId,
-        league_slug: league.league_slug,
+        league_slug: leagueSlug,
       }),
     });
 
@@ -409,7 +415,13 @@ export const WWMBrowse = () => {
       const data = await r.json();
       setCompleted(data);
       if (data.length) {
-        setUser(data[0]);
+        let found;
+        if (username) {
+          found = data.find((d: any) => d.username === username);
+        }
+        found = found || data[0];
+
+        setBrowseUser(found);
       }
     } else {
       const data = await r.json();
@@ -427,7 +439,7 @@ export const WWMBrowse = () => {
       body: JSON.stringify({
         wordle_answer_id: answerId,
         user_id: userId,
-        league_slug: league.league_slug,
+        league_slug: leagueSlug,
       }),
     });
     if (r.status === 200) {
@@ -455,15 +467,15 @@ export const WWMBrowse = () => {
 
   useEffect(() => {
     (async () => {
-      if (user) {
-        getGuesses(user.user_id);
+      if (browseUser) {
+        getGuesses(browseUser.user_id);
       }
     })();
-  }, [user]);
+  }, [browseUser]);
 
   if (!completed.length) {
     return (
-      <div css={{ textAlign: 'center' }}>
+      <div css={{ textAlign: 'center', padding: '10px' }}>
         <Typography variant="h3" color={error ? 'red' : 'black'}>
           {error || 'Loading...'}
         </Typography>
@@ -482,17 +494,18 @@ export const WWMBrowse = () => {
             variant="outlined"
             size="small"
             onClick={() => {
-              setUser(c);
+              setBrowseUser(c);
+              navigate(genPuzzleBrowse(leagueSlug, answerId, username));
             }}
           >
             {c.username} - {c.num_guesses}
           </Button>
         ))}
       </div>
-      {user ? (
+      {browseUser ? (
         <div>
           <div css={{ textAlign: 'center' }}>
-            <Typography variant="h3">{user.username}</Typography>
+            <Typography variant="h3">{browseUser.username}</Typography>
           </div>
           <WWMDisplay league={league} results={results} showKeyboard={false} />
         </div>

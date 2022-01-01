@@ -39,8 +39,6 @@ export function JoinLeague() {
   const [league, setLeague] = useState<League>();
   const [user, setUser]: [{ username: string }, any] = useGetAndSet('user');
 
-  console.log('JoinLeague', leagueSlug, inviteCode, error, league);
-
   async function join() {
     const data = await joinLeague(leagueSlug, inviteCode);
     const j = await data.json();

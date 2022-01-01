@@ -88,7 +88,6 @@ const WWMLeaguesX = () => {
   const [user, setUser]: [{ username: string }, any] = useGetAndSet('user');
 
   async function joinLeague(row: League): Promise<void> {
-    console.log('join', row);
     const data = await fetch(genUrl('leagues/join'), {
       method: 'POST',
       headers: {
@@ -99,13 +98,10 @@ const WWMLeaguesX = () => {
         league_slug: row.league_slug,
       }),
     });
-    console.log('join data', data);
     setLeagues(await getLeagues());
   }
 
   async function leaveLeague(row: League): Promise<void> {
-    console.log('leave', row);
-    console.log('join', row);
     const data = await fetch(genUrl('leagues/leave'), {
       method: 'POST',
       headers: {
@@ -116,7 +112,6 @@ const WWMLeaguesX = () => {
         league_slug: row.league_slug,
       }),
     });
-    console.log('leave data', data);
     setLeagues(await getLeagues());
   }
 

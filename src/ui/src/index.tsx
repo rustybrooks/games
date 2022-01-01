@@ -29,12 +29,10 @@ const styles = {
 
 const genUrl = (fn = '') => `${constants.BASE_URL}/api/user/${fn}`;
 
-const NavBar = ({ history }: { history: any }) => {
+const NavBar = () => {
   const [loginOpen, setLoginOpen] = useGetAndSet('login-open', false);
   const [loginWidget, setLoginWidget] = useGetAndSet('login-widget');
   const [user, setUser]: [{ username: string }, any] = useGetAndSet('user');
-
-  console.log('loginopen!', loginOpen);
 
   function openDrawer() {
     setLoginOpen(true);
@@ -47,7 +45,6 @@ const NavBar = ({ history }: { history: any }) => {
   function logout() {
     localStorage.setItem('api-key', null);
     setUser(null);
-    history.push('/');
   }
 
   async function updateUser() {
@@ -58,7 +55,6 @@ const NavBar = ({ history }: { history: any }) => {
         'X-API-KEY': localStorage.getItem('api-key'),
       },
     });
-    console.log('updateUser', data);
     if (data.status === 403) {
       setUser(null);
     } else {
@@ -71,7 +67,6 @@ const NavBar = ({ history }: { history: any }) => {
     updateUser();
   }, []);
 
-  console.log('user =', user);
   return (
     <div css={styles.root}>
       <AppBar position="static" css={{ flexGrow: 1 }}>
@@ -238,11 +233,11 @@ theme.typography.h2 = {
   },
 };
 
-function AppX({ history }: { history: any }) {
+function AppX() {
   return (
     <ThemeProvider theme={theme}>
       <BrowserRouter>
-        <NavBar history={history} />
+        <NavBar />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/test" element={<Test />} />
@@ -253,6 +248,7 @@ function AppX({ history }: { history: any }) {
           <Route path="/wwm/leagues/:leagueSlug/join/:inviteCode" element={<JoinLeague />} />
           <Route path="/wwm/puzzles/:leagueSlug/:answerId/play" element={<WWM />} />
           <Route path="/wwm/puzzles/:leagueSlug/:answerId/browse" element={<WWMBrowse />} />
+          <Route path="/wwm/puzzles/:leagueSlug/:answerId/browse/:username" element={<WWMBrowse />} />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>
