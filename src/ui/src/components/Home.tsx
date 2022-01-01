@@ -2,8 +2,8 @@ import { Link } from 'react-router-dom';
 import { Typography, Paper } from '@mui/material';
 
 export const Home = () => (
-  <Paper sx={{ width: '100%', mb: 2 }}>
-    <div>
+  <Paper sx={{ width: '100%' }}>
+    <div css={{ padding: '2rem' }}>
       <Typography variant="h2">
         <p>
           Welcome to Words with Melvins, a mastermind-like word puzzle game. This game is based on and heavily influenced by the excellent

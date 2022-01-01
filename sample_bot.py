@@ -14,7 +14,7 @@ session.headers = {
 
 basedir = os.path.dirname(os.path.realpath(__file__))
 
-base_url = 'http://games.rustybrooks.com/api/games/wordle'
+base_url = 'http://games.rustybrooks.com/api/games/wwm'
 # base_url = 'http://localhost:5000'
 dict_file = ''
 wordlist = {}
@@ -74,7 +74,6 @@ def make_one_puzzle_guess(league, puzzle):
 def solve_one_puzzle(league, puzzle):
     while True:
         guess_result = make_one_puzzle_guess(league, puzzle)
-        print(json.dumps(guess_result, indent=2))
         if guess_result['completed']:
             break
 
@@ -85,6 +84,6 @@ def solve_one_puzzle(league, puzzle):
 # This is the name of the current only bot league
 slug = 'bot_league_5l_5m'
 bot_league = get_league(slug)
-puzzles = get_active_puzzles(bot_league)
+puzzles = get_active_puzzles(slug)
 unsolved = [p for p in puzzles if not p['completed']]
 solve_one_puzzle(bot_league, unsolved[0])
