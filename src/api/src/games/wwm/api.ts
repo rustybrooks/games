@@ -267,7 +267,7 @@ const leagueSeriesStats = async (request: Request, response: Response, next: Nex
     return next(new exceptions.HttpNotFound('League not found'));
   }
 
-  const stats = await queries.getLeagueSeriesStats({ league_slug, wordle_league_series_id });
+  const stats = await queries.getLeagueSeriesStats({ league_slug, wordle_league_series_id, sort: '-score' });
   return response.status(200).json(stats);
 };
 
