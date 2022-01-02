@@ -104,6 +104,7 @@ export interface Props<T> {
   rowButtons: ButtonInfoFn<T>[];
   initialRowsPerPage?: number;
   minWidth?: number | string;
+  selectedRows?: any[];
 }
 
 // eslint-disable-next-line import/no-default-export
@@ -116,6 +117,7 @@ export function EnhancedTable<T>({
   rowButtons = null,
   initialRowsPerPage = 10,
   minWidth = 600,
+  selectedRows = [],
 }: Props<T>) {
   const [order, setOrder] = useState<Order>(initialSortOrder);
   const [orderBy, setOrderBy] = useState<keyof T>(initialSortColumn);
@@ -165,7 +167,13 @@ export function EnhancedTable<T>({
                 const labelId = `enhanced-table-checkbox-${index}`;
 
                 return (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={row[mainColumn].toString()}>
+                  <TableRow
+                    hover
+                    selected={selectedRows.includes(row[mainColumn])}
+                    role="checkbox"
+                    tabIndex={-1}
+                    key={row[mainColumn].toString()}
+                  >
                     {headCells.map(c =>
                       c.id === mainColumn ? (
                         <TableCell key={c.id.toString()} component="th" id={labelId} scope={'row'} padding={'none'}>

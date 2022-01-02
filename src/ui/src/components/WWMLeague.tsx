@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import * as eht from './EnhancedTable';
 
 import * as constants from '../constants';
-import { League, LeagueSeries, LeagueStats } from '../../types/wwm';
+import { League, LeagueSeries, LeagueStats, User } from '../../types';
 import { useGetAndSet } from 'react-context-hook';
 import { Link } from '@mui/material';
 
@@ -154,6 +154,7 @@ const statsHeadCells: eht.HeadCell<LeagueStats>[] = [
 
 export function WWMLeagueSeries({ league, seriesCallback }: { league: League; seriesCallback: any }) {
   const [series, setSeries] = useState<LeagueSeries[]>(null);
+  const [active, setActive] = useState<LeagueSeries>(null);
 
   async function getLeagueSeries() {
     const r = await fetch(genUrl('leagues/series'), {
@@ -169,6 +170,7 @@ export function WWMLeagueSeries({ league, seriesCallback }: { league: League; se
     if (r.status === 200) {
       const data = await r.json();
       setSeries(data);
+      setActive(data[0]);
       if (data.length) {
         seriesCallback(data[0]);
       }
@@ -187,6 +189,7 @@ export function WWMLeagueSeries({ league, seriesCallback }: { league: League; se
 
   async function navStats(row: LeagueSeries): Promise<void> {
     seriesCallback(row);
+    setActive(row);
   }
 
   function buttonCallback(row: LeagueSeries): eht.ButtonInfo<LeagueSeries> {
@@ -204,6 +207,7 @@ export function WWMLeagueSeries({ league, seriesCallback }: { league: League; se
         rowButtons={[buttonCallback]}
         initialRowsPerPage={10}
         minWidth="10rem"
+        selectedRows={[active && active.start_date]}
       />
     </TitleBox>
   );
@@ -211,6 +215,7 @@ export function WWMLeagueSeries({ league, seriesCallback }: { league: League; se
 
 export function WWMLeagueSeriesStats({ league, series }: { league: League; series: LeagueSeries }) {
   const [stats, setStats] = useState<LeagueStats[]>(null);
+  const [user, setUser] = useGetAndSet<User>('user');
 
   async function getLeagueStats() {
     const r = await fetch(genUrl('leagues/series_stats'), {
@@ -253,6 +258,7 @@ export function WWMLeagueSeriesStats({ league, series }: { league: League; serie
         initialSortOrder="desc"
         rowButtons={[]}
         initialRowsPerPage={25}
+        selectedRows={[user && user.username]}
       />
     </TitleBox>
   );
