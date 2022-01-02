@@ -1,13 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import * as eht from './EnhancedTable';
 
 import * as constants from '../constants';
 import { League, LeagueSeries, LeagueStats } from '../../types/wwm';
 import { useGetAndSet } from 'react-context-hook';
-import { Box, Button, Modal, Paper, Typography, Link } from '@mui/material';
+import { Link } from '@mui/material';
 
 import { useParams } from 'react-router-dom';
-import { Div, Table, Tr, Td } from './Styled';
+import { Div, Table, Td, Tr } from './Styled';
 import { formatDistance } from 'date-fns';
 import { TitleBox } from './TitleBox';
 
@@ -16,12 +16,8 @@ const genUrl = (fn = '') => `${constants.BASE_URL}/api/games/wwm/${fn}`;
 const ff = ['Roboto', 'Arial', 'sans-serif'].join(',');
 
 const style: { [id: string]: any } = {
-  table: {
-    //borderCollapse: 'collapse',
-    //padding: '3px',
-  },
+  table: {},
   tdHead: {
-    // border: '1px solid black',
     padding: '5px',
     margin: '3px',
     fontWeight: 'bold',
@@ -30,7 +26,6 @@ const style: { [id: string]: any } = {
     background: '#cce',
   },
   tdData: {
-    // border: '1px solid black',
     padding: '5px',
     margin: '3px',
     fontFamily: ff,
@@ -203,9 +198,9 @@ export function WWMLeagueSeries({ league, seriesCallback }: { league: League; se
       <eht.EnhancedTable
         rows={series}
         headCells={seriesHeadCells}
-        mainColumn={'start_date'}
-        initialSortColumn={'start_date'}
-        checkButtons={false}
+        mainColumn="start_date"
+        initialSortColumn="start_date"
+        initialSortOrder="desc"
         rowButtons={[buttonCallback]}
         initialRowsPerPage={10}
         minWidth="10rem"
@@ -254,8 +249,8 @@ export function WWMLeagueSeriesStats({ league, series }: { league: League; serie
         rows={stats}
         headCells={statsHeadCells}
         mainColumn={'username'}
-        initialSortColumn={'score'}
-        checkButtons={false}
+        initialSortColumn="score"
+        initialSortOrder="desc"
         rowButtons={[]}
         initialRowsPerPage={25}
       />
@@ -348,16 +343,12 @@ export function WWMLeague() {
       <table>
         <tbody>
           <tr>
-            <td valign="top" width="400px">
+            <td valign="top">
               <WWMLeagueInfo league={league} />
-            </td>
-            <td rowSpan={2} valign="top">
-              <WWMLeagueSeriesStats league={league} series={series} />
-            </td>
-          </tr>
-          <tr>
-            <td valign="top" width="400px">
               <WWMLeagueSeries league={league} seriesCallback={setSeries} />
+            </td>
+            <td valign="top">
+              <WWMLeagueSeriesStats league={league} series={series} />
             </td>
           </tr>
         </tbody>

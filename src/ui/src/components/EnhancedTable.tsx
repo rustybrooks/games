@@ -1,5 +1,4 @@
 import { useState, MouseEvent, ChangeEvent } from 'react';
-import { alpha } from '@mui/material/styles';
 import { visuallyHidden } from '@mui/utils';
 import {
   Button,
@@ -12,10 +11,7 @@ import {
   TablePagination,
   TableRow,
   TableSortLabel,
-  Toolbar,
-  Typography,
-  Paper,
-  Checkbox,
+  SortDirection,
 } from '@mui/material';
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
@@ -27,28 +23,12 @@ function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   }
   return 0;
 }
-
 type Order = 'asc' | 'desc';
 
-function getComparator<Key extends keyof any>(
-  order: Order,
-  orderBy: Key,
-): (a: { [key in Key]: number | string }, b: { [key in Key]: number | string }) => number {
-  return order === 'desc' ? (a, b) => descendingComparator(a, b, orderBy) : (a, b) => -descendingComparator(a, b, orderBy);
-}
-
-// This method is created for cross-browser compatibility, if you don't
-// need to support IE11, you can use Array.prototype.sort() directly
-function stableSort<T>(array: readonly T[], comparator: (a: T, b: T) => number) {
-  const stabilizedThis = array.map((el, index) => [el, index] as [T, number]);
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) {
-      return order;
-    }
-    return a[1] - b[1];
-  });
-  return stabilizedThis.map(el => el[0]);
+function getComparator<T>(order: Order, orderBy: keyof T): (a: T, b: T) => number {
+  return order === 'desc'
+    ? (a: T, b: T) => descendingComparator<T>(a, b, orderBy)
+    : (a: T, b: T) => -descendingComparator<T>(a, b, orderBy);
 }
 
 export interface HeadCell<T> {
@@ -60,29 +40,16 @@ export interface HeadCell<T> {
 }
 
 interface EnhancedTableProps<T> {
-  checkButtons: boolean;
   rowButtons: any[];
   headCells: HeadCell<T>[];
-  numSelected: number;
   onRequestSort: (event: MouseEvent<unknown>, property: keyof T) => void;
-  onSelectAllClick: (event: ChangeEvent<HTMLInputElement>) => void;
   order: Order;
   orderBy: string;
   rowCount: number;
 }
 
 function EnhancedTableHead<T>(props: EnhancedTableProps<T>) {
-  const {
-    headCells,
-    onSelectAllClick,
-    order,
-    orderBy,
-    numSelected,
-    rowCount,
-    onRequestSort,
-    checkButtons = false,
-    rowButtons = [],
-  } = props;
+  const { headCells, order, orderBy, onRequestSort, rowButtons = [] } = props;
   const createSortHandler = (property: keyof T) => (event: MouseEvent<unknown>) => {
     onRequestSort(event, property);
   };
@@ -90,19 +57,6 @@ function EnhancedTableHead<T>(props: EnhancedTableProps<T>) {
   return (
     <TableHead>
       <TableRow>
-        {checkButtons ? (
-          <TableCell padding="checkbox">
-            <Checkbox
-              color="primary"
-              indeterminate={numSelected > 0 && numSelected < rowCount}
-              checked={rowCount > 0 && numSelected === rowCount}
-              onChange={onSelectAllClick}
-              inputProps={{
-                'aria-label': 'select all desserts',
-              }}
-            />
-          </TableCell>
-        ) : null}
         {headCells.map(headCell => (
           <TableCell
             key={headCell.id.toString()}
@@ -131,28 +85,8 @@ function EnhancedTableHead<T>(props: EnhancedTableProps<T>) {
 }
 
 interface EnhancedTableToolbarProps {
-  numSelected: number;
   loading: boolean;
 }
-
-const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
-  const { numSelected, loading } = props;
-  return (
-    <Toolbar
-      sx={{
-        pl: { sm: 2 },
-        pr: { xs: 1, sm: 1 },
-        ...(numSelected > 0 && {
-          bgcolor: theme => alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
-        }),
-      }}
-    >
-      <Typography sx={{ flex: '1 1 100%' }} color="inherit" variant="subtitle1" component="div">
-        {numSelected > 0 ? `${numSelected} selected` : ''}
-      </Typography>
-    </Toolbar>
-  );
-};
 
 export interface ButtonInfo<T> {
   label: string;
@@ -166,7 +100,7 @@ export interface Props<T> {
   headCells: HeadCell<T>[];
   mainColumn: keyof T;
   initialSortColumn: keyof T;
-  checkButtons: boolean;
+  initialSortOrder?: Order;
   rowButtons: ButtonInfoFn<T>[];
   initialRowsPerPage?: number;
   minWidth?: number | string;
@@ -178,48 +112,20 @@ export function EnhancedTable<T>({
   headCells,
   mainColumn,
   initialSortColumn,
-  checkButtons = false,
+  initialSortOrder = 'asc',
   rowButtons = null,
   initialRowsPerPage = 10,
   minWidth = 600,
 }: Props<T>) {
-  const [order, setOrder] = useState<Order>('asc');
+  const [order, setOrder] = useState<Order>(initialSortOrder);
   const [orderBy, setOrderBy] = useState<keyof T>(initialSortColumn);
-  const [selected, setSelected] = useState<readonly any[]>([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(initialRowsPerPage);
-  const [loading, setLoading] = useState(false);
 
   const handleRequestSort = (event: MouseEvent<unknown>, property: keyof T) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
-  };
-
-  const handleSelectAllClick = (event: ChangeEvent<HTMLInputElement>) => {
-    if (event.target.checked) {
-      const newSelecteds = rows.map(n => n[mainColumn]);
-      setSelected(newSelecteds);
-      return;
-    }
-    setSelected([]);
-  };
-
-  const handleClick = (event: MouseEvent<unknown>, name: string) => {
-    const selectedIndex = selected.indexOf(name);
-    let newSelected: readonly string[] = [];
-
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(selected.slice(0, selectedIndex), selected.slice(selectedIndex + 1));
-    }
-
-    setSelected(newSelected);
   };
 
   const handleChangePage = (event: unknown, newPage: number) => {
@@ -235,8 +141,6 @@ export function EnhancedTable<T>({
     fn(row);
   };
 
-  const isSelected = (name: string) => selected.indexOf(name) !== -1;
-
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
@@ -246,47 +150,22 @@ export function EnhancedTable<T>({
         <Table sx={{ minWidth: minWidth }} aria-labelledby="tableTitle" size="small">
           <EnhancedTableHead
             headCells={headCells}
-            numSelected={selected.length}
             order={order}
             orderBy={orderBy.toString()}
-            onSelectAllClick={handleSelectAllClick}
             onRequestSort={handleRequestSort}
             rowCount={rows.length}
-            checkButtons={checkButtons}
             rowButtons={rowButtons}
           />
           <TableBody>
-            {/* getComparator(order, orderBy) */}
             {rows
               .slice()
-              .sort()
+              .sort(getComparator(order, orderBy))
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row, index) => {
-                const isItemSelected = isSelected(row[mainColumn].toString());
                 const labelId = `enhanced-table-checkbox-${index}`;
 
                 return (
-                  <TableRow
-                    hover
-                    onClick={(event: any) => handleClick(event, row[mainColumn].toString())}
-                    role="checkbox"
-                    aria-checked={isItemSelected}
-                    tabIndex={-1}
-                    key={row[mainColumn].toString()}
-                    selected={isItemSelected}
-                  >
-                    {checkButtons ? (
-                      <TableCell padding="checkbox">
-                        <Checkbox
-                          color="primary"
-                          checked={isItemSelected}
-                          inputProps={{
-                            'aria-labelledby': labelId,
-                          }}
-                        />
-                      </TableCell>
-                    ) : null}
-
+                  <TableRow hover role="checkbox" tabIndex={-1} key={row[mainColumn].toString()}>
                     {headCells.map(c =>
                       c.id === mainColumn ? (
                         <TableCell key={c.id.toString()} component="th" id={labelId} scope={'row'} padding={'none'}>
@@ -306,7 +185,7 @@ export function EnhancedTable<T>({
                           return (
                             <Button
                               size="small"
-                              sx={{ margin: '5px' }}
+                              sx={{ margin: '3x' }}
                               key={buttonInfo.label}
                               disabled={!buttonInfo.activeCallback(row)}
                               variant={'contained'}
@@ -342,7 +221,6 @@ export function EnhancedTable<T>({
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
       />
-      {checkButtons ? <EnhancedTableToolbar loading={loading} numSelected={selected.length} /> : null}
     </Box>
   );
 }

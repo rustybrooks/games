@@ -155,7 +155,6 @@ const WWMLeaguesX = () => {
         headCells={ourheadCells}
         mainColumn={'league_slug'}
         initialSortColumn={'league_name'}
-        checkButtons={false}
         rowButtons={[buttonCallback]}
       />
     </Paper>

@@ -117,8 +117,8 @@ export const WWMGames = () => {
         rows={puzzles}
         headCells={ourheadCells}
         mainColumn={'count'}
-        initialSortColumn={'league_name'}
-        checkButtons={false}
+        initialSortColumn={'active_after'}
+        initialRowsPerPage={10}
         rowButtons={[buttonCallback]}
       />
     </Paper>
