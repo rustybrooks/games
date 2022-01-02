@@ -169,6 +169,7 @@ export interface Props<T> {
   checkButtons: boolean;
   rowButtons: ButtonInfoFn<T>[];
   initialRowsPerPage?: number;
+  minWidth?: number | string;
 }
 
 // eslint-disable-next-line import/no-default-export
@@ -180,6 +181,7 @@ export function EnhancedTable<T>({
   checkButtons = false,
   rowButtons = null,
   initialRowsPerPage = 10,
+  minWidth = 600,
 }: Props<T>) {
   const [order, setOrder] = useState<Order>('asc');
   const [orderBy, setOrderBy] = useState<keyof T>(initialSortColumn);
@@ -240,109 +242,107 @@ export function EnhancedTable<T>({
 
   return (
     <Box sx={{ width: '100%' }}>
-      <Paper sx={{ width: '100%', mb: 2 }}>
-        <TableContainer>
-          <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size="small">
-            <EnhancedTableHead
-              headCells={headCells}
-              numSelected={selected.length}
-              order={order}
-              orderBy={orderBy.toString()}
-              onSelectAllClick={handleSelectAllClick}
-              onRequestSort={handleRequestSort}
-              rowCount={rows.length}
-              checkButtons={checkButtons}
-              rowButtons={rowButtons}
-            />
-            <TableBody>
-              {/* getComparator(order, orderBy) */}
-              {rows
-                .slice()
-                .sort()
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row, index) => {
-                  const isItemSelected = isSelected(row[mainColumn].toString());
-                  const labelId = `enhanced-table-checkbox-${index}`;
+      <TableContainer>
+        <Table sx={{ minWidth: minWidth }} aria-labelledby="tableTitle" size="small">
+          <EnhancedTableHead
+            headCells={headCells}
+            numSelected={selected.length}
+            order={order}
+            orderBy={orderBy.toString()}
+            onSelectAllClick={handleSelectAllClick}
+            onRequestSort={handleRequestSort}
+            rowCount={rows.length}
+            checkButtons={checkButtons}
+            rowButtons={rowButtons}
+          />
+          <TableBody>
+            {/* getComparator(order, orderBy) */}
+            {rows
+              .slice()
+              .sort()
+              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              .map((row, index) => {
+                const isItemSelected = isSelected(row[mainColumn].toString());
+                const labelId = `enhanced-table-checkbox-${index}`;
 
-                  return (
-                    <TableRow
-                      hover
-                      onClick={(event: any) => handleClick(event, row[mainColumn].toString())}
-                      role="checkbox"
-                      aria-checked={isItemSelected}
-                      tabIndex={-1}
-                      key={row[mainColumn].toString()}
-                      selected={isItemSelected}
-                    >
-                      {checkButtons ? (
-                        <TableCell padding="checkbox">
-                          <Checkbox
-                            color="primary"
-                            checked={isItemSelected}
-                            inputProps={{
-                              'aria-labelledby': labelId,
-                            }}
-                          />
+                return (
+                  <TableRow
+                    hover
+                    onClick={(event: any) => handleClick(event, row[mainColumn].toString())}
+                    role="checkbox"
+                    aria-checked={isItemSelected}
+                    tabIndex={-1}
+                    key={row[mainColumn].toString()}
+                    selected={isItemSelected}
+                  >
+                    {checkButtons ? (
+                      <TableCell padding="checkbox">
+                        <Checkbox
+                          color="primary"
+                          checked={isItemSelected}
+                          inputProps={{
+                            'aria-labelledby': labelId,
+                          }}
+                        />
+                      </TableCell>
+                    ) : null}
+
+                    {headCells.map(c =>
+                      c.id === mainColumn ? (
+                        <TableCell key={c.id.toString()} component="th" id={labelId} scope={'row'} padding={'none'}>
+                          {c.formatter ? c.formatter(row, row[c.id]) : row[c.id]}
                         </TableCell>
-                      ) : null}
-
-                      {headCells.map(c =>
-                        c.id === mainColumn ? (
-                          <TableCell key={c.id.toString()} component="th" id={labelId} scope={'row'} padding={'none'}>
-                            {c.formatter ? c.formatter(row, row[c.id]) : row[c.id]}
-                          </TableCell>
-                        ) : (
-                          <TableCell key={c.id.toString()} align={c.numeric ? 'right' : 'left'}>
-                            {c.formatter ? c.formatter(row, row[c.id]) : row[c.id]}
-                          </TableCell>
-                        ),
-                      )}
-                      {rowButtons && rowButtons.length ? (
-                        <TableCell size="small" key="buttons">
-                          {rowButtons.map(b => {
-                            const buttonInfo = b(row);
-
-                            return (
-                              <Button
-                                size="small"
-                                sx={{ margin: '5px' }}
-                                key={buttonInfo.label}
-                                disabled={!buttonInfo.activeCallback(row)}
-                                variant={'contained'}
-                                onClick={event => handleButtonClick(row, buttonInfo.callback)}
-                              >
-                                {buttonInfo.label}
-                              </Button>
-                            );
-                          })}
+                      ) : (
+                        <TableCell key={c.id.toString()} align={c.numeric ? 'right' : 'left'}>
+                          {c.formatter ? c.formatter(row, row[c.id]) : row[c.id]}
                         </TableCell>
-                      ) : null}
-                    </TableRow>
-                  );
-                })}
-              {emptyRows > 0 && (
-                <TableRow
-                  style={{
-                    height: 33 * emptyRows,
-                  }}
-                >
-                  <TableCell colSpan={6} />
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
-          component="div"
-          count={rows.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
-        {checkButtons ? <EnhancedTableToolbar loading={loading} numSelected={selected.length} /> : null}
-      </Paper>
+                      ),
+                    )}
+                    {rowButtons && rowButtons.length ? (
+                      <TableCell size="small" key="buttons">
+                        {rowButtons.map(b => {
+                          const buttonInfo = b(row);
+
+                          return (
+                            <Button
+                              size="small"
+                              sx={{ margin: '5px' }}
+                              key={buttonInfo.label}
+                              disabled={!buttonInfo.activeCallback(row)}
+                              variant={'contained'}
+                              onClick={event => handleButtonClick(row, buttonInfo.callback)}
+                            >
+                              {buttonInfo.label}
+                            </Button>
+                          );
+                        })}
+                      </TableCell>
+                    ) : null}
+                  </TableRow>
+                );
+              })}
+            {emptyRows > 0 && (
+              <TableRow
+                style={{
+                  height: 33 * emptyRows,
+                }}
+              >
+                <TableCell colSpan={6} />
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <TablePagination
+        rowsPerPageOptions={[5, 10, 25]}
+        component="div"
+        count={rows.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+      />
+      {checkButtons ? <EnhancedTableToolbar loading={loading} numSelected={selected.length} /> : null}
     </Box>
   );
 }

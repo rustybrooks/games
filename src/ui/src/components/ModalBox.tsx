@@ -20,7 +20,7 @@ interface ModalProps {
   width: string;
 }
 
-export const ModalBox = forwardRef((props: any, ref: any) => {
+export const ModalBox = forwardRef((props: ModalProps, ref: any) => {
   return (
     <Box tabIndex={-1} sx={{ ...style.modalBox, width: props.width }} ref={ref}>
       {props.children}

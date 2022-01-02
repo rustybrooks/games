@@ -9,6 +9,7 @@ import { Box, Button, Modal, Paper, Typography, Link } from '@mui/material';
 import { useParams } from 'react-router-dom';
 import { Div, Table, Tr, Td } from './Styled';
 import { formatDistance } from 'date-fns';
+import { TitleBox } from './TitleBox';
 
 const genUrl = (fn = '') => `${constants.BASE_URL}/api/games/wwm/${fn}`;
 
@@ -81,41 +82,41 @@ const statsHeadCells: eht.HeadCell<LeagueStats>[] = [
     label: 'score',
     formatter: floatFormatter2,
   },
-  {
-    id: 'raw_score',
-    numeric: true,
-    disablePadding: false,
-    label: 'raw score',
-    formatter: intFormatter,
-  },
-  {
-    id: 'avg_guesses',
-    numeric: true,
-    disablePadding: false,
-    label: 'avg guesses',
-    formatter: floatFormatter2,
-  },
+  // {
+  //   id: 'raw_score',
+  //   numeric: true,
+  //   disablePadding: false,
+  //   label: 'raw score',
+  //   formatter: intFormatter,
+  // },
+  // {
+  //   id: 'avg_guesses',
+  //   numeric: true,
+  //   disablePadding: false,
+  //   label: 'avg guesses',
+  //   formatter: floatFormatter2,
+  // },
   {
     id: 'min_guesses_correct',
     numeric: true,
     disablePadding: false,
-    label: 'min guesses correct',
+    label: 'min guesses (correct)',
     formatter: intFormatter,
   },
   {
     id: 'avg_guesses_correct',
     numeric: true,
     disablePadding: false,
-    label: 'avg guesses correct',
+    label: 'avg guesses (correct)',
     formatter: floatFormatter2,
   },
-  {
-    id: 'max_guesses',
-    numeric: true,
-    disablePadding: false,
-    label: 'max guesses',
-    formatter: intFormatter,
-  },
+  // {
+  //   id: 'max_guesses',
+  //   numeric: true,
+  //   disablePadding: false,
+  //   label: 'max guesses',
+  //   formatter: intFormatter,
+  // },
   {
     id: 'done',
     numeric: true,
@@ -195,7 +196,7 @@ export function WWMLeagueSeries({ league, seriesCallback }: { league: League; se
   }
 
   return (
-    <Div sx={{ width: '400px' }}>
+    <TitleBox title="League Series">
       <eht.EnhancedTable
         rows={series}
         headCells={seriesHeadCells}
@@ -204,8 +205,9 @@ export function WWMLeagueSeries({ league, seriesCallback }: { league: League; se
         checkButtons={false}
         rowButtons={[buttonCallback]}
         initialRowsPerPage={10}
+        minWidth="10rem"
       />
-    </Div>
+    </TitleBox>
   );
 }
 
@@ -241,15 +243,17 @@ export function WWMLeagueSeriesStats({ league, series }: { league: League; serie
   }
 
   return (
-    <eht.EnhancedTable
-      rows={stats}
-      headCells={statsHeadCells}
-      mainColumn={'username'}
-      initialSortColumn={'score'}
-      checkButtons={false}
-      rowButtons={[]}
-      initialRowsPerPage={25}
-    />
+    <TitleBox title="Series Stats">
+      <eht.EnhancedTable
+        rows={stats}
+        headCells={statsHeadCells}
+        mainColumn={'username'}
+        initialSortColumn={'score'}
+        checkButtons={false}
+        rowButtons={[]}
+        initialRowsPerPage={25}
+      />
+    </TitleBox>
   );
 }
 
@@ -257,7 +261,7 @@ export function WWMLeagueInfo({ league }: { league: League }) {
   const inviteLink = `${constants.BASE_URL}/wwm/leagues/${league.league_slug}/join${league.is_private ? `/${league.invite_code}` : ''}`;
 
   return (
-    <Div>
+    <TitleBox title="League Info" width="25rem">
       <Table sx={style.table}>
         <tbody>
           <Tr>
@@ -303,7 +307,7 @@ export function WWMLeagueInfo({ league }: { league: League }) {
           </Tr>
         </tbody>
       </Table>
-    </Div>
+    </TitleBox>
   );
 }
 
@@ -340,9 +344,6 @@ export function WWMLeague() {
 
   return (
     <Div>
-      <Typography sx={{ padding: '10px' }}>
-        This is an ugly work in progress that is only here so that I can look at the results and decide to do next. Please ignore it.
-      </Typography>
       <table>
         <tbody>
           <tr>
