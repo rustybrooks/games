@@ -17,21 +17,25 @@ const ff = ['Roboto', 'Arial', 'sans-serif'].join(',');
 
 const style: { [id: string]: any } = {
   table: {
-    borderCollapse: 'collapse',
+    //borderCollapse: 'collapse',
     //padding: '3px',
   },
   tdHead: {
-    border: '1px solid black',
-    padding: '3px',
+    // border: '1px solid black',
+    padding: '5px',
+    margin: '3px',
     fontWeight: 'bold',
     fontFamily: ff,
     textAlign: 'right',
+    background: '#cce',
   },
   tdData: {
-    border: '1px solid black',
-    padding: '3px',
+    // border: '1px solid black',
+    padding: '5px',
+    margin: '3px',
     fontFamily: ff,
     textAlign: 'left',
+    background: '#eee',
   },
 };
 
@@ -93,7 +97,6 @@ const statsHeadCells: eht.HeadCell<LeagueStats>[] = [
   //   id: 'avg_guesses',
   //   numeric: true,
   //   disablePadding: false,
-  //   label: 'avg guesses',
   //   formatter: floatFormatter2,
   // },
   {
@@ -242,8 +245,11 @@ export function WWMLeagueSeriesStats({ league, series }: { league: League; serie
     return <div>Loading...</div>;
   }
 
+  const d1 = formatDistance(new Date(series.start_date), new Date(), { addSuffix: true });
+  const d2 = formatDistance(new Date(series.end_date), new Date(), { addSuffix: true });
+
   return (
-    <TitleBox title="Series Stats">
+    <TitleBox title={`Series Stats - ${d1} to ${d2}`}>
       <eht.EnhancedTable
         rows={stats}
         headCells={statsHeadCells}
@@ -261,14 +267,9 @@ export function WWMLeagueInfo({ league }: { league: League }) {
   const inviteLink = `${constants.BASE_URL}/wwm/leagues/${league.league_slug}/join${league.is_private ? `/${league.invite_code}` : ''}`;
 
   return (
-    <TitleBox title="League Info" width="25rem">
+    <TitleBox title={league.league_name} width="25rem">
       <Table sx={style.table}>
         <tbody>
-          <Tr>
-            <Td sx={{ ...style.tdHead, textAlign: 'center' }} colSpan={4}>
-              {league.league_name}
-            </Td>
-          </Tr>
           <Tr>
             <Td sx={style.tdHead}>Created</Td>
             <Td sx={style.tdData}>{formatDistance(new Date(league.create_date), new Date(), { addSuffix: true })}</Td>

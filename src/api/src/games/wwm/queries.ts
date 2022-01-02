@@ -85,7 +85,7 @@ export async function getLeagueSeriesStats({
   const possible = 'sum(case when a.active_after < now() then 1 else 0 end)';
   const wins = 'sum(case when correct then 1 else 0 end)';
   const done = 'sum(case when not completed or wordle_status_id is null then 0 else 1 end)';
-  const raw_score = 'sum(case when correct then l.max_guesses-num_guesses else 0 end)';
+  const raw_score = 'sum(case when correct then 1+l.max_guesses-num_guesses else 0 end)';
 
   const query = `
       select

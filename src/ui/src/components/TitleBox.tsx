@@ -24,7 +24,7 @@ export const TitleBox = forwardRef((props: PropsTypes, ref: any) => {
 
   return (
     <Box tabIndex={-1} sx={{ ...style.modalBox, width: props.width }} ref={ref}>
-      <Container sx={{ background: bg, width: '100%' }}>
+      <Container sx={{ background: bg, width: '100%', padding: '.25rem' }}>
         <Typography>{props.title}</Typography>
       </Container>
       <Box sx={{ padding: '.5rem' }}>{props.children}</Box>
