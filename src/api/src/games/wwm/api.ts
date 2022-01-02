@@ -135,7 +135,7 @@ const check = async (request: Request, response: Response, next: NextFunction) =
       result: utils.evaluateGuess(answer.answer, g),
     })),
     correct: guess === answer.answer,
-    completed: guesses.length === league.max_guesses,
+    completed: guess === answer.answer || guesses.length === league.max_guesses,
     answer: guesses.length === league.max_guesses ? answer.answer : null,
   });
 };

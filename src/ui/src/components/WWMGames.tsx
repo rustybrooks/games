@@ -76,7 +76,7 @@ const ourheadCells: eht.HeadCell<EnumeratedPuzzle>[] = [
   },
 ];
 
-export const WWMGames = () => {
+export function WWMGames() {
   const [leagues, setLeagues] = useGetAndSet<League[]>('leagues');
   const [puzzles, setPuzzles] = useGetAndSet<EnumeratedPuzzle[]>('active-puzzles');
   const [user, setUser]: [{ username: string }, any] = useGetAndSet('user');
@@ -116,11 +116,11 @@ export const WWMGames = () => {
       <eht.EnhancedTable
         rows={puzzles}
         headCells={ourheadCells}
-        mainColumn={'count'}
-        initialSortColumn={'active_after'}
+        mainColumn="count"
+        initialSortColumn="active_after"
         initialRowsPerPage={10}
         rowButtons={[buttonCallback]}
       />
     </Paper>
   );
-};
+}

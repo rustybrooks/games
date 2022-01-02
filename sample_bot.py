@@ -31,7 +31,7 @@ class HttpExceptionUnknown(Exception):
 
 class HttpExceptionBadRequest(Exception):
     def __init__(self, data):
-        super().__init__(data["details"])
+        self.message = data["detail"]
 
 
 # A simple convenience function to post data.  It will raise an exception for
@@ -55,6 +55,7 @@ def words(length):
         wordlist[length] = [x for x in dwords if len(x) == length]
 
     return wordlist[length]
+
 
 # If things are working, you can try this as the simplest way to see if you
 # have the right API key for your expected user
@@ -133,14 +134,16 @@ def solve_one_puzzle(league, puzzle):
         # This is just to make sure if there's a problem or a bug you don't slam the server too hard.
         time.sleep(1)
 
-# uncomment this to print out the username of the user attached to the api key you're
-# providing.  (Or a message that indicates auth failed, which looks like
-# {"status":403, "detail":"unauthorized"}
-# test_connectivity()
 
-# This is the name of the current only bot league
-slug = "bot_league_5l_5m"
-bot_league = get_league(slug)
-puzzles = get_active_puzzles(slug)
-unsolved = [p for p in puzzles if not p["completed"]]
-solve_one_puzzle(bot_league, unsolved[0])
+if __name__ == "__main__":
+    # uncomment this to print out the username of the user attached to the api key you're
+    # providing.  (Or a message that indicates auth failed, which looks like
+    # {"status":403, "detail":"unauthorized"}
+    # test_connectivity()
+
+    # This is the name of the current only bot league
+    slug = "bot_league_5l_5m"
+    bot_league = get_league(slug)
+    puzzles = get_active_puzzles(slug)
+    unsolved = [p for p in puzzles if not p["completed"]]
+    solve_one_puzzle(bot_league, unsolved[0])
