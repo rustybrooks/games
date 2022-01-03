@@ -525,7 +525,7 @@ export const WWMBrowse = () => {
     if (league) {
       getCompletedUsers();
     }
-  }, [answerId, leagues]);
+  }, [answerId, leagues, user]);
 
   useEffect(() => {
     (async () => {
@@ -583,6 +583,14 @@ export const WWMBrowse = () => {
                   Join League and Play
                 </Button>
               </Div>
+            </Div>
+          ) : null}
+          {error === 'unauthorized' ? (
+            <Div>
+              <Typography>
+                You can not view the results of this puzzle because you are not logged into the site. Use the Login button at the top right
+                to log in.
+              </Typography>
             </Div>
           ) : null}
         </TitleBox>

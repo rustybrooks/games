@@ -27,7 +27,7 @@ export const isLoggedIn = async (request: Request) => {
 
 export const requireLogin = (response: Response, next: NextFunction) => {
   if (response.locals.user === null) {
-    throw new exceptions.HttpException(403, 'unauthorized');
+    throw new exceptions.HttpException(403, 'unauthorized', 'unauthorized');
     // next(new exceptions.HttpException(403, 'unauthorized'));
     // throw new exceptions.HaltException('halt'); // prevent further execution?
   }

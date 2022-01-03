@@ -175,6 +175,9 @@ function LoginX({ updateUser, history }: { updateUser: any; history: any }) {
               label="Password"
               type="password"
               onChange={(event: any) => setPassword(event.target.value)}
+              onKeyPress={event => {
+                event.key.toLowerCase() === 'enter' ? doLogin() : null;
+              }}
             />
           </FormControl>
         </FormGroup>
