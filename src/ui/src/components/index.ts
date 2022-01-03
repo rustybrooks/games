@@ -7,3 +7,4 @@ export * from './WWMGames';
 export * from './WWMLeagues';
 export * from './WWMLeague';
 export * from './JoinLeague';
+export * from './JoinLeaguePlay';

@@ -16,7 +16,8 @@ import { getLeagues } from './WWMLeagues';
 
 import { Cell, Div } from './Styled';
 import { ModalBox } from './ModalBox';
-import { genActivePuzzles, genPuzzleBrowse } from '../routes';
+import { genActivePuzzles, genJoinLeague, genJoinLeagueAndPlay, genLeague, genPuzzleBrowse, genPuzzlePlay } from '../routes';
+import { TitleBox } from './TitleBox';
 
 function guessesToCategories(results: any) {
   const rightKeys: string[] = [];
@@ -477,7 +478,7 @@ export const WWMBrowse = () => {
       }
     } else {
       const data = await r.json();
-      setError(data.detail);
+      setError(data.detail_code);
     }
   }
 
@@ -543,12 +544,56 @@ export const WWMBrowse = () => {
     };
   }, [results]);
 
+  if (error) {
+    return (
+      <div
+        onKeyPress={event => {
+          event.key.toLowerCase() === 'enter' ? navigate(genPuzzlePlay(leagueSlug, answerId)) : null;
+        }}
+      >
+        <TitleBox title={`${league.league_name}`} width="40rem" sx={{ margin: 'auto', marginTop: '5rem' }}>
+          {error === 'not_completed' ? (
+            <Div>
+              <Typography>
+                You haven't completed this puzzle, so until you do, you can't see other people's results. If you'd like to play the puzle
+                now, click the Play button.
+              </Typography>
+              <Div sx={{ textAlign: 'right' }}>
+                <Button variant="contained" onClick={() => navigate(genPuzzlePlay(leagueSlug, answerId))}>
+                  Play
+                </Button>
+              </Div>
+            </Div>
+          ) : null}
+          {error === 'not_found' ? (
+            <Div>
+              <Typography>Wasn't able to find a Words with Melvins puzzle matching this url. Not sure what went wrong!</Typography>
+              <br />
+              <Typography>
+                Maybe <Link href={genActivePuzzles()}>look at the active puzzles</Link> and see what's there, or look at{' '}
+                <Link href={genLeague(leagueSlug)}>the league page</Link> for this leage?
+              </Typography>
+            </Div>
+          ) : null}
+          {error === 'not_in_league' ? (
+            <Div>
+              <Typography>You can not view the results of this puzzle because you are not a member of the league it's in.</Typography>
+              <Div sx={{ textAlign: 'right' }}>
+                <Button variant="contained" onClick={() => navigate(genJoinLeagueAndPlay(leagueSlug, answerId))}>
+                  Join League and Play
+                </Button>
+              </Div>
+            </Div>
+          ) : null}
+        </TitleBox>
+      </div>
+    );
+  }
+
   if (!completed.length) {
     return (
       <div css={{ textAlign: 'center', padding: '10px' }}>
-        <Typography variant="h3" color={error ? 'red' : 'black'}>
-          {error || 'Loading...'}
-        </Typography>
+        <Typography variant="h3">Loading...</Typography>
       </div>
     );
   }

@@ -7,7 +7,7 @@ import { css } from '@emotion/react';
 import { AppBar, Button, Drawer, Typography, Toolbar } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import * as constants from './constants';
-import { WWM, WWMBots, WWMLeague, WWMLeagues, WWMGames, WWMBrowse, Login, Home, Test, JoinLeague } from './components';
+import { WWM, WWMBots, WWMLeague, WWMLeagues, WWMGames, WWMBrowse, Login, Home, Test, JoinLeague, JoinLeaguePlay } from './components';
 
 const styles = {
   root: css({
@@ -246,6 +246,7 @@ function AppX() {
           <Route path="/wwm/leagues" element={<WWMLeagues />} />
           <Route path="/wwm/leagues/:leagueSlug" element={<WWMLeague />} />
           <Route path="/wwm/leagues/:leagueSlug/join/:inviteCode" element={<JoinLeague />} />
+          <Route path="/wwm/leagues/:leagueSlug/join_play/:answerId" element={<JoinLeaguePlay />} />
           <Route path="/wwm/puzzles/:leagueSlug/:answerId/play" element={<WWM />} />
           <Route path="/wwm/puzzles/:leagueSlug/:answerId/browse" element={<WWMBrowse />} />
           <Route path="/wwm/puzzles/:leagueSlug/:answerId/browse/:username" element={<WWMBrowse />} />

@@ -40,13 +40,13 @@ export async function getLeagues({
   const joins = [];
   const extraCols = [];
   if (user_id) {
-    where.push('(not is_private or (user_id is not null and active))');
+    where.push('(not is_private or (user_id is not null))');
     bindvars.user_id = user_id;
-    extraCols.push('case when user_id is null or not active then false else true end as is_member');
+    extraCols.push('case when user_id is null then false else true end as is_member');
     joins.push(
       `${
         isMemberOnly ? '' : 'left '
-      }join wordle_league_members wlm on (wlm.wordle_league_id=wl.wordle_league_id and wlm.user_id=$(user_id))`,
+      }join wordle_league_members wlm on (wlm.wordle_league_id=wl.wordle_league_id and wlm.user_id=$(user_id) and wlm.active)`,
     );
   }
   // console.log(extraCols, user_id);

@@ -77,7 +77,12 @@ const check = async (request: Request, response: Response, next: NextFunction) =
 
   const league = await queries.getLeague({ league_slug, user_id: response.locals.user.user_id, isMemberOnly: true });
   if (!league) {
-    return next(new exceptions.HttpNotFound('League not found'));
+    const league2 = await queries.getLeague({ league_slug });
+    if (league2) {
+      return next(new exceptions.HttpBadRequest('You are not in this league', 'not_in_league'));
+    } else {
+      return next(new exceptions.HttpNotFound('League not found'));
+    }
   }
 
   const abDate = new Date();
@@ -150,7 +155,12 @@ const guesses = async (request: Request, response: Response, next: NextFunction)
 
   const league = await queries.getLeague({ league_slug, user_id: response.locals.user.user_id, isMemberOnly: true });
   if (!league) {
-    return next(new exceptions.HttpNotFound('League not found'));
+    const league2 = await queries.getLeague({ league_slug });
+    if (league2) {
+      return next(new exceptions.HttpBadRequest('You are not in this league', 'not_in_league'));
+    } else {
+      return next(new exceptions.HttpNotFound('League not found'));
+    }
   }
 
   const answer = await queries.answer({ league_slug, wordle_answer_id });
@@ -161,7 +171,7 @@ const guesses = async (request: Request, response: Response, next: NextFunction)
   if (user_id) {
     const ourStatus = await queries.wordleStatuses({ wordle_answer_id, completed: true, user_id: response.locals.user.user_id });
     if (!ourStatus.length) {
-      return next(new exceptions.HttpBadRequest('You have not completed this puzzle'));
+      return next(new exceptions.HttpBadRequest('You have not completed this puzzle', 'not_completed'));
     }
   }
 
@@ -197,7 +207,12 @@ const activePuzzles = async (request: Request, response: Response, next: NextFun
   if (league_slug) {
     const league = await queries.getLeague({ league_slug, user_id: response.locals.user.user_id, isMemberOnly: true });
     if (!league) {
-      return next(new exceptions.HttpNotFound('League not found'));
+      const league2 = await queries.getLeague({ league_slug });
+      if (league2) {
+        return next(new exceptions.HttpBadRequest('You are not in this league', 'not_in_league'));
+      } else {
+        return next(new exceptions.HttpNotFound('League not found'));
+      }
     }
   }
 
@@ -215,7 +230,12 @@ const completedUsers = async (request: Request, response: Response, next: NextFu
 
   const league = await queries.getLeague({ league_slug, user_id: response.locals.user.user_id, isMemberOnly: true });
   if (!league) {
-    return next(new exceptions.HttpNotFound('League not found'));
+    const league2 = await queries.getLeague({ league_slug });
+    if (league2) {
+      return next(new exceptions.HttpBadRequest('You are not in this league', 'not_in_league'));
+    } else {
+      return next(new exceptions.HttpNotFound('League not found'));
+    }
   }
 
   const answer = await queries.answer({ league_slug, wordle_answer_id });
@@ -225,7 +245,7 @@ const completedUsers = async (request: Request, response: Response, next: NextFu
 
   const ourStatus = await queries.wordleStatuses({ wordle_answer_id, user_id: response.locals.user.user_id, completed: true });
   if (!ourStatus.length) {
-    return next(new exceptions.HttpBadRequest('You have not completed this puzzle'));
+    return next(new exceptions.HttpBadRequest('You have not completed this puzzle', 'not_completed'));
   }
 
   const data = await queries.wordleStatuses({ wordle_answer_id, completed: true, sort: ['-correct_letters,num_guesses,ws.end_date'] });
@@ -237,7 +257,12 @@ const leagueInfo = async (request: Request, response: Response, next: NextFuncti
 
   const league = await queries.getLeague({ league_slug, user_id: response.locals.user ? response.locals.user.user_id : null });
   if (!league) {
-    return next(new exceptions.HttpNotFound('League not found'));
+    const league2 = await queries.getLeague({ league_slug });
+    if (league2) {
+      return next(new exceptions.HttpBadRequest('You are not in this league', 'not_in_league'));
+    } else {
+      return next(new exceptions.HttpNotFound('League not found'));
+    }
   }
 
   return response.status(200).json(league);
@@ -248,7 +273,12 @@ const leagueSeries = async (request: Request, response: Response, next: NextFunc
 
   const league = await queries.getLeague({ league_slug, user_id: response.locals.user ? response.locals.user.user_id : null });
   if (!league) {
-    return next(new exceptions.HttpNotFound('League not found'));
+    const league2 = await queries.getLeague({ league_slug });
+    if (league2) {
+      return next(new exceptions.HttpBadRequest('You are not in this league', 'not_in_league'));
+    } else {
+      return next(new exceptions.HttpNotFound('League not found'));
+    }
   }
 
   const series = await queries.getleagueSeries({
@@ -264,7 +294,12 @@ const leagueSeriesStats = async (request: Request, response: Response, next: Nex
 
   const league = await queries.getLeague({ league_slug, user_id: response.locals.user ? response.locals.user.user_id : null });
   if (!league) {
-    return next(new exceptions.HttpNotFound('League not found'));
+    const league2 = await queries.getLeague({ league_slug });
+    if (league2) {
+      return next(new exceptions.HttpBadRequest('You are not in this league', 'not_in_league'));
+    } else {
+      return next(new exceptions.HttpNotFound('League not found'));
+    }
   }
 
   const stats = await queries.getLeagueSeriesStats({ league_slug, wordle_league_series_id, sort: '-score' });

@@ -17,9 +17,10 @@ function errorMiddleware(error: HttpException, request: Request, response: Respo
   // console.log('errorMiddleware', error);
   const status = error.status || 500;
   const message = error.message || 'Something went wrong';
+  const detail_code = error.detail_code || 'unknown';
   response.status(status).send({
-    status,
     detail: message,
+    detail_code: detail_code,
   });
 }
 

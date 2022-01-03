@@ -5,27 +5,30 @@ export class HttpException extends Error {
 
   message: string;
 
-  constructor(status: number, message: string) {
-    super(message);
+  detail_code: string;
+
+  constructor(status: number, detail: string, detail_code: string = null) {
+    super(detail);
     this.status = status;
-    this.message = message;
+    this.message = detail;
+    this.detail_code = detail_code;
   }
 }
 
 export class HttpForbidden extends HttpException {
-  constructor(message = 'forbidden') {
-    super(403, message);
+  constructor(detail = 'forbidden', detail_code = 'forbidden') {
+    super(403, detail, detail_code);
   }
 }
 
 export class HttpBadRequest extends HttpException {
-  constructor(message = 'bad request') {
-    super(400, message);
+  constructor(detail = 'bad request', detail_code = 'bad_request') {
+    super(400, detail, detail_code);
   }
 }
 
 export class HttpNotFound extends HttpException {
-  constructor(message = 'not found') {
-    super(404, message);
+  constructor(detail = 'not found', detail_code = 'not_found') {
+    super(404, detail, detail_code);
   }
 }
