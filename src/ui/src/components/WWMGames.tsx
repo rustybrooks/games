@@ -1,11 +1,14 @@
 import { useEffect } from 'react';
 import { useGetAndSet } from 'react-context-hook';
-import { Paper, Typography, Link } from '@mui/material';
+import { Paper, Typography, Link, Button } from '@mui/material';
 import { formatDistance } from 'date-fns';
 import { useNavigate } from 'react-router';
 import * as eht from './EnhancedTable';
 import { ActivePuzzle, League } from '../../types/wwm';
 import { getActivePuzzles, getLeagues } from './WWMLeagues';
+import { TitleBox } from './TitleBox';
+import { Div } from './Styled';
+import { genLeagues, genPuzzlePlay } from '../routes';
 
 type EnumeratedPuzzle = ActivePuzzle & { count: number };
 
@@ -106,9 +109,21 @@ export function WWMGames() {
   function buttonCallback(row: EnumeratedPuzzle): eht.ButtonInfo<EnumeratedPuzzle> {
     if (row.completed) {
       return { label: 'Browse', callback: navBrowse, activeCallback: () => true };
-    } else {
-      return { label: 'Play', callback: navPlay, activeCallback: () => true };
     }
+    return { label: 'Play', callback: navPlay, activeCallback: () => true };
+  }
+
+  if (!user) {
+    return (
+      <TitleBox title="No Words with Melvins puzzles available" width="40rem" sx={{ margin: 'auto', marginTop: '5rem' }}>
+        <Div>
+          <Typography>
+            It looks like you're not logged in, so there aren't any puzzles for you to play. Log in using the menu at the top right, make
+            sure <Link href={genLeagues()}>you are in some leagues</Link>, and try again.
+          </Typography>
+        </Div>
+      </TitleBox>
+    );
   }
 
   return (

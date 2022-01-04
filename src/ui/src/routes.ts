@@ -5,7 +5,7 @@ export function genActivePuzzles() {
 export function genPuzzleBrowse(leagueSlug: string, answerId: string, username: string = null) {
   let url = `/wwm/puzzles/${leagueSlug}/${answerId}/browse`;
   if (username) {
-    url += '/' + username;
+    url += `/${username}`;
   }
   return url;
 }
@@ -18,10 +18,14 @@ export function genLeague(leagueSlug: string) {
   return `/wwm/leagues/${leagueSlug}`;
 }
 
+export function genLeagues() {
+  return `/wwm/leagues`;
+}
+
 export function genJoinLeague(leagueSlug: string, inviteCode: string = null, answerId: string = null) {
   let url = `/wwm/leagues/${leagueSlug}/join`;
   if (inviteCode) {
-    url += '/' + inviteCode;
+    url += `/${inviteCode}`;
   }
   return url;
 }

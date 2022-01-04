@@ -134,11 +134,10 @@ const WWMLeaguesX = () => {
   }
 
   function buttonCallback(row: League): eht.ButtonInfo<League> {
-    if (canJoin(row)) {
-      return { label: 'Join', callback: joinLeague, activeCallback: () => true };
-    } else {
-      return { label: 'Leave', callback: leaveLeague, activeCallback: () => true };
+    if (canLeave(row)) {
+      return { label: 'Leave', callback: leaveLeague, activeCallback: () => canLeave(row) || canJoin(row) };
     }
+    return { label: 'Join', callback: joinLeague, activeCallback: () => canLeave(row) || canJoin(row) };
   }
 
   return (
