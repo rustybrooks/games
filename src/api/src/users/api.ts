@@ -40,6 +40,11 @@ const signup = async (request: Request, response: Response, next: NextFunction) 
     errors.username = 'Username must be at least 4 characters';
   }
 
+  let re = /^[a-z,A-Z,0-9,\-,_]+$/;
+  if (!username.match(re)) {
+    errors.username = 'Username must be composed of only letters, numbers, _ and -';
+  }
+
   if (password !== password2) {
     errors.password2 = 'Passwords do not match';
   }

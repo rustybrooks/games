@@ -309,7 +309,7 @@ export const WWM = () => {
       console.log('puzzle complete', buttonx);
 
       if (buttonx == 'enter') {
-        navigate(genActivePuzzles());
+        navigate(genPuzzleBrowse(leagueSlug, answerId));
         setOpen(false);
       }
 
@@ -386,17 +386,18 @@ export const WWM = () => {
             {status.error && status.error.length ? status.error : status.answer}
           </Typography>
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            You have completed this puzzle.
-            <br />
-            <Link href={genPuzzleBrowse(leagueSlug, answerId)}>You can view other people's solutions here</Link>
+            You have completed this puzzle
           </Typography>
 
           <Div sx={{ textAlign: 'right' }}>
             <Button sx={{ margin: '.5rem' }} onClick={() => setOpen(false)} variant="outlined">
               Close
             </Button>
-            <Button sx={{ margin: '.5rem' }} onClick={() => navigate(genActivePuzzles())} variant="contained">
+            <Button sx={{ margin: '.5rem' }} onClick={() => navigate(genActivePuzzles())} variant="outlined">
               Back to Puzzles
+            </Button>
+            <Button sx={{ margin: '.5rem' }} onClick={() => navigate(genPuzzleBrowse(leagueSlug, answerId))} variant="contained">
+              See other solutions
             </Button>
           </Div>
         </ModalBox>

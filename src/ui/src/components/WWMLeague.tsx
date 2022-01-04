@@ -88,18 +88,19 @@ const statsHeadCells: eht.HeadCell<LeagueStats>[] = [
   //   label: 'raw score',
   //   formatter: intFormatter,
   // },
-  // {
-  //   id: 'avg_guesses',
-  //   numeric: true,
-  //   disablePadding: false,
-  //   formatter: floatFormatter2,
-  // },
   {
     id: 'min_guesses_correct',
     numeric: true,
     disablePadding: false,
-    label: 'min guesses (correct)',
+    label: 'min guesses',
     formatter: intFormatter,
+  },
+  {
+    id: 'avg_guesses',
+    numeric: true,
+    disablePadding: false,
+    label: 'avg guesses',
+    formatter: floatFormatter2,
   },
   {
     id: 'avg_guesses_correct',
@@ -120,7 +121,9 @@ const statsHeadCells: eht.HeadCell<LeagueStats>[] = [
     numeric: true,
     disablePadding: false,
     label: 'complete',
-    formatter: intFormatter,
+    formatter: (row, val) => {
+      return `${val} / ${row.possible}`;
+    },
   },
   {
     id: 'wins',
@@ -129,13 +132,13 @@ const statsHeadCells: eht.HeadCell<LeagueStats>[] = [
     label: 'wins',
     formatter: intFormatter,
   },
-  {
-    id: 'possible',
-    numeric: true,
-    disablePadding: false,
-    label: 'possible',
-    formatter: intFormatter,
-  },
+  // {
+  //   id: 'possible',
+  //   numeric: true,
+  //   disablePadding: false,
+  //   label: 'possible',
+  //   formatter: intFormatter,
+  // },
   {
     id: 'win_pct',
     numeric: true,
