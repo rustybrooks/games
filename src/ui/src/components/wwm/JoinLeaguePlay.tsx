@@ -2,10 +2,10 @@ import { Typography } from '@mui/material';
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useGetAndSet } from 'react-context-hook';
-import * as constants from '../constants';
+import * as constants from '../../constants';
 import { useNavigate } from 'react-router';
-import { genPuzzlePlay } from '../routes';
-import { Div } from './Styled';
+import { genPuzzlePlay } from '../../routes';
+import { Div } from '../Styled';
 const genUrl = (fn = '') => `${constants.BASE_URL}/api/games/wwm/${fn}`;
 
 async function joinLeague(leagueSlug: string, inviteCode: string = null) {

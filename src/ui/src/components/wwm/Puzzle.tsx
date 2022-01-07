@@ -1,23 +1,23 @@
-import { useState, useRef, useEffect } from 'react';
-import './WWM.css';
-import { useNavigate } from 'react-router';
+import {useEffect, useRef, useState} from 'react';
+import './Puzzle.css';
+import {useNavigate} from 'react-router';
 
 import Keyboard from 'react-simple-keyboard';
 import 'react-simple-keyboard/build/css/index.css';
 
-import { useGetAndSet } from 'react-context-hook';
-import { Box, Button, Modal, Paper, Typography, Link } from '@mui/material';
+import {useGetAndSet} from 'react-context-hook';
+import {Button, Link, Modal, Paper, Typography} from '@mui/material';
 
-import { useParams } from 'react-router-dom';
-import { League } from '../../types/wwm';
-import * as constants from '../constants';
+import {useParams} from 'react-router-dom';
+import {League} from '../../../types';
+import * as constants from '../../constants';
 
-import { getLeagues } from './WWMLeagues';
+import {getLeagues} from './Leagues';
 
-import { Cell, Div } from './Styled';
-import { ModalBox } from './ModalBox';
-import { genActivePuzzles, genJoinLeague, genJoinLeagueAndPlay, genLeague, genPuzzleBrowse, genPuzzlePlay } from '../routes';
-import { TitleBox } from './TitleBox';
+import {Cell, Div} from '../Styled';
+import {ModalBox} from '../ModalBox';
+import {genActivePuzzles, genJoinLeagueAndPlay, genLeague, genPuzzleBrowse, genPuzzlePlay} from '../../routes';
+import {TitleBox} from '../TitleBox';
 
 function guessesToCategories(results: any) {
   const rightKeys: string[] = [];
@@ -210,7 +210,7 @@ function WWMDisplay({
   );
 }
 
-export const WWM = () => {
+export const Puzzle = () => {
   const { answerId, leagueSlug } = useParams();
   const navigate = useNavigate();
 

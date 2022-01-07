@@ -19,7 +19,7 @@ afterAll(async () => {
   pgexplorer.SQL.db.$pool.end();
 });
 
-describe('WWM Utilities', () => {
+describe('Puzzle Utilities', () => {
   it('test_evaluateGuess', async () => {
     expect(utils.evaluateGuess('masse', 'basse')).toStrictEqual([' ', '+', '+', '+', '+']);
     expect(utils.evaluateGuess('masse', 'masse')).toStrictEqual(['+', '+', '+', '+', '+']);
@@ -293,7 +293,7 @@ describe('Answer submission', () => {
       .send({ league_slug: 'every_6h_weekly_5' })
       .expect(404)
       .then(response => {
-        expect(response.body.detail === 'WWM not found');
+        expect(response.body.detail === 'Puzzle not found');
       });
   });
 });

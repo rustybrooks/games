@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react';
-import * as eht from './EnhancedTable';
+import * as eht from '../EnhancedTable';
 
-import * as constants from '../constants';
-import { League, LeagueSeries, LeagueStats, User } from '../../types';
+import * as constants from '../../constants';
+import { League, LeagueSeries, LeagueStats, User } from '../../../types';
 import { useGetAndSet } from 'react-context-hook';
 import { Link } from '@mui/material';
 
 import { useParams } from 'react-router-dom';
-import { Div, Table, Td, Tr } from './Styled';
+import { Div, Table, Td, Tr } from '../Styled';
 import { formatDistance } from 'date-fns';
-import { TitleBox } from './TitleBox';
+import { TitleBox } from '../TitleBox';
 
 const genUrl = (fn = '') => `${constants.BASE_URL}/api/games/wwm/${fn}`;
 
@@ -316,7 +316,7 @@ export function WWMLeagueInfo({ league }: { league: League }) {
   );
 }
 
-export function WWMLeague() {
+export function League() {
   const { leagueSlug } = useParams();
   const [league, setLeague] = useState<League>(null);
   const [series, setSeries] = useState<LeagueSeries>(null);

@@ -1,11 +1,11 @@
 import { Typography, Paper, Box } from '@mui/material';
 import { useGetAndSet } from 'react-context-hook';
-import * as constants from '../constants';
+import * as constants from '../../constants';
 import { useEffect, useState } from 'react';
 
 const genUrl = (fn = '') => `${constants.BASE_URL}/api/user/${fn}`;
 
-export function WWMBots() {
+export function Bots() {
   const [user, setUser] = useGetAndSet('user');
   const [apikey, setApikey] = useState<string>('Loading...');
 

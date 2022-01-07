@@ -3,8 +3,8 @@ import { styled } from '@mui/material/styles';
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useGetAndSet } from 'react-context-hook';
-import * as constants from '../constants';
-import { League } from '../../types/wwm';
+import * as constants from '../../constants';
+import { League } from '../../../types/wwm';
 
 const genUrl = (fn = '') => `${constants.BASE_URL}/api/games/wwm/${fn}`;
 

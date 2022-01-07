@@ -1,14 +1,14 @@
 import { useEffect } from 'react';
 import { useGetAndSet } from 'react-context-hook';
-import { Paper, Typography, Link, Button } from '@mui/material';
+import { Paper, Typography, Link } from '@mui/material';
 import { formatDistance } from 'date-fns';
 import { useNavigate } from 'react-router';
-import * as eht from './EnhancedTable';
-import { ActivePuzzle, League } from '../../types/wwm';
-import { getActivePuzzles, getLeagues } from './WWMLeagues';
-import { TitleBox } from './TitleBox';
-import { Div } from './Styled';
-import { genLeagues, genPuzzlePlay } from '../routes';
+import * as eht from '../EnhancedTable';
+import { ActivePuzzle, League } from '../../../types';
+import { getActivePuzzles, getLeagues } from './Leagues';
+import { TitleBox } from '../TitleBox';
+import { Div } from '../Styled';
+import { genLeagues, genPuzzlePlay } from '../../routes';
 
 type EnumeratedPuzzle = ActivePuzzle & { count: number };
 
@@ -79,7 +79,7 @@ const ourheadCells: eht.HeadCell<EnumeratedPuzzle>[] = [
   },
 ];
 
-export function WWMGames() {
+export function ActivePuzzles() {
   const [leagues, setLeagues] = useGetAndSet<League[]>('leagues');
   const [puzzles, setPuzzles] = useGetAndSet<EnumeratedPuzzle[]>('active-puzzles');
   const [user, setUser]: [{ username: string }, any] = useGetAndSet('user');

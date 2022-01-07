@@ -2,9 +2,9 @@ import { useEffect } from 'react';
 import { useGetAndSet } from 'react-context-hook';
 import { Typography, Paper, Link } from '@mui/material';
 import { formatDistance } from 'date-fns';
-import * as eht from './EnhancedTable';
-import { ActivePuzzle, League } from '../../types/wwm';
-import * as constants from '../constants';
+import * as eht from '../EnhancedTable';
+import { ActivePuzzle, League } from '../../../types/wwm';
+import * as constants from '../../constants';
 
 const genUrl = (fn = '') => `${constants.BASE_URL}/api/games/wwm/${fn}`;
 
@@ -160,4 +160,4 @@ const WWMLeaguesX = () => {
   );
 };
 
-export const WWMLeagues = WWMLeaguesX;
+export const Leagues = WWMLeaguesX;
