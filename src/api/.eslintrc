@@ -1,4 +1,4 @@
 {
-	"extends": ["@rustybrooks/eslint-prettier-config"]
+	"extends": ["@rustybrooks/eslint-config-prettier"]
 }
 

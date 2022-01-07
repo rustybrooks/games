@@ -1,6 +1,5 @@
 import { SQL } from '../../db';
-import { ActivePuzzle, Guess, League, WWMStatus } from '../../../../ui/types/wwm';
-import { QueryParams } from '../../../../ui/types';
+import { ActivePuzzle, Guess, League, WWMStatus, QueryParams } from '../../../../ui/types';
 import * as utils from './utils';
 
 const defaultSourceWordList = 'filtered/twl06.txt.filtered';
@@ -347,7 +346,7 @@ export async function getPuzzles({
 }): Promise<ActivePuzzle> {
   const [where, bindvars] = SQL.autoWhere({ user_id, wordle_league_id });
 
-  where.push("m.active")
+  where.push('m.active');
 
   if (active !== null) {
     if (active) {
@@ -488,7 +487,7 @@ export async function leagueMembers({
 
 export async function addLeagueMember({ user_id, wordle_league_id }: { user_id: number; wordle_league_id: number }) {
   const now = new Date();
-  SQL.insert(
+  return SQL.insert(
     'wordle_league_members',
     {
       user_id,
@@ -507,7 +506,7 @@ export async function addLeagueMember({ user_id, wordle_league_id }: { user_id: 
 }
 
 export async function removeLeagueMember({ user_id, wordle_league_id }: { user_id: number; wordle_league_id: number }) {
-  SQL.update(
+  return SQL.update(
     'wordle_league_members',
     'wordle_league_id=$(wordle_league_id) and user_id=$(user_id)',
     { wordle_league_id, user_id },

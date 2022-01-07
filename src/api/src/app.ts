@@ -20,7 +20,7 @@ function errorMiddleware(error: HttpException, request: Request, response: Respo
   const detail_code = error.detail_code || 'unknown';
   response.status(status).send({
     detail: message,
-    detail_code: detail_code,
+    detail_code,
   });
 }
 

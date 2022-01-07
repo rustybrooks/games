@@ -1,5 +1,5 @@
 {
-  "extends": "@rustybrooks/eslint-prettier-config",
+  "extends": "@rustybrooks/eslint-config-prettier",
   "compilerOptions": {
     "allowJs": true,
     "jsx": "react-jsx",

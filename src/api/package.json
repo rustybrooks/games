@@ -4,18 +4,19 @@
   "description": "games",
   "main": "./src/index.js",
   "dependencies": {
+    "@newrelic/native-metrics": "latest",
     "@rustybrooks/pgexplorer": "latest",
     "bcrypt": "latest",
     "cors": "latest",
     "express": "latest",
     "jsonwebtoken": "latest",
-    "node-cron": "latest",
-    "sprintf-js": "latest",
     "newrelic": "latest",
-    "@newrelic/native-metrics": "latest"
+    "node-cron": "latest",
+    "sprintf-js": "latest"
   },
   "devDependencies": {
     "@jest/types": "latest",
+    "@rustybrooks/eslint-config-prettier": "^1.0.4",
     "@types/bcrypt": "latest",
     "@types/cors": "latest",
     "@types/express": "latest",
@@ -25,14 +26,13 @@
     "@types/node-cron": "latest",
     "@types/sprintf-js": "latest",
     "@types/supertest": "latest",
-    "mockdate": "latest",
     "jest": "latest",
+    "mockdate": "latest",
     "nodemon": "latest",
+    "supertest": "latest",
     "ts-jest": "latest",
     "ts-node": "latest",
-    "typescript": "latest",
-    "supertest": "latest",
-    "@rustybrooks/eslint-prettier-config": "latest"
+    "typescript": "latest"
   },
   "scripts": {
     "build": "rm -rf dist ui && ./node_modules/.bin/tsc -p .",
