@@ -1,37 +1,4 @@
 {
-  "root": true,
-  "parser": "@typescript-eslint/parser",
-  "plugins": ["@typescript-eslint"],
-  "extends": [
-    "eslint:recommended",
-    "plugin:@typescript-eslint/eslint-recommended",
-    "plugin:@typescript-eslint/recommended",
-    "airbnb-base",
-    "airbnb-typescript/base"
-  ],
-  "parserOptions": {
-    "project": "./tsconfig.json"
-  },
-  "rules": {
-    "no-continue": "off",
-    "max-classes-per-file": "off",
-    "class-methods-use-this": "off",
-    "arrow-parens": "off",
-    "no-console": "off",
-    "max-len": "off",
-    "implicit-arrow-linebreak": "off",
-    "operator-linebreak": "off",
-    "import/prefer-default-export": "off",
-    "import/no-default-export": "error",
-    "function-paren-newline": "off",
-    "@typescript-eslint/ban-ts-comment": "off",
-    "@typescript-eslint/indent": "off",
-    // replace no-restricted-syntax with one that allows fors
-    "no-await-in-loop": 0,
-    "no-restricted-syntax": "off",
-    "import/extensions": "off",
-    "import/no-relative-packages": "off",
-    "@typescript-eslint/naming-convention": "off",
-    "object-curly-newline": "off"
-  }
+	"extends": ["@rustybrooks/eslint-prettier-config"]
 }
+
