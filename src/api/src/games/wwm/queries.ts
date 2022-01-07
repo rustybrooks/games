@@ -330,14 +330,16 @@ export async function generateAllAnswers(now: Date) {
   }
 }
 
-export async function activePuzzles({
+export async function getPuzzles({
   user_id,
+  active = null,
   wordle_league_id = null,
   page = null,
   limit = null,
   sort = null,
 }: {
   user_id: number;
+  active?: boolean;
   wordle_league_id?: number;
   page?: number;
   limit?: number;
@@ -345,10 +347,16 @@ export async function activePuzzles({
 }): Promise<ActivePuzzle> {
   const [where, bindvars] = SQL.autoWhere({ user_id, wordle_league_id });
 
-  where.push('m.active');
+  where.push("m.active")
 
-  where.push('$(now) between active_after and active_before');
-  bindvars.now = new Date();
+  if (active !== null) {
+    if (active) {
+      where.push('$(now) between active_after and active_before');
+    } else {
+      where.push('$(now) > active_before');
+    }
+    bindvars.now = new Date();
+  }
 
   const query = `
       select league_slug, league_name, 
@@ -368,7 +376,6 @@ export async function activePuzzles({
       ${SQL.orderBy(sort)}
       ${SQL.limit(page, limit)}
   `;
-  // console.log(query, bindvars);
   return SQL.select(query, bindvars);
 }
 

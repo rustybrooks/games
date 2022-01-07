@@ -196,14 +196,14 @@ const guesses = async (request: Request, response: Response, next: NextFunction)
   });
 };
 
-const activePuzzles = async (request: Request, response: Response, next: NextFunction) => {
+const puzzles = async (request: Request, response: Response, next: NextFunction) => {
   try {
     users.requireLogin(response, next);
   } catch (e) {
     return next(e);
   }
 
-  const { league_slug } = getParams(request);
+  const { league_slug, active } = getParams(request);
   if (league_slug) {
     const league = await queries.getLeague({ league_slug, user_id: response.locals.user.user_id, isMemberOnly: true });
     if (!league) {
@@ -216,9 +216,10 @@ const activePuzzles = async (request: Request, response: Response, next: NextFun
     }
   }
 
-  const puzzles = await queries.activePuzzles({ user_id: response.locals.user.user_id, sort: 'active_after' });
-  return response.status(200).json(puzzles);
+  const p = await queries.getPuzzles({ user_id: response.locals.user.user_id, sort: 'active_after', active });
+  return response.status(200).json(p);
 };
+
 
 const completedUsers = async (request: Request, response: Response, next: NextFunction) => {
   try {
@@ -248,7 +249,8 @@ const completedUsers = async (request: Request, response: Response, next: NextFu
     return next(new exceptions.HttpBadRequest('You have not completed this puzzle', 'not_completed'));
   }
 
-  const data = await queries.wordleStatuses({ wordle_answer_id, completed: true, sort: ['-correct_letters,num_guesses,ws.end_date'] });
+
+  const data = await queries.wordleStatuses({ wordle_answer_id, completed: true, sort: ['correct::char(5) desc', 'num_guesses', 'ws.end_date'] });
   return response.status(200).json(data);
 };
 
@@ -306,9 +308,9 @@ const leagueSeriesStats = async (request: Request, response: Response, next: Nex
   return response.status(200).json(stats);
 };
 
+router.all('/puzzles/', puzzles);
 router.all('/puzzles/check', check);
 router.all('/puzzles/guesses', guesses);
-router.all('/puzzles/active', activePuzzles);
 router.all('/puzzles/completed', completedUsers);
 
 router.all('/leagues', leagues);

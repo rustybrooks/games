@@ -8,16 +8,20 @@ import * as constants from '../../constants';
 
 const genUrl = (fn = '') => `${constants.BASE_URL}/api/games/wwm/${fn}`;
 
-export async function getActivePuzzles(): Promise<ActivePuzzle[]> {
-  const data = await fetch(genUrl('puzzles/active'), {
-    method: 'GET',
+export async function getPuzzles(active = true): Promise<ActivePuzzle[]> {
+  const data = await fetch(genUrl('puzzles/'), {
+    method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'X-API-KEY': localStorage.getItem('api-key'),
     },
+    body: JSON.stringify({
+      active,
+    })
   });
   return data.json();
 }
+
 
 function dateFormatter(row: League, d: string) {
   return formatDistance(new Date(d), new Date(), { addSuffix: true });

@@ -5,7 +5,7 @@ import { formatDistance } from 'date-fns';
 import { useNavigate } from 'react-router';
 import * as eht from '../EnhancedTable';
 import { ActivePuzzle, League } from '../../../types';
-import { getActivePuzzles, getLeagues } from './Leagues';
+import { getPuzzles, getLeagues } from './Leagues';
 import { TitleBox } from '../TitleBox';
 import { Div } from '../Styled';
 import { genLeagues, genPuzzlePlay } from '../../routes';
@@ -79,7 +79,7 @@ const ourheadCells: eht.HeadCell<EnumeratedPuzzle>[] = [
   },
 ];
 
-export function ActivePuzzles() {
+export function ActivePuzzles({active = true}) {
   const [leagues, setLeagues] = useGetAndSet<League[]>('leagues');
   const [puzzles, setPuzzles] = useGetAndSet<EnumeratedPuzzle[]>('active-puzzles');
   const [user, setUser]: [{ username: string }, any] = useGetAndSet('user');
@@ -89,7 +89,7 @@ export function ActivePuzzles() {
     (async () => {
       if (!leagues.length) setLeagues(await getLeagues());
       if (user) {
-        setPuzzles((await getActivePuzzles()).map((x, i) => ({ ...x, count: i })));
+        setPuzzles((await getPuzzles(active)).map((x, i) => ({ ...x, count: i })));
       }
     })();
   }, [user]);
@@ -110,7 +110,7 @@ export function ActivePuzzles() {
     if (row.completed) {
       return { label: 'Browse', callback: navBrowse, activeCallback: () => true };
     }
-    return { label: 'Play', callback: navPlay, activeCallback: () => true };
+    return { label: 'Play', callback: navPlay, activeCallback: () => active };
   }
 
   if (!user) {
@@ -138,4 +138,8 @@ export function ActivePuzzles() {
       />
     </Paper>
   );
+}
+
+export function ArchivedPuzzles() {
+  return ActivePuzzles({active: false})
 }

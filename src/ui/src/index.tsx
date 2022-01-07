@@ -7,7 +7,20 @@ import { css } from '@emotion/react';
 import { AppBar, Button, Drawer, Typography, Toolbar } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import * as constants from './constants';
-import { Puzzle, Bots, League, Leagues, ActivePuzzles, WWMBrowse, Login, Home, Test, JoinLeague, JoinLeaguePlay } from './components';
+import {
+  Puzzle,
+  Bots,
+  League,
+  Leagues,
+  ActivePuzzles,
+  WWMBrowse,
+  Login,
+  Home,
+  Test,
+  JoinLeague,
+  JoinLeaguePlay,
+  ArchivedPuzzles
+} from './components';
 
 const styles = {
   root: css({
@@ -82,11 +95,11 @@ const NavBar = () => {
               Archived Puzzles
             </Button>
             <Button color="inherit" component={Link} to="/wwm/leagues">
-              WWM Leagues
+              Leagues
             </Button>
             {
               <Button color="inherit" component={Link} to="/wwm/bots">
-                WWM Bots
+                Bots
               </Button>
             }
           </div>
@@ -245,6 +258,7 @@ function AppX() {
           <Route path="/" element={<Home />} />
           <Route path="/test" element={<Test />} />
           <Route path="/wwm" element={<ActivePuzzles />} />
+          <Route path="/wwm/archived" element={<ArchivedPuzzles />} />
           <Route path="/wwm/bots" element={<Bots />} />
           <Route path="/wwm/leagues" element={<Leagues />} />
           <Route path="/wwm/leagues/:leagueSlug" element={<League />} />
