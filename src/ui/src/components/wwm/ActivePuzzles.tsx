@@ -79,7 +79,7 @@ const ourheadCells: eht.HeadCell<EnumeratedPuzzle>[] = [
   },
 ];
 
-export function ActivePuzzles({active = true}) {
+export function ActivePuzzles({ active = true }) {
   const [leagues, setLeagues] = useGetAndSet<League[]>('leagues');
   const [puzzles, setPuzzles] = useGetAndSet<EnumeratedPuzzle[]>('active-puzzles');
   const [user, setUser]: [{ username: string }, any] = useGetAndSet('user');
@@ -132,7 +132,8 @@ export function ActivePuzzles({active = true}) {
         rows={puzzles}
         headCells={ourheadCells}
         mainColumn="count"
-        initialSortColumn="active_after"
+        initialSortColumn={active ? 'active_after' : 'active_before'}
+        initialSortOrder={active ? 'asc' : 'desc'}
         initialRowsPerPage={10}
         rowButtons={[buttonCallback]}
       />
@@ -141,5 +142,5 @@ export function ActivePuzzles({active = true}) {
 }
 
 export function ArchivedPuzzles() {
-  return ActivePuzzles({active: false})
+  return ActivePuzzles({ active: false });
 }

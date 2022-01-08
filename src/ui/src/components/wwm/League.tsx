@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
+import { useGetAndSet } from 'react-context-hook';
+import { Link } from '@mui/material';
+import { useParams } from 'react-router-dom';
+import { formatDistance } from 'date-fns';
 import * as eht from '../EnhancedTable';
 
 import * as constants from '../../constants';
 import { League, LeagueSeries, LeagueStats, User } from '../../../types';
-import { useGetAndSet } from 'react-context-hook';
-import { Link } from '@mui/material';
 
-import { useParams } from 'react-router-dom';
 import { Div, Table, Td, Tr } from '../Styled';
-import { formatDistance } from 'date-fns';
 import { TitleBox } from '../TitleBox';
 
 const genUrl = (fn = '') => `${constants.BASE_URL}/api/games/wwm/${fn}`;
@@ -121,9 +121,7 @@ const statsHeadCells: eht.HeadCell<LeagueStats>[] = [
     numeric: true,
     disablePadding: false,
     label: 'complete',
-    formatter: (row, val) => {
-      return `${val} / ${row.possible}`;
-    },
+    formatter: (row, val) => `${val} / ${row.possible}`,
   },
   {
     id: 'wins',
@@ -195,8 +193,12 @@ export function WWMLeagueSeries({ league, seriesCallback }: { league: League; se
     setActive(row);
   }
 
-  function buttonCallback(row: LeagueSeries): eht.ButtonInfo<LeagueSeries> {
-    return { label: 'Show', callback: navStats, activeCallback: () => true };
+  function buttonCallback(row: LeagueSeries, a: LeagueSeries): eht.ButtonInfo<LeagueSeries> {
+    return {
+      label: 'Show',
+      callback: navStats,
+      activeCallback: () => a && a.wordle_league_series_id !== row.wordle_league_series_id,
+    };
   }
 
   return (
@@ -207,7 +209,7 @@ export function WWMLeagueSeries({ league, seriesCallback }: { league: League; se
         mainColumn="start_date"
         initialSortColumn="start_date"
         initialSortOrder="desc"
-        rowButtons={[buttonCallback]}
+        rowButtons={[row => buttonCallback(row, active)]}
         initialRowsPerPage={10}
         minWidth="10rem"
         selectedRows={[active && active.start_date]}

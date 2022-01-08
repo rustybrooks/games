@@ -17,11 +17,11 @@ export async function getPuzzles(active = true): Promise<ActivePuzzle[]> {
     },
     body: JSON.stringify({
       active,
-    })
+      sort: active ? 'active_after' : '-active_before',
+    }),
   });
   return data.json();
 }
-
 
 function dateFormatter(row: League, d: string) {
   return formatDistance(new Date(d), new Date(), { addSuffix: true });

@@ -72,7 +72,7 @@ def get_league(league_slug):
 # This includes puzzles you've already solved - see the end of this script for and
 # example of filtering those out
 def get_active_puzzles(league_slug):
-    return post("/puzzles/active", json={"league_slug": league_slug})
+    return post("/puzzles", json={"league_slug": league_slug, 'active': True})
 
 
 # This gets all the guesses for a given puzzle.  You won't normally need to call this

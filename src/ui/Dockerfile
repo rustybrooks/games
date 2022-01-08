@@ -7,7 +7,7 @@ ENV NODE_ENV=development
 RUN apt-get -y update \
  && DEBIAN_FRONTEND=noninteractive apt-get -yq install curl apt-utils \
  && curl -sL https://deb.nodesource.com/setup_16.x | bash - \
- && apt-get install -y nodejs
+ && apt-get install -y nodejs \
  && npm install npm@latest -g
 
 COPY package*.json /srv/src/ui/

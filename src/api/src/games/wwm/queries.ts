@@ -375,6 +375,7 @@ export async function getPuzzles({
       ${SQL.orderBy(sort)}
       ${SQL.limit(page, limit)}
   `;
+  console.log(query, bindvars);
   return SQL.select(query, bindvars);
 }
 
