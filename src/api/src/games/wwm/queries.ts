@@ -47,6 +47,8 @@ export async function getLeagues({
         isMemberOnly ? '' : 'left '
       }join wordle_league_members wlm on (wlm.wordle_league_id=wl.wordle_league_id and wlm.user_id=$(user_id) and wlm.active)`,
     );
+  } else {
+    where.push('not is_private');
   }
   // console.log(extraCols, user_id);
   const query = `
@@ -57,7 +59,6 @@ export async function getLeagues({
       ${SQL.orderBy(sort)}
       ${SQL.limit(page, limit)}
   `;
-  // console.log(query, bindvars);
   return SQL.select(query, bindvars);
 }
 

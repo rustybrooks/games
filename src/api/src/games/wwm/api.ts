@@ -5,7 +5,7 @@ import { getParams } from '../../utils';
 import * as exceptions from '../../exceptions';
 import * as users from '../../users';
 import * as queries from './queries';
-import { League } from '../../../../ui/types/wwm';
+import { League } from '../../../../ui/types';
 
 export const router = express.Router();
 
