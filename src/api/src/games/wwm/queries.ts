@@ -2,7 +2,7 @@ import { SQL } from '../../db';
 import { ActivePuzzle, Guess, League, WWMStatus, QueryParams } from '../../../../ui/types';
 import * as utils from './utils';
 
-const defaultSourceWordList = 'filtered/twl06.txt.filtered';
+export const defaultSourceWordList = 'filtered/twl06.txt.filtered';
 export const defaultAnswerWordList = 'sources/collins.2019.txt.clean';
 
 function sleep(ms: number) {
@@ -376,7 +376,7 @@ export async function getPuzzles({
       ${SQL.orderBy(sort)}
       ${SQL.limit(page, limit)}
   `;
-  console.log(query, bindvars);
+  // console.log(query, bindvars);
   return SQL.select(query, bindvars);
 }
 

@@ -1,6 +1,14 @@
 import * as fs from 'fs';
 
 const words: { [id: string]: string[] } = {};
+const letters: string[] = [...Array(26).keys()].map(i => String.fromCharCode(i + 97));
+
+function remove<T>(list: T[], element: T) {
+  const index = list.indexOf(element);
+  if (index !== -1) {
+    list.splice(index, 1);
+  }
+}
 
 export function evaluateGuess(expected: string, guess: string) {
   const expectedl = expected.toLowerCase();
@@ -59,4 +67,73 @@ export function randomWord(length: number, wordFile: string) {
 export function isWordInList(word: string, wordFile: string) {
   const wl = wordList(word.length, wordFile);
   return wl.includes(word);
+}
+
+export function eliminateGuessHelper(guess: string, result: string): [string[][], string[], string[]] {
+  const lcno = Object.fromEntries(letters.map(l => [l, 0]));
+  const lc = Object.fromEntries(letters.map(l => [l, 0]));
+  const l = guess.length;
+
+  const allowed: string[][] = [...Array(l).keys()].map(() => [...letters]);
+  const pos_required: string[] = [];
+  const required: string[] = [];
+  const not_allowed: string[] = [];
+
+  for (let i = 0; i < l; i += 1) {
+    lc[guess[i]] += 1;
+    if (result[i] === '-' || result[i] === '+') {
+      lcno[guess[i]] += 1;
+    }
+  }
+
+  for (let i = 0; i < l; i += 1) {
+    if (result[i] === '+') {
+      allowed[i] = [guess[i]];
+      pos_required.push(guess[i]);
+    } else if (result[i] === '-') {
+      remove(allowed[i], guess[i]);
+      required.push(guess[i]);
+    } else if ((!pos_required.includes(guess[i]) && !required.includes(guess[i])) || lc[guess[i]] === lcno[guess[i]]) {
+      not_allowed.push(guess[i]);
+    } else {
+      remove(allowed[i], guess[i]);
+    }
+  }
+
+  return [allowed, not_allowed, required];
+}
+
+export function eliminateGuess(inWords: string[], guess: string, result: string) {
+  // console.log(`---------------- ${guess} '${result}' - ${inWords.length}`);
+  // console.log(inWords.slice(0, 300));
+
+  const [allowed, not_allowed, required] = eliminateGuessHelper(guess, result);
+  // console.log(
+  //   allowed.map(a => a.join('')),
+  //   not_allowed.join(''),
+  //   required.join(''),
+  // );
+
+  return inWords.filter(word => {
+    const tmp_required = [...required];
+    let keep = true;
+    for (const [i, c] of word.split('').entries()) {
+      if (not_allowed.includes(c)) {
+        keep = false;
+        break;
+      }
+      if (!allowed[i].includes(c)) {
+        keep = false;
+        break;
+      }
+
+      const cp = [...allowed[i]];
+      remove(cp, c);
+      if (cp.length) {
+        // console.log(word, 'remove tmpr', i, c);
+        remove(tmp_required, c);
+      }
+    }
+    return keep && tmp_required.length === 0;
+  });
 }

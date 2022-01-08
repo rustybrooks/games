@@ -1,23 +1,23 @@
-import {useEffect, useRef, useState} from 'react';
+import { useEffect, useRef, useState } from 'react';
 import './Puzzle.css';
-import {useNavigate} from 'react-router';
+import { useNavigate } from 'react-router';
 
 import Keyboard from 'react-simple-keyboard';
 import 'react-simple-keyboard/build/css/index.css';
 
-import {useGetAndSet} from 'react-context-hook';
-import {Button, Link, Modal, Paper, Typography} from '@mui/material';
+import { useGetAndSet } from 'react-context-hook';
+import { Button, Link, Modal, Paper, Typography } from '@mui/material';
 
-import {useParams} from 'react-router-dom';
-import {League} from '../../../types';
+import { useParams } from 'react-router-dom';
+import { League } from '../../../types';
 import * as constants from '../../constants';
 
-import {getLeagues} from './Leagues';
+import { getLeagues } from './Leagues';
 
-import {Cell, Div} from '../Styled';
-import {ModalBox} from '../ModalBox';
-import {genActivePuzzles, genJoinLeagueAndPlay, genLeague, genPuzzleBrowse, genPuzzlePlay} from '../../routes';
-import {TitleBox} from '../TitleBox';
+import { Cell, Div } from '../Styled';
+import { ModalBox } from '../ModalBox';
+import { genActivePuzzles, genJoinLeagueAndPlay, genLeague, genPuzzleBrowse, genPuzzlePlay } from '../../routes';
+import { TitleBox } from '../TitleBox';
 
 function guessesToCategories(results: any) {
   const rightKeys: string[] = [];
@@ -47,8 +47,8 @@ function guessesToCategories(results: any) {
 
 const style: { [id: string]: any } = {
   cell: {
-    width: { mobile: '7rem', tablet: '8rem', desktop: '4rem' },
-    height: { mobile: '7rem', tablet: '8rem', desktop: '4rem' },
+    width: { mobile: '7rem', tablet: '8rem', desktop: '4.2rem' },
+    height: { mobile: '7rem', tablet: '8rem', desktop: '4.2rem' },
     background: 'white',
     padding: '5px',
     border: '2px solid #ccc',
@@ -64,7 +64,7 @@ const style: { [id: string]: any } = {
   },
 
   container: {
-    width: { mobile: '100%', tablet: '100%', desktop: '30rem' },
+    width: { mobile: '100%', tablet: '100%', desktop: '40rem' },
     margin: '0 auto',
     marginTop: { mobile: '20px', tablet: '20px', desktop: '20px' },
   },
@@ -100,10 +100,11 @@ function WWMDisplay({
   onTouchEnd = null,
 }: {
   league: League;
-  results: { guess: string; result: string[] }[];
+  results: { guess: string; result: string[]; reduction: number[] }[];
   onKeyPress?: (button: string) => Promise<void>;
   error?: string;
   answer?: string;
+  // eslint-disable-next-line
   showKeyboard?: boolean;
   onTouchStart?: any;
   onTouchMove?: any;
@@ -142,7 +143,7 @@ function WWMDisplay({
         <table css={style.table} style={{ margin: '0 auto' }}>
           <tbody>
             {[...Array(league.max_guesses).keys()].map(y => {
-              const result = results[y] || { guess: '', result: [] };
+              const result = results[y] || { guess: '', result: [], reduction: [-1, -1] };
               return (
                 <tr key={y}>
                   {[...Array(league.letters).keys()].map(x => {
@@ -170,6 +171,11 @@ function WWMDisplay({
                       </Cell>
                     );
                   })}
+                  {result.reduction[0] !== -1 ? (
+                    <td>
+                      <Typography>{result.reduction[0]} left</Typography>
+                    </td>
+                  ) : null}
                 </tr>
               );
             })}
@@ -177,11 +183,13 @@ function WWMDisplay({
               <td colSpan={league.letters}>
                 {error ? (
                   <Typography variant="h2" color="#d22">
-                    {error}&nbsp;
+                    {error}
+                    &nbsp;
                   </Typography>
                 ) : (
                   <Typography variant="h2" color="#2d2">
-                    {answer}&nbsp;
+                    {answer}
+                    &nbsp;
                   </Typography>
                 )}
               </td>
@@ -210,13 +218,13 @@ function WWMDisplay({
   );
 }
 
-export const Puzzle = () => {
+export function Puzzle() {
   const { answerId, leagueSlug } = useParams();
   const navigate = useNavigate();
 
   const [status, setStatus] = useState({ answer: '', error: '', complete: false });
   const [leagues, setLeagues] = useGetAndSet<League[]>('leagues');
-  const [results, setResults] = useState<{ guess: string; result: string[] }[]>([]);
+  const [results, setResults] = useState<{ guess: string; result: string[]; reduction: number[] }[]>([]);
   const gridIdx = useRef(0);
   const [open, setOpen] = useState(false);
 
@@ -244,7 +252,7 @@ export const Puzzle = () => {
       const data = await r.json();
       gridIdx.current = data.guesses.length;
       while (data.guesses.length < league.max_guesses) {
-        data.guesses.push({ guess: '', result: [] });
+        data.guesses.push({ guess: '', result: [], reduction: [-1, -1] });
       }
       if (data.correct) {
         setStatus({ ...status, answer: 'Correct answer!', complete: true });
@@ -273,6 +281,7 @@ export const Puzzle = () => {
       body: JSON.stringify({
         wordle_answer_id: answerId,
         league_slug: leagueSlug,
+        reduce: false,
       }),
     });
     if (r.status === 200) {
@@ -280,7 +289,7 @@ export const Puzzle = () => {
 
       gridIdx.current = data.guesses.length;
       while (data.guesses.length < league.max_guesses) {
-        data.guesses.push({ guess: '', result: [] });
+        data.guesses.push({ guess: '', result: [], reduction: [-1, -1] });
       }
 
       if (data.correct) {
@@ -304,11 +313,11 @@ export const Puzzle = () => {
   const onKeyPress = async (button: string) => {
     const buttonx = button.toLowerCase();
 
-    console.log('onkey', status);
+    // console.log('onkey', status);
     if (status.complete) {
-      console.log('puzzle complete', buttonx);
+      // console.log('puzzle complete', buttonx);
 
-      if (buttonx == 'enter') {
+      if (buttonx === 'enter') {
         navigate(genPuzzleBrowse(leagueSlug, answerId));
         setOpen(false);
       }
@@ -404,14 +413,14 @@ export const Puzzle = () => {
       </Modal>
     </div>
   );
-};
+}
 
-export const WWMBrowse = () => {
+export function WWMBrowse() {
   const { answerId, leagueSlug, username } = useParams();
   const navigate = useNavigate();
 
   const [leagues, setLeagues] = useGetAndSet<League[]>('leagues');
-  const [results, setResults] = useState<{ guess: string; result: string[] }[]>([]);
+  const [results, setResults] = useState<{ guess: string; result: string[]; reduction: number[] }[]>([]);
   const [completed, setCompleted] = useState([]);
   const [browseUser, setBrowseUser] = useState(null);
   const [error, setError] = useState(null);
@@ -420,9 +429,9 @@ export const WWMBrowse = () => {
   const [touchEnd, setTouchEnd] = useState(0);
 
   function swipeUser(amt: number) {
-    const idx = completed.findIndex(c => c.username == browseUser.username);
+    const idx = completed.findIndex(c => c.username === browseUser.username);
 
-    let newidx = (((idx + amt) % completed.length) + completed.length) % completed.length;
+    const newidx = (((idx + amt) % completed.length) + completed.length) % completed.length;
     console.log('idx', idx, newidx);
     const newUser = completed[newidx];
     navigate(genPuzzleBrowse(leagueSlug, answerId, newUser.username));
@@ -494,13 +503,14 @@ export const WWMBrowse = () => {
         wordle_answer_id: answerId,
         user_id: userId,
         league_slug: leagueSlug,
+        reduce: true,
       }),
     });
     if (r.status === 200) {
       const data = await r.json();
 
       while (data.guesses.length < league.max_guesses) {
-        data.guesses.push({ guess: '', result: [] });
+        data.guesses.push({ guess: '', result: [], reduction: [-1, -1] });
       }
 
       setResults(data.guesses);
@@ -509,9 +519,9 @@ export const WWMBrowse = () => {
 
   function handleKeyDown(event: any) {
     const key = event.key.toLowerCase();
-    if (key == 'arrowright') {
+    if (key === 'arrowright') {
       swipeUser(1);
-    } else if (key == 'arrowleft') {
+    } else if (key === 'arrowleft') {
       swipeUser(-1);
     }
   }
@@ -622,7 +632,7 @@ export const WWMBrowse = () => {
               navigate(genPuzzleBrowse(leagueSlug, answerId, c.username));
             }}
           >
-            {c.username} - {c.num_guesses}
+            {c.username} -{c.num_guesses}
           </Button>
         ))}
       </div>
@@ -643,4 +653,4 @@ export const WWMBrowse = () => {
       ) : null}
     </Paper>
   );
-};
+}

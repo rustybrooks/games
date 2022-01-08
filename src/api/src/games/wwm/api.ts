@@ -137,6 +137,7 @@ const check = async (request: Request, response: Response, next: NextFunction) =
     guesses: guesses.map((g: string) => ({
       guess: g,
       result: utils.evaluateGuess(answer.answer, g),
+      reduction: [-1, -1],
     })),
     correct: guess === answer.answer,
     completed: guess === answer.answer || guesses.length === league.max_guesses,
@@ -150,7 +151,7 @@ const guesses = async (request: Request, response: Response, next: NextFunction)
   } catch (e) {
     return next(e);
   }
-  const { user_id, league_slug, wordle_answer_id } = getParams(request);
+  const { user_id, league_slug, wordle_answer_id, reduce } = getParams(request);
 
   const league = await queries.getLeague({ league_slug, user_id: response.locals.user.user_id, isMemberOnly: true });
   if (!league) {
@@ -175,22 +176,36 @@ const guesses = async (request: Request, response: Response, next: NextFunction)
 
   const effectiveUserId = user_id || response.locals.user.user_id;
 
-  const guesses = await queries.getGuesses({
+  const these_guesses = await queries.getGuesses({
     user_id: effectiveUserId,
     wordle_answer_id: answer.wordle_answer_id,
     sort: 'wordle_guesses.create_date',
   });
 
-  const correct = !!guesses.find(g => g.correct);
+  const correct = !!these_guesses.find(g => g.correct);
+  let words1: string[] = [];
+  let words2: string[] = [];
+  if (reduce) {
+    words1 = utils.wordList(league.letters, league.accept_word_list || queries.defaultAnswerWordList);
+    words2 = utils.wordList(league.letters, league.source_word_list || queries.defaultSourceWordList);
+  }
 
   return response.status(200).json({
-    guesses: guesses.map((g: any) => ({
-      guess: g.guess,
-      result: utils.evaluateGuess(answer.answer, g.guess),
-      correct: g.correct,
-    })),
+    guesses: these_guesses.map((g: any) => {
+      const result = utils.evaluateGuess(answer.answer, g.guess);
+      if (reduce) {
+        words1 = utils.eliminateGuess(words1, g.guess, result.join(''));
+        words2 = utils.eliminateGuess(words2, g.guess, result.join(''));
+      }
+      return {
+        guess: g.guess,
+        result,
+        correct: g.correct,
+        reduction: reduce ? [words1.length, words2.length] : [-1, -1],
+      };
+    }),
     correct,
-    answer: guesses.length === league.max_guesses ? answer.answer : null,
+    answer: these_guesses.length === league.max_guesses ? answer.answer : null,
   });
 };
 
