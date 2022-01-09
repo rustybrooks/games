@@ -116,7 +116,7 @@ const check = async (request: Request, response: Response, next: NextFunction) =
     return next(new exceptions.HttpBadRequest('Already reached maximum number of quesses for this puzzle'));
   }
 
-  if (!utils.isWordInList(guess, league.accept_word_list || queries.defaultAnswerWordList)) {
+  if (!utils.isWordInList(guess, league.accept_word_list || utils.defaultAnswerWordList)) {
     return next(new exceptions.HttpBadRequest('Invalid word'));
   }
 
@@ -186,8 +186,8 @@ const guesses = async (request: Request, response: Response, next: NextFunction)
   let words1: string[] = [];
   let words2: string[] = [];
   if (reduce) {
-    words1 = utils.wordList(league.letters, league.accept_word_list || queries.defaultAnswerWordList);
-    words2 = utils.wordList(league.letters, league.source_word_list || queries.defaultSourceWordList);
+    words1 = utils.wordList(league.letters, league.accept_word_list || utils.defaultAnswerWordList);
+    words2 = utils.wordList(league.letters, league.source_word_list || utils.defaultSourceWordList);
   }
 
   return response.status(200).json({

@@ -1,9 +1,6 @@
 import { SQL } from '../../db';
 import { ActivePuzzle, Guess, League, WWMStatus, QueryParams } from '../../../../ui/types';
-import * as utils from './utils';
-
-export const defaultSourceWordList = 'filtered/twl06.txt.filtered';
-export const defaultAnswerWordList = 'sources/collins.2019.txt.clean';
+import { defaultSourceWordList, randomWord } from './utils';
 
 function sleep(ms: number) {
   return new Promise(resolve => {
@@ -286,7 +283,7 @@ export async function generateAnswer(league: any, activeAfter: Date) {
   });
   if (a.length) return a[0];
 
-  const rando = utils.randomWord(league.letters, league.source_word_list || defaultSourceWordList).toLowerCase();
+  const rando = randomWord(league.letters, league.source_word_list || defaultSourceWordList).toLowerCase();
   console.log('Adding', activeAfter, activeBefore, rando);
   return SQL.insert(
     'wordle_answers',

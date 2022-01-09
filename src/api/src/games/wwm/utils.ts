@@ -1,5 +1,8 @@
 import * as fs from 'fs';
 
+export const defaultSourceWordList = 'filtered/twl06.txt.filtered';
+export const defaultAnswerWordList = 'sources/collins.2019.txt.clean';
+
 const words: { [id: string]: string[] } = {};
 const letters: string[] = [...Array(26).keys()].map(i => String.fromCharCode(i + 97));
 
@@ -84,16 +87,23 @@ export function eliminateGuessHelper(guess: string, result: string): [string[][]
     if (result[i] === '-' || result[i] === '+') {
       lcno[guess[i]] += 1;
     }
+
+    if (result[i] === '+') {
+      pos_required.push(guess[i]);
+    } else if (result[i] === '-') {
+      required.push(guess[i]);
+    }
   }
 
   for (let i = 0; i < l; i += 1) {
     if (result[i] === '+') {
       allowed[i] = [guess[i]];
-      pos_required.push(guess[i]);
     } else if (result[i] === '-') {
       remove(allowed[i], guess[i]);
-      required.push(guess[i]);
     } else if ((!pos_required.includes(guess[i]) && !required.includes(guess[i])) || lc[guess[i]] === lcno[guess[i]]) {
+      // console.log('pr', guess[i], pos_required.includes(guess[i]));
+      // console.log('r', guess[i], required.includes(guess[i]));
+      // console.log('c', guess[i], lc[guess[i]] === lcno[guess[i]]);
       not_allowed.push(guess[i]);
     } else {
       remove(allowed[i], guess[i]);

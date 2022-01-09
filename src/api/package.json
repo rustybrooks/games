@@ -16,7 +16,7 @@
   },
   "devDependencies": {
     "@jest/types": "latest",
-    "@rustybrooks/eslint-config-prettier": "^1.0.7",
+    "@rustybrooks/eslint-config-prettier": "^1.0.8",
     "@types/bcrypt": "latest",
     "@types/cors": "latest",
     "@types/express": "latest",
