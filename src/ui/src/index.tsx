@@ -19,7 +19,8 @@ import {
   Test,
   JoinLeague,
   JoinLeaguePlay,
-  ArchivedPuzzles
+  ArchivedPuzzles,
+  NewLeague,
 } from './components';
 
 const styles = {
@@ -42,7 +43,7 @@ const styles = {
 
 const genUrl = (fn = '') => `${constants.BASE_URL}/api/user/${fn}`;
 
-const NavBar = () => {
+function NavBar() {
   const [loginOpen, setLoginOpen] = useGetAndSet('login-open', false);
   const [loginWidget, setLoginWidget] = useGetAndSet('login-widget');
   const [user, setUser]: [{ username: string }, any] = useGetAndSet('user');
@@ -97,11 +98,9 @@ const NavBar = () => {
             <Button color="inherit" component={Link} to="/wwm/leagues">
               Leagues
             </Button>
-            {
-              <Button color="inherit" component={Link} to="/wwm/bots">
-                Bots
-              </Button>
-            }
+            <Button color="inherit" component={Link} to="/wwm/bots">
+              Bots
+            </Button>
           </div>
           {user ? (
             <div>
@@ -126,7 +125,7 @@ const NavBar = () => {
       </Drawer>
     </div>
   );
-};
+}
 
 const initialValue: { [id: string]: any } = {
   'login-widget': null,
@@ -261,6 +260,7 @@ function AppX() {
           <Route path="/wwm/archived" element={<ArchivedPuzzles />} />
           <Route path="/wwm/bots" element={<Bots />} />
           <Route path="/wwm/leagues" element={<Leagues />} />
+          <Route path="/wwm/leagues/new" element={<NewLeague />} />
           <Route path="/wwm/leagues/:leagueSlug" element={<League />} />
           <Route path="/wwm/leagues/:leagueSlug/join/:inviteCode" element={<JoinLeague />} />
           <Route path="/wwm/leagues/:leagueSlug/join_play/:answerId" element={<JoinLeaguePlay />} />

@@ -33,3 +33,7 @@ export function genJoinLeague(leagueSlug: string, inviteCode: string = null, ans
 export function genJoinLeagueAndPlay(leagueSlug: string, answerId: string = null) {
   return `/wwm/leagues/${leagueSlug}/join_play/${answerId}`;
 }
+
+export function genLeagueNew() {
+  return '/wwm/leagues/new';
+}

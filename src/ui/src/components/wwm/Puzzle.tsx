@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import './Puzzle.css';
 import { useNavigate } from 'react-router';
 
@@ -388,7 +388,7 @@ export function Puzzle() {
 
   return (
     <div>
-      <WWMDisplay league={league} results={results} onKeyPress={onKeyPress} error={status.error} answer={status.answer} />,
+      <WWMDisplay league={league} results={results} onKeyPress={onKeyPress} error={status.error} answer={status.answer} />
       <Modal open={open} onClose={handleClose} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
         <ModalBox width="30rem">
           <Typography id="modal-modal-title" variant="h6" component="h2" color={status.error && status.error.length ? 'red' : 'green'}>
@@ -438,15 +438,15 @@ export function WWMBrowse() {
     setBrowseUser(newUser);
   }
 
-  function handleTouchStart(e: any) {
+  const handleTouchStart = useCallback((e: any) => {
     setTouchStart(e.targetTouches[0].clientX);
-  }
+  }, []);
 
-  function handleTouchMove(e: any) {
+  const handleTouchMove = useCallback((e: any) => {
     setTouchEnd(e.targetTouches[0].clientX);
-  }
+  }, []);
 
-  function handleTouchEnd() {
+  const handleTouchEnd = useCallback(() => {
     if (touchStart - touchEnd > 150) {
       swipeUser(1);
     }
@@ -454,7 +454,7 @@ export function WWMBrowse() {
     if (touchStart - touchEnd < -150) {
       swipeUser(-1);
     }
-  }
+  }, []);
 
   let league: League = null;
   if (leagues) {
@@ -581,6 +581,7 @@ export function WWMBrowse() {
               <Typography>Wasn't able to find a Words with Melvins puzzle matching this url. Not sure what went wrong!</Typography>
               <br />
               <Typography>
+                {/* eslint-disable-next-line react/no-unescaped-entities */}
                 Maybe <Link href={genActivePuzzles()}>look at the active puzzles</Link> and see what's there, or look at{' '}
                 <Link href={genLeague(leagueSlug)}>the league page</Link> for this leage?
               </Typography>

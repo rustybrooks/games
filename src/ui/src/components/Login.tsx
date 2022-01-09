@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 // import { withStyles } from '@mui/core/styles';
 import { useGetAndSet } from 'react-context-hook';
@@ -44,11 +44,11 @@ function LoginX({ updateUser, history }: { updateUser: any; history: any }) {
     setLoginOpen(false);
   }
 
-  function doCancel() {
+  const doCancel = useCallback(() => {
     closeDrawer();
-  }
+  }, []);
 
-  const doLogin = async () => {
+  const doLogin = useCallback(async () => {
     const result = await fetch(genUrl('login'), {
       method: 'POST',
       headers: {
@@ -68,7 +68,7 @@ function LoginX({ updateUser, history }: { updateUser: any; history: any }) {
       closeDrawer();
       updateUser();
     }
-  };
+  }, []);
 
   const doSignup = async () => {
     const result = await fetch(genUrl('signup'), {

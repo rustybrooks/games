@@ -184,10 +184,10 @@ const guesses = async (request: Request, response: Response, next: NextFunction)
 
   const correct = !!these_guesses.find(g => g.correct);
   let words1: string[] = [];
-  let words2: string[] = [];
+  const words2: string[] = [];
   if (reduce) {
     words1 = utils.wordList(league.letters, league.accept_word_list || utils.defaultAnswerWordList);
-    words2 = utils.wordList(league.letters, league.source_word_list || utils.defaultSourceWordList);
+    // words2 = utils.wordList(league.letters, league.source_word_list || utils.defaultSourceWordList);
   }
 
   return response.status(200).json({
@@ -195,13 +195,13 @@ const guesses = async (request: Request, response: Response, next: NextFunction)
       const result = utils.evaluateGuess(answer.answer, g.guess);
       if (reduce) {
         words1 = utils.eliminateGuess(words1, g.guess, result.join(''));
-        words2 = utils.eliminateGuess(words2, g.guess, result.join(''));
+        // words2 = utils.eliminateGuess(words2, g.guess, result.join(''));
       }
       return {
         guess: g.guess,
         result,
         correct: g.correct,
-        reduction: reduce ? [words1.length, words2.length] : [-1, -1],
+        reduction: reduce ? [words1.length, -1] : [-1, -1],
       };
     }),
     correct,

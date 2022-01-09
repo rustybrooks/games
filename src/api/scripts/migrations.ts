@@ -124,6 +124,14 @@ m.addStatement(`
 
 m.addStatement('create unique index wordle_leagues_invite_code on wordle_leagues(invite_code)');
 
+// -------------------------------------------------------
+m = new migrations.Migration(4, 'Modifying leagues');
+
+m.addStatement(`
+    alter table wordle_leagues 
+    add column user_id bigint references users(user_id)
+`);
+
 export async function bootstrapLeagues(startDate: Date) {
   for (const d of [
     {

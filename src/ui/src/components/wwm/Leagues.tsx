@@ -3,8 +3,9 @@ import { useGetAndSet } from 'react-context-hook';
 import { Typography, Paper, Link } from '@mui/material';
 import { formatDistance } from 'date-fns';
 import * as eht from '../EnhancedTable';
-import { ActivePuzzle, League } from '../../../types/wwm';
+import { ActivePuzzle, League } from '../../../types';
 import * as constants from '../../constants';
+import { genLeagueNew } from '../../routes';
 
 const genUrl = (fn = '') => `${constants.BASE_URL}/api/games/wwm/${fn}`;
 
@@ -87,7 +88,7 @@ const ourheadCells: eht.HeadCell<League>[] = [
 
 /// ///////////////////////
 
-const WWMLeaguesX = () => {
+function WWMLeaguesX() {
   const [leagues, setLeagues] = useGetAndSet<League[]>('leagues');
   const [user, setUser]: [{ username: string }, any] = useGetAndSet('user');
 
@@ -150,18 +151,19 @@ const WWMLeaguesX = () => {
         <Typography sx={{ padding: '10px' }}>
           These are all the available leagues that you can join, along with details about the conditions of the league. You need to have an
           account and be logged in to join a league. Once you join a league new puzzles will appear on the league's schedule and will remain
-          active for the period defined for the league.
+          active for the period defined for the league. If you don't see anything that interests you here, or you'd like to have a private
+          league, <Link href={genLeagueNew()}>you can create a new league here.</Link>
         </Typography>
       </div>
       <eht.EnhancedTable
         rows={leagues}
         headCells={ourheadCells}
-        mainColumn={'league_slug'}
-        initialSortColumn={'league_name'}
+        mainColumn="league_slug"
+        initialSortColumn="league_name"
         rowButtons={[buttonCallback]}
       />
     </Paper>
   );
-};
+}
 
 export const Leagues = WWMLeaguesX;

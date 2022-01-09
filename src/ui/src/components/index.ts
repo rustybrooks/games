@@ -8,3 +8,4 @@ export * from './wwm/Leagues';
 export * from './wwm/League';
 export * from './wwm/JoinLeague';
 export * from './wwm/JoinLeaguePlay';
+export * from './wwm/NewLeague';
