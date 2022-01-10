@@ -1,6 +1,5 @@
 import { useCallback, useState } from 'react';
 
-// import { withStyles } from '@mui/core/styles';
 import { useGetAndSet } from 'react-context-hook';
 import { css } from '@emotion/react';
 
@@ -26,7 +25,7 @@ const style = {
 
 const genUrl = (fn = '') => `${constants.BASE_URL}/api/user/${fn}`;
 
-function LoginX({ updateUser, history }: { updateUser: any; history: any }) {
+function LoginX({ updateUser }: { updateUser: any }) {
   const [tab, setTab] = useState('login');
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
@@ -68,7 +67,7 @@ function LoginX({ updateUser, history }: { updateUser: any; history: any }) {
       closeDrawer();
       updateUser();
     }
-  }, []);
+  }, [username, password]);
 
   const doSignup = async () => {
     const result = await fetch(genUrl('signup'), {
@@ -106,10 +105,10 @@ function LoginX({ updateUser, history }: { updateUser: any; history: any }) {
             <TextField
               error={Boolean(errors.username)}
               helperText={errors.username}
-              id="username"
+              id="susername"
               label="Username"
               autoFocus
-              onChange={(event: any) => setUsername(event.target.value)}
+              onChange={event => setUsername(event.target.value)}
             />
           </FormControl>
 
@@ -119,7 +118,7 @@ function LoginX({ updateUser, history }: { updateUser: any; history: any }) {
               helperText={errors.email}
               id="semail"
               label="Email"
-              onChange={(event: any) => setEmail(event.target.value)}
+              onChange={event => setEmail(event.target.value)}
             />
           </FormControl>
 
@@ -130,7 +129,7 @@ function LoginX({ updateUser, history }: { updateUser: any; history: any }) {
               id="spassword"
               label="Password"
               type="password"
-              onChange={(event: any) => setPassword(event.target.value)}
+              onChange={event => setPassword(event.target.value)}
             />
           </FormControl>
 
@@ -141,7 +140,7 @@ function LoginX({ updateUser, history }: { updateUser: any; history: any }) {
               id="spassword2"
               label="Confirm Password"
               type="password"
-              onChange={(event: any) => setPassword2(event.target.value)}
+              onChange={event => setPassword2(event.target.value)}
             />
           </FormControl>
         </FormGroup>
@@ -162,7 +161,7 @@ function LoginX({ updateUser, history }: { updateUser: any; history: any }) {
               helperText={errors.username}
               id="username"
               label="Username"
-              onChange={(event: any) => setUsername(event.target.value)}
+              onChange={event => setUsername(event.target.value)}
               autoFocus
             />
           </FormControl>
@@ -174,7 +173,7 @@ function LoginX({ updateUser, history }: { updateUser: any; history: any }) {
               id="password"
               label="Password"
               type="password"
-              onChange={(event: any) => setPassword(event.target.value)}
+              onChange={event => setPassword(event.target.value)}
               onKeyPress={event => {
                 event.key.toLowerCase() === 'enter' ? doLogin() : null;
               }}

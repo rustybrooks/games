@@ -17,6 +17,11 @@ export function roundedNow() {
 }
 
 /* ******* leagues ******** */
+
+export async function addLeague(data: any) {
+  return SQL.insert('wordle_leagues', data);
+}
+
 export async function getLeagues({
   wordle_league_id = null,
   league_slug = null,
@@ -36,15 +41,15 @@ export async function getLeagues({
   const joins = [];
   const extraCols = [];
   if (user_id) {
-    where.push('(not is_private or (user_id is not null))');
+    where.push('(not is_private or (wlm.user_id is not null)) or wl.user_id=$(user_id)');
     bindvars.user_id = user_id;
-    extraCols.push('case when user_id is null then false else true end as is_member');
+    extraCols.push('case when wlm.user_id is null then false else true end as is_member');
     joins.push(
       `${
         isMemberOnly ? '' : 'left '
       }join wordle_league_members wlm on (wlm.wordle_league_id=wl.wordle_league_id and wlm.user_id=$(user_id) and wlm.active)`,
     );
-  } else {
+  } else if (isMemberOnly) {
     where.push('not is_private');
   }
   // console.log(extraCols, user_id);
@@ -86,7 +91,7 @@ export async function getLeagueSeriesStats({
 
   const query = `
       select
-      user_id::integer, username, s.start_date, s.end_date, 
+      m.user_id::integer, username, s.start_date, s.end_date, 
       ${raw_score}::integer as raw_score,
       ${raw_score}::float/nullif(${possible}, 0) as score,
       avg(num_guesses)::float as avg_guesses,
@@ -101,9 +106,9 @@ export async function getLeagueSeriesStats({
       from wordle_leagues l
       join wordle_league_series s using(wordle_league_id)
       join wordle_league_members m using (wordle_league_id)
-      join users u using (user_id)
+      join users u on (m.user_id=u.user_id)
       join wordle_answers a using (wordle_league_series_id)
-      left join wordle_status ws using (wordle_answer_id, user_id)
+      left join wordle_status ws on (a.wordle_answer_id=ws.wordle_answer_id and ws.user_id=m.user_id)
       ${SQL.whereClause(where)}
       group by 1, 2, 3, 4
       having ${done} > 0
@@ -427,7 +432,11 @@ export async function addGuess({
     `
        on conflict (user_id, wordle_answer_id) 
        do update set 
-       num_guesses=(select count(*) from wordle_guesses wg where wg.wordle_answer_id=excluded.wordle_answer_id and wg.user_id=excluded.user_id),
+       num_guesses=(
+         select count(*) 
+         from wordle_guesses wg 
+         where wg.wordle_answer_id=excluded.wordle_answer_id and wg.user_id=excluded.user_id
+       ),
        correct_placement=excluded.correct_placement,
        correct_letters=excluded.correct_letters,
        correct=excluded.correct,

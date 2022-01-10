@@ -1,5 +1,6 @@
 import express, { Request, Response, NextFunction } from 'express';
 
+import { randomBytes } from 'crypto';
 import * as utils from './utils';
 import { getParams } from '../../utils';
 import * as exceptions from '../../exceptions';
@@ -318,12 +319,71 @@ const leagueSeriesStats = async (request: Request, response: Response, next: Nex
   return response.status(200).json(stats);
 };
 
+const leagueNameCheck = async (request: Request, response: Response, next: NextFunction) => {
+  const { league_name } = getParams(request);
+
+  const league_slug = utils.nameToSlug(league_name);
+
+  const league = await queries.getLeague({ league_slug });
+  if (league) {
+    return next(new exceptions.HttpBadRequest('A league with this slug already exists', 'league_name_exists'));
+  }
+
+  return response.status(200).json({ status: 'ok', league_slug });
+};
+
+const addLeague = async (request: Request, response: Response, next: NextFunction) => {
+  try {
+    users.requireLogin(response, next);
+  } catch (e) {
+    return next(e);
+  }
+
+  const { league_name, series_days, answer_interval_minutes, letters, max_guesses, time_to_live_hours, is_private, is_hard_mode } =
+    getParams(request);
+
+  const invite_code = is_private ? randomBytes(16).toString('hex') : null;
+  const league_slug = utils.nameToSlug(league_name);
+
+  const start_date = new Date();
+  while (start_date.getUTCDay() !== 0) {
+    start_date.setDate(start_date.getDate() - 1);
+  }
+  start_date.setMilliseconds(0);
+  start_date.setSeconds(0);
+  start_date.setHours(0);
+
+  const data = {
+    league_name,
+    league_slug,
+    series_days,
+    answer_interval_minutes,
+    letters,
+    max_guesses,
+    time_to_live_hours,
+    start_date,
+    create_date: new Date(),
+    is_private,
+    is_hard_mode,
+    invite_code,
+    accept_word_list: utils.defaultAnswerWordList,
+    source_word_list: utils.defaultSourceWordList,
+    user_id: response.locals.user.user_id,
+  };
+
+  await queries.addLeague(data);
+
+  return response.status(200).json({ status: 'ok', league_slug });
+};
+
 router.all('/puzzles/', puzzles);
 router.all('/puzzles/check', check);
 router.all('/puzzles/guesses', guesses);
 router.all('/puzzles/completed', completedUsers);
 
 router.all('/leagues', leagues);
+router.all('/leagues/check', leagueNameCheck);
+router.all('/leagues/add', addLeague);
 router.all('/leagues/join', joinLeague);
 router.all('/leagues/leave', leaveLeague);
 router.all('/leagues/info', leagueInfo);

@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { render } from 'react-dom';
 import { BrowserRouter, Route, Routes, Link } from 'react-router-dom';
 import { useGetAndSet, withStore } from 'react-context-hook';
@@ -48,20 +48,20 @@ function NavBar() {
   const [loginWidget, setLoginWidget] = useGetAndSet('login-widget');
   const [user, setUser]: [{ username: string }, any] = useGetAndSet('user');
 
-  function openDrawer() {
+  const openDrawer = useCallback(() => {
     setLoginOpen(true);
-  }
+  }, []);
 
-  function closeDrawer() {
+  const closeDrawer = useCallback(() => {
     setLoginOpen(false);
-  }
+  }, []);
 
-  function logout() {
+  const logout = useCallback(() => {
     localStorage.setItem('api-key', null);
     setUser(null);
-  }
+  }, []);
 
-  async function updateUser() {
+  const updateUser = useCallback(async () => {
     const data = await fetch(genUrl(), {
       method: 'GET',
       headers: {
@@ -74,7 +74,7 @@ function NavBar() {
     } else {
       setUser(await data.json());
     }
-  }
+  }, []);
 
   useEffect(() => {
     setLoginWidget(this);
@@ -120,7 +120,7 @@ function NavBar() {
       </AppBar>
       <Drawer anchor="right" open={loginOpen} onClose={closeDrawer}>
         <div role="presentation">
-          <Login updateUser={updateUser} history={history} />
+          <Login updateUser={updateUser} />
         </div>
       </Drawer>
     </div>

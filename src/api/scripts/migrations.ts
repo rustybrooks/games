@@ -133,6 +133,8 @@ m.addStatement(`
 `);
 
 export async function bootstrapLeagues(startDate: Date) {
+  const user = await users.user({ username: 'rbrooks' });
+
   for (const d of [
     {
       league_name: 'Daily Play / Weekly Series / 5 letters',
@@ -144,6 +146,7 @@ export async function bootstrapLeagues(startDate: Date) {
       time_to_live_hours: 24,
       start_date: startDate,
       create_date: new Date(),
+      user_id: user.user_id,
     },
 
     {
@@ -156,6 +159,7 @@ export async function bootstrapLeagues(startDate: Date) {
       time_to_live_hours: 24,
       start_date: startDate,
       create_date: new Date(),
+      user_id: user.user_id,
     },
 
     {
@@ -168,6 +172,7 @@ export async function bootstrapLeagues(startDate: Date) {
       time_to_live_hours: 24,
       start_date: startDate,
       create_date: new Date(),
+      user_id: user.user_id,
     },
 
     {
@@ -180,6 +185,7 @@ export async function bootstrapLeagues(startDate: Date) {
       time_to_live_hours: 24,
       start_date: startDate,
       create_date: new Date(),
+      user_id: user.user_id,
     },
 
     {
@@ -196,6 +202,7 @@ export async function bootstrapLeagues(startDate: Date) {
       invite_code: randomBytes(16).toString('hex'),
       accept_word_list: 'sources/collins.2019.txt.clean',
       source_word_list: 'sources/collins.2019.txt.clean',
+      user_id: user.user_id,
     },
   ]) {
     await SQL.insert('wordle_leagues', d, false, 'on conflict (league_slug) do nothing');
@@ -224,6 +231,6 @@ export async function migrateSimple({ apply = [], isInitial = false }: { apply?:
 export async function migrate({ apply = [], isInitial = false }: { apply?: number[]; isInitial?: boolean }) {
   await migrateSimple({ apply, isInitial });
 
-  await bootstrapLeagues(new Date('2021-12-25'));
   await bootstrapAdmin();
+  await bootstrapLeagues(new Date('2021-12-25'));
 }

@@ -43,6 +43,21 @@ export function evaluateGuess(expected: string, guess: string) {
   });
 }
 
+export function nameToSlug(name: string) {
+  let newname = name.toLowerCase().split('');
+  const achar = 'a'.charCodeAt(0);
+  const zchar = 'z'.charCodeAt(0);
+  const zerochar = '0'.charCodeAt(0);
+  const ninechar = '9'.charCodeAt(0);
+  newname = newname.map((c: string) => {
+    return (c.charCodeAt(0) >= achar && c.charCodeAt(0) <= zchar) || (c.charCodeAt(0) >= zerochar && c.charCodeAt(0) <= ninechar) ? c : '-';
+  });
+  return newname
+    .join('')
+    .replace(/-+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
 export function wordList(length: number, source: string) {
   const wkey = `${source}-${length}`;
   if (!(wkey in words)) {
