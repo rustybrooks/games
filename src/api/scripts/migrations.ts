@@ -129,7 +129,7 @@ m = new migrations.Migration(4, 'Modifying leagues');
 
 m.addStatement(`
     alter table wordle_leagues 
-    add column user_id bigint references users(user_id)
+    add column create_user_id bigint references users(user_id)
 `);
 
 export async function bootstrapLeagues(startDate: Date) {
@@ -146,7 +146,7 @@ export async function bootstrapLeagues(startDate: Date) {
       time_to_live_hours: 24,
       start_date: startDate,
       create_date: new Date(),
-      user_id: user.user_id,
+      create_user_id: user.user_id,
     },
 
     {
@@ -159,7 +159,7 @@ export async function bootstrapLeagues(startDate: Date) {
       time_to_live_hours: 24,
       start_date: startDate,
       create_date: new Date(),
-      user_id: user.user_id,
+      create_user_id: user.user_id,
     },
 
     {
@@ -172,7 +172,7 @@ export async function bootstrapLeagues(startDate: Date) {
       time_to_live_hours: 24,
       start_date: startDate,
       create_date: new Date(),
-      user_id: user.user_id,
+      create_user_id: user.user_id,
     },
 
     {
@@ -185,7 +185,7 @@ export async function bootstrapLeagues(startDate: Date) {
       time_to_live_hours: 24,
       start_date: startDate,
       create_date: new Date(),
-      user_id: user.user_id,
+      create_user_id: user.user_id,
     },
 
     {
@@ -202,7 +202,7 @@ export async function bootstrapLeagues(startDate: Date) {
       invite_code: randomBytes(16).toString('hex'),
       accept_word_list: 'sources/collins.2019.txt.clean',
       source_word_list: 'sources/collins.2019.txt.clean',
-      user_id: user.user_id,
+      create_user_id: user.user_id,
     },
   ]) {
     await SQL.insert('wordle_leagues', d, false, 'on conflict (league_slug) do nothing');

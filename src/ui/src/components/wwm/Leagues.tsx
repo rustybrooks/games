@@ -9,17 +9,22 @@ import { genLeagueNew } from '../../routes';
 
 const genUrl = (fn = '') => `${constants.BASE_URL}/api/games/wwm/${fn}`;
 
-export async function getPuzzles(active = true): Promise<ActivePuzzle[]> {
+export async function getPuzzles(active = true, league_slug: string = null): Promise<ActivePuzzle[]> {
+  const body: any = {
+    active,
+    sort: active ? 'active_after' : '-active_before',
+  };
+  if (league_slug) {
+    body.league_slug = league_slug;
+  }
+
   const data = await fetch(genUrl('puzzles/'), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'X-API-KEY': localStorage.getItem('api-key'),
     },
-    body: JSON.stringify({
-      active,
-      sort: active ? 'active_after' : '-active_before',
-    }),
+    body: JSON.stringify(body),
   });
   return data.json();
 }

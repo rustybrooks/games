@@ -140,6 +140,11 @@ function WWMDisplay({
       }}
     >
       <Div sx={style.container} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}>
+        <div style={{ margin: '0 auto' }}>
+          <div style={{ textAlign: 'center' }}>
+            <Typography variant="h2">League: {league.league_name}</Typography>
+          </div>
+        </div>
         <table css={style.table} style={{ margin: '0 auto' }}>
           <tbody>
             {[...Array(league.max_guesses).keys()].map(y => {

@@ -122,8 +122,15 @@ const check = async (request: Request, response: Response, next: NextFunction) =
   }
 
   guesses.push(guess);
-
   const result = utils.evaluateGuess(answer.answer, guess);
+
+  console.log('is hard mode??', league.is_hard_mode);
+  if (league.is_hard_mode) {
+    if (!utils.checkHardMode(league, guess, result, guessesList, answer)) {
+      return next(new exceptions.HttpBadRequest('Invalid guess - violates prior rules'));
+    }
+  }
+
   queries.addGuess({
     user_id: response.locals.user.user_id,
     wordle_answer_id: answer.wordle_answer_id,
@@ -185,7 +192,7 @@ const guesses = async (request: Request, response: Response, next: NextFunction)
 
   const correct = !!these_guesses.find(g => g.correct);
   let words1: string[] = [];
-  const words2: string[] = [];
+  // const words2: string[] = [];
   if (reduce) {
     words1 = utils.wordList(league.letters, league.accept_word_list || utils.defaultAnswerWordList);
     // words2 = utils.wordList(league.letters, league.source_word_list || utils.defaultSourceWordList);
@@ -229,7 +236,7 @@ const puzzles = async (request: Request, response: Response, next: NextFunction)
     }
   }
 
-  const p = await queries.getPuzzles({ user_id: response.locals.user.user_id, sort: sort || 'active_after', active });
+  const p = await queries.getPuzzles({ user_id: response.locals.user.user_id, sort: sort || 'active_after', active, league_slug });
   return response.status(200).json(p);
 };
 
@@ -368,7 +375,7 @@ const addLeague = async (request: Request, response: Response, next: NextFunctio
     invite_code,
     accept_word_list: utils.defaultAnswerWordList,
     source_word_list: utils.defaultSourceWordList,
-    user_id: response.locals.user.user_id,
+    create_user_id: response.locals.user.user_id,
   };
 
   await queries.addLeague(data);

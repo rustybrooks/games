@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import { League, Guess } from '../../../../ui/types';
 
 export const defaultSourceWordList = 'filtered/twl06.txt.filtered';
 export const defaultAnswerWordList = 'sources/collins.2019.txt.clean';
@@ -161,4 +162,15 @@ export function eliminateGuess(inWords: string[], guess: string, result: string)
     }
     return keep && tmp_required.length === 0;
   });
+}
+
+export function checkHardMode(league: League, guess: string, result: string[], guesses: Guess[], answer: any): boolean {
+  let wordsLeft = wordList(league.letters, league.accept_word_list || defaultAnswerWordList);
+  for (const g of guesses) {
+    console.log('answer', answer, 'guess', g.guess);
+    const r = evaluateGuess(answer.answer, g.guess);
+    wordsLeft = eliminateGuess(wordsLeft, g.guess, r.join(''));
+  }
+
+  return wordsLeft.includes(guess);
 }

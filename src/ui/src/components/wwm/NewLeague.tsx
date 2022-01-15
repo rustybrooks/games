@@ -54,22 +54,25 @@ export function NewLeague() {
   );
 
   const createLeague = useCallback(async () => {
+    const body = {
+      league_name: leagueName,
+      series_days: seriesDays,
+      answer_interval_minutes: (24 * 60) / frequency,
+      letters,
+      max_guesses: guesses,
+      time_to_live_hours: ttl,
+      is_private: priv,
+      is_hard_mode: hard,
+    };
+    console.log('post body', body);
+
     const r = await fetch(genUrl('leagues/add'), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'X-API-KEY': localStorage.getItem('api-key'),
       },
-      body: JSON.stringify({
-        league_name: leagueName,
-        series_days: seriesDays,
-        answer_interval_minutes: (24 * 60) / frequency,
-        letters,
-        max_guesses: guesses,
-        time_to_live_hours: ttl,
-        is_private: priv,
-        is_hard_mode: hard,
-      }),
+      body: JSON.stringify(body),
     });
     if (r.status === 200) {
       const data = await r.json();
@@ -101,6 +104,8 @@ export function NewLeague() {
       </div>
     );
   }
+
+  console.log('priv', priv, 'hard', hard);
 
   return (
     <Div sx={{ width: '100%' }}>
@@ -199,12 +204,18 @@ export function NewLeague() {
         <FormGroup row>
           <FormControlLabel
             control={<Switch id="hard-mode" />}
-            value={hard}
+            checked={hard}
             label="Hard Mode"
             sx={{ m: 1 }}
-            onChange={(event: any) => setHard(event.target.value)}
+            onChange={(event: any) => setHard(event.target.checked)}
           />
-          <FormControlLabel control={<Switch id="private" />} value={priv} label="Private League" sx={{ m: 1 }} />
+          <FormControlLabel
+            control={<Switch id="private" />}
+            checked={priv}
+            label="Private League"
+            sx={{ m: 1 }}
+            onChange={(event: any) => setPriv(event.target.checked)}
+          />
         </FormGroup>
 
         <Div sx={{ textAlign: 'right' }}>

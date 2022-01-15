@@ -1,19 +1,22 @@
 import { useEffect, useState } from 'react';
 import { useGetAndSet } from 'react-context-hook';
-import { Link } from '@mui/material';
+import { Link, Typography } from '@mui/material';
 import { useParams } from 'react-router-dom';
 import { formatDistance } from 'date-fns';
+import { useNavigate } from 'react-router';
 import * as eht from '../EnhancedTable';
 
 import * as constants from '../../constants';
-import { League, LeagueSeries, LeagueStats, User } from '../../../types';
+import { ActivePuzzle, League, LeagueSeries, LeagueStats, User } from '../../../types';
 
 import { Div, Table, Td, Tr } from '../Styled';
 import { TitleBox } from '../TitleBox';
+import { getPuzzles, getLeagues } from './Leagues';
 
 const genUrl = (fn = '') => `${constants.BASE_URL}/api/games/wwm/${fn}`;
 
 const ff = ['Roboto', 'Arial', 'sans-serif'].join(',');
+type EnumeratedPuzzle = ActivePuzzle & { count: number };
 
 const style: { [id: string]: any } = {
   table: {},
@@ -153,6 +156,57 @@ const statsHeadCells: eht.HeadCell<LeagueStats>[] = [
   },
 ];
 
+function leagueFormatter(row: EnumeratedPuzzle, d: string) {
+  return <Link href={`/wwm/leagues/${row.league_slug}`}>{d}</Link>;
+}
+
+function answerFormatter(row: EnumeratedPuzzle, a: string) {
+  if (row.correct_answer === null) return '';
+
+  return (
+    <Typography variant="body2" color={row.correct ? 'green' : 'red'}>
+      {row.correct_answer.toUpperCase()}
+    </Typography>
+  );
+}
+
+const ourheadCells: eht.HeadCell<EnumeratedPuzzle>[] = [
+  {
+    id: 'league_name',
+    numeric: false,
+    disablePadding: false,
+    label: 'League',
+    formatter: leagueFormatter,
+  },
+  {
+    id: 'active_after',
+    numeric: true,
+    disablePadding: false,
+    label: 'Active after',
+    formatter: dateFormatter,
+  },
+  {
+    id: 'active_before',
+    numeric: true,
+    disablePadding: false,
+    label: 'Active until',
+    formatter: dateFormatter,
+  },
+  {
+    id: 'num_guesses',
+    numeric: true,
+    disablePadding: false,
+    label: '# guesses',
+  },
+  {
+    id: 'correct_answer',
+    numeric: false,
+    disablePadding: false,
+    label: 'Your solution',
+    formatter: answerFormatter,
+  },
+];
+
 export function WWMLeagueSeries({ league, seriesCallback }: { league: League; seriesCallback: any }) {
   const [series, setSeries] = useState<LeagueSeries[]>(null);
   const [active, setActive] = useState<LeagueSeries>(null);
@@ -247,7 +301,11 @@ export function WWMLeagueSeriesStats({ league, series }: { league: League; serie
   }, [league, series]);
 
   if (!stats) {
-    return <div>Loading...</div>;
+    return (
+      <TitleBox title="">
+        <Typography variant="h2">No stats available yet</Typography>
+      </TitleBox>
+    );
   }
 
   const d1 = formatDistance(new Date(series.start_date), new Date(), { addSuffix: true });
@@ -258,7 +316,7 @@ export function WWMLeagueSeriesStats({ league, series }: { league: League; serie
       <eht.EnhancedTable
         rows={stats}
         headCells={statsHeadCells}
-        mainColumn={'username'}
+        mainColumn="username"
         initialSortColumn="score"
         initialSortOrder="desc"
         rowButtons={[]}
@@ -318,6 +376,57 @@ export function WWMLeagueInfo({ league }: { league: League }) {
   );
 }
 
+export function LeaguePuzzles({ league, active }: { league: League; active: boolean }) {
+  const [puzzles, setPuzzles] = useState<EnumeratedPuzzle[]>();
+  const navigate = useNavigate();
+  const [user, setUser]: [{ username: string }, any] = useGetAndSet('user');
+
+  useEffect(() => {
+    (async () => {
+      if (user) {
+        setPuzzles((await getPuzzles(active, league.league_slug)).map((x, i) => ({ ...x, count: i })));
+      }
+    })();
+  }, [user]);
+
+  async function navrow(row: EnumeratedPuzzle, postfix: string) {
+    navigate(`/wwm/puzzles/${row.league_slug}/${row.wordle_answer_id}/${postfix}`);
+  }
+
+  async function navPlay(row: EnumeratedPuzzle): Promise<void> {
+    return navrow(row, 'play');
+  }
+
+  async function navBrowse(row: EnumeratedPuzzle): Promise<void> {
+    return navrow(row, 'browse');
+  }
+
+  function buttonCallback(row: EnumeratedPuzzle): eht.ButtonInfo<EnumeratedPuzzle> {
+    if (row.completed) {
+      return { label: 'Browse', callback: navBrowse, activeCallback: () => true };
+    }
+    return { label: 'Play', callback: navPlay, activeCallback: () => active };
+  }
+
+  if (!puzzles) {
+    return <div>Loading...</div>;
+  }
+
+  return (
+    <TitleBox title={active ? 'Active Puzzles' : 'Archived Puzzles'}>
+      <eht.EnhancedTable
+        rows={puzzles}
+        headCells={ourheadCells}
+        mainColumn="count"
+        initialSortColumn={active ? 'active_after' : 'active_before'}
+        initialSortOrder={active ? 'asc' : 'desc'}
+        initialRowsPerPage={5}
+        rowButtons={[buttonCallback]}
+      />
+    </TitleBox>
+  );
+}
+
 export function League() {
   const { leagueSlug } = useParams();
   const [league, setLeague] = useState<League>(null);
@@ -360,6 +469,8 @@ export function League() {
             </td>
             <td valign="top">
               <WWMLeagueSeriesStats league={league} series={series} />
+              <LeaguePuzzles league={league} active />
+              <LeaguePuzzles league={league} active={false} />
             </td>
           </tr>
         </tbody>
