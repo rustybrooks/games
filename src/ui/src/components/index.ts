@@ -9,3 +9,4 @@ export * from './wwm/League';
 export * from './wwm/JoinLeague';
 export * from './wwm/JoinLeaguePlay';
 export * from './wwm/NewLeague';
+export * from './wwm/Comments';

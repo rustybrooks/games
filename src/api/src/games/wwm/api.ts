@@ -383,10 +383,48 @@ const addLeague = async (request: Request, response: Response, next: NextFunctio
   return response.status(200).json({ status: 'ok', league_slug });
 };
 
+const comments = async (request: Request, response: Response, next: NextFunction) => {
+  const { wordle_answer_id } = getParams(request);
+
+  const league = await queries.getLeague({ wordle_answer_id, user_id: response.locals.user ? response.locals.user.user_id : null });
+  if (!league) {
+    return next(new exceptions.HttpNotFound('League not found'));
+  }
+
+  return response.status(200).json(await queries.getComments({ wordle_answer_id, sort: '-create_date' }));
+};
+
+const addComment = async (request: Request, response: Response, next: NextFunction) => {
+  try {
+    users.requireLogin(response, next);
+  } catch (e) {
+    return next(e);
+  }
+
+  const { wordle_answer_id, comment } = getParams(request);
+
+  const league = await queries.getLeague({ wordle_answer_id, user_id: response.locals.user ? response.locals.user.user_id : null });
+  if (!league) {
+    return next(new exceptions.HttpNotFound('League not found'));
+  }
+
+  await queries.addComment({
+    wordle_answer_id,
+    comment,
+    user_id: response.locals.user.user_id,
+  });
+
+  await queries.sleep(100);
+
+  return response.status(200).json({ status: 'ok' });
+};
+
 router.all('/puzzles/', puzzles);
 router.all('/puzzles/check', check);
 router.all('/puzzles/guesses', guesses);
 router.all('/puzzles/completed', completedUsers);
+router.all('/puzzles/comments', comments);
+router.all('/puzzles/add_comment', addComment);
 
 router.all('/leagues', leagues);
 router.all('/leagues/check', leagueNameCheck);

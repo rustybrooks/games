@@ -18,6 +18,7 @@ import { Cell, Div } from '../Styled';
 import { ModalBox } from '../ModalBox';
 import { genActivePuzzles, genJoinLeagueAndPlay, genLeague, genPuzzleBrowse, genPuzzlePlay } from '../../routes';
 import { TitleBox } from '../TitleBox';
+import { Comments } from './Comments';
 
 function guessesToCategories(results: any) {
   const rightKeys: string[] = [];
@@ -624,8 +625,8 @@ export function WWMBrowse() {
   }
 
   return (
-    <Paper sx={{ padding: '10px' }}>
-      <div css={{ textAlign: 'center' }}>
+    <div>
+      <div css={{ textAlign: 'center', padding: '10px' }}>
         {completed.map(c => (
           <Button
             key={c.username}
@@ -655,8 +656,9 @@ export function WWMBrowse() {
             onTouchEnd={handleTouchEnd}
             onTouchMove={handleTouchMove}
           />
+          <Comments wordle_answer_id={answerId} />
         </div>
       ) : null}
-    </Paper>
+    </div>
   );
 }

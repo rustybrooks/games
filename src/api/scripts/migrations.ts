@@ -87,7 +87,7 @@ initial.addStatement(`
         correct_placement smallint not null,
         correct_letters smallint not null,
         correct boolean not null,
-        create_date timestamp with time zone not null               
+        create_date timestamp with time zone not null
     )
 `);
 
@@ -130,6 +130,19 @@ m = new migrations.Migration(4, 'Modifying leagues');
 m.addStatement(`
     alter table wordle_leagues 
     add column create_user_id bigint references users(user_id)
+`);
+
+// -------------------------------------------------------
+m = new migrations.Migration(5, 'Adding comments');
+
+m.addStatement(`
+    create table wordle_comments (
+        wordle_comment_id serial primary key,
+        user_id bigint not null references users(user_id),
+        wordle_answer_id bigint not null references wordle_answers(wordle_answer_id),
+        create_date timestamp with time zone not null,
+        comment varchar(5000)
+    )
 `);
 
 export async function bootstrapLeagues(startDate: Date) {

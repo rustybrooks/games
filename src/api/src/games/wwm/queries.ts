@@ -1,8 +1,8 @@
 import { SQL } from '../../db';
-import { ActivePuzzle, Guess, League, WWMStatus, QueryParams } from '../../../../ui/types';
+import { ActivePuzzle, Guess, League, WWMStatus, QueryParams, Comment } from '../../../../ui/types';
 import { defaultSourceWordList, randomWord } from './utils';
 
-function sleep(ms: number) {
+export function sleep(ms: number) {
   return new Promise(resolve => {
     setTimeout(resolve, ms);
   });
@@ -25,6 +25,7 @@ export async function addLeague(data: any) {
 export async function getLeagues({
   wordle_league_id = null,
   league_slug = null,
+  wordle_answer_id = null,
   user_id = null,
   isMemberOnly = false,
   page = null,
@@ -33,10 +34,21 @@ export async function getLeagues({
 }: {
   wordle_league_id?: number;
   league_slug?: string;
+  wordle_answer_id?: number;
   user_id?: number;
   isMemberOnly?: boolean;
 } & QueryParams = {}): Promise<League[]> {
   const [where, bindvars] = SQL.autoWhere({ wordle_league_id, league_slug });
+
+  if (wordle_answer_id) {
+    where.push(`wl.wordle_league_id=(
+        select wls.wordle_league_id 
+        from wordle_answers a 
+        join wordle_league_series wls using (wordle_league_series_id) 
+        where a.wordle_answer_id=$(wordle_answer_id)
+    )`);
+    bindvars.wordle_answer_id = wordle_answer_id;
+  }
 
   const joins = [];
   const extraCols = [];
@@ -547,6 +559,39 @@ export async function wordleStatuses({
     ${SQL.whereClause(where)}
     ${SQL.orderBy(sort)}
     ${SQL.limit(page, limit)}
+  `;
+  return SQL.select(query, bindvars);
+}
+
+/* ******* comments ******** */
+
+export async function addComment(data: {
+  user_id: number;
+  comment: string;
+  wordle_answer_id: number;
+  create_date?: Date;
+}): Promise<Comment> {
+  const this_data = { ...data };
+  if (!data.create_date) {
+    this_data.create_date = new Date();
+  }
+  return SQL.insert('wordle_comments', this_data, true);
+}
+
+export async function getComments({
+  wordle_answer_id,
+  page = null,
+  limit = null,
+  sort = null,
+}: { wordle_answer_id: number } & QueryParams): Promise<Comment[]> {
+  const [where, bindvars] = SQL.autoWhere({ wordle_answer_id });
+  const query = `
+      select c.*, username 
+      from wordle_comments c
+      join users using (user_id)
+      ${SQL.whereClause(where)}
+        ${SQL.orderBy(sort)}
+        ${SQL.limit(page, limit)}
   `;
   return SQL.select(query, bindvars);
 }

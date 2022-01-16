@@ -78,3 +78,12 @@ export interface LeagueStats {
   win_pct_possible: number;
   possible: number;
 }
+
+export interface Comment {
+  wordle_comment_id: number;
+  user_id: number;
+  username: string;
+  comment: string;
+  create_date: Date;
+  wordle_answer_id: number;
+}
