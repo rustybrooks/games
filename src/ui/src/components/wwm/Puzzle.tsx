@@ -454,13 +454,14 @@ export function WWMBrowse() {
 
   const handleTouchEnd = useCallback(() => {
     if (touchStart - touchEnd > 150) {
+      console.log('asswipe');
       swipeUser(1);
     }
 
     if (touchStart - touchEnd < -150) {
       swipeUser(-1);
     }
-  }, []);
+  }, [swipeUser, touchEnd, touchStart]);
 
   let league: League = null;
   if (leagues) {

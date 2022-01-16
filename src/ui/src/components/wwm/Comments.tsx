@@ -6,12 +6,6 @@ import { Div } from '../Styled';
 
 const genUrl = (fn = '') => `${constants.BASE_URL}/api/games/wwm/${fn}`;
 
-const style: { [id: string]: any } = {
-  container: {},
-};
-
-const drawerBleeding = 56;
-
 // move this to utils or something
 export async function getComments(wordle_answer_id: number | string): Promise<Comment[]> {
   const data = await fetch(genUrl('puzzles/comments'), {
@@ -28,10 +22,6 @@ export async function getComments(wordle_answer_id: number | string): Promise<Co
 }
 
 export async function addComment(wordle_answer_id: number | string, comment: string) {
-  if (!comment.trim().length) {
-    return {};
-  }
-
   const data = await fetch(genUrl('puzzles/add_comment'), {
     method: 'POST',
     headers: {
@@ -40,7 +30,7 @@ export async function addComment(wordle_answer_id: number | string, comment: str
     },
     body: JSON.stringify({
       wordle_answer_id,
-      comment: comment.trim(),
+      comment,
     }),
   });
   return data.json();
@@ -69,13 +59,16 @@ export function Comments({ wordle_answer_id }: { wordle_answer_id: number | stri
   };
 
   const handleCommentKey = async (event: any) => {
-    console.log('key...', event.key);
-    if (event.key.toLowerCase() === 'enter') {
-      addComment(wordle_answer_id, comment);
+    if (event.key.toLowerCase() === 'enter' && comment.trim().length) {
+      addComment(wordle_answer_id, comment.trim());
       setComment('');
       setComments(await getComments(wordle_answer_id));
     }
   };
+
+  if (!user) {
+    return <div />;
+  }
 
   return (
     <Div>
@@ -104,7 +97,7 @@ export function Comments({ wordle_answer_id }: { wordle_answer_id: number | stri
             onKeyDown={handleCommentKey}
           />
         ) : null}
-        <Paper sx={{ maxHeight: { mobile: '20rem', tablet: '30rem', desktop: '30rem' }, overflow: 'auto' }}>
+        <Paper sx={{ maxHeight: { mobile: '30rem', tablet: '30rem', desktop: '25rem' }, overflow: 'auto' }}>
           {comments.map(c => {
             return (
               <Box key={c.wordle_comment_id} style={{ display: 'flex', margin: '.25em' }}>
