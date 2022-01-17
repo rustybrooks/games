@@ -414,7 +414,7 @@ const addComment = async (request: Request, response: Response, next: NextFuncti
     user_id: response.locals.user.user_id,
   });
 
-  await queries.sleep(100);
+  await queries.sleep(50);
 
   return response.status(200).json({ status: 'ok' });
 };

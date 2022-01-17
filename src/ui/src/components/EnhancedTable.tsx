@@ -149,7 +149,7 @@ export function EnhancedTable<T>({
   return (
     <Box sx={{ width: '100%' }}>
       <TableContainer>
-        <Table sx={{ minWidth: minWidth }} aria-labelledby="tableTitle" size="small">
+        <Table sx={{ minWidth }} aria-labelledby="tableTitle" size="small">
           <EnhancedTableHead
             headCells={headCells}
             order={order}
@@ -176,7 +176,7 @@ export function EnhancedTable<T>({
                   >
                     {headCells.map(c =>
                       c.id === mainColumn ? (
-                        <TableCell key={c.id.toString()} component="th" id={labelId} scope={'row'} padding={'none'}>
+                        <TableCell key={c.id.toString()} component="th" id={labelId} scope="row" padding="none">
                           {c.formatter ? c.formatter(row, row[c.id]) : row[c.id]}
                         </TableCell>
                       ) : (
@@ -196,7 +196,7 @@ export function EnhancedTable<T>({
                               sx={{ margin: '3x' }}
                               key={buttonInfo.label}
                               disabled={!buttonInfo.activeCallback(row)}
-                              variant={'contained'}
+                              variant="contained"
                               onClick={event => handleButtonClick(row, buttonInfo.callback)}
                             >
                               {buttonInfo.label}
@@ -228,6 +228,8 @@ export function EnhancedTable<T>({
         page={page}
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
+        nextIconButtonProps={{ size: 'large' }}
+        backIconButtonProps={{ size: 'large' }}
       />
     </Box>
   );

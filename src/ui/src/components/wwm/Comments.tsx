@@ -60,7 +60,7 @@ export function Comments({ wordle_answer_id }: { wordle_answer_id: number | stri
 
   const handleCommentKey = async (event: any) => {
     if (event.key.toLowerCase() === 'enter' && comment.trim().length) {
-      addComment(wordle_answer_id, comment.trim());
+      await addComment(wordle_answer_id, comment.trim());
       setComment('');
       setComments(await getComments(wordle_answer_id));
     }
@@ -85,30 +85,36 @@ export function Comments({ wordle_answer_id }: { wordle_answer_id: number | stri
           keepMounted: true,
         }}
       >
-        {user ? (
-          <TextField
-            id="outlined-multiline-flexible"
-            label="Comment"
-            multiline
-            maxRows={4}
-            sx={{ width: '100%' }}
-            value={comment}
-            onChange={handleComment}
-            onKeyDown={handleCommentKey}
-          />
-        ) : null}
-        <Paper sx={{ maxHeight: { mobile: '30rem', tablet: '30rem', desktop: '25rem' }, overflow: 'auto' }}>
-          {comments.map(c => {
-            return (
-              <Box key={c.wordle_comment_id} style={{ display: 'flex', margin: '.25em' }}>
-                <Typography color="#55f" sx={{ marginRight: '.5em' }}>
-                  [{c.username}]
-                </Typography>
-                <Typography>{c.comment}</Typography>
-              </Box>
-            );
-          })}
-        </Paper>
+        <Div sx={{ margin: '.5rem' }}>
+          {user ? (
+            <TextField
+              id="outlined-multiline-flexible"
+              label="Comment"
+              multiline
+              maxRows={4}
+              sx={{ width: '100%' }}
+              value={comment}
+              onChange={handleComment}
+              onKeyDown={handleCommentKey}
+            />
+          ) : null}
+          <Paper sx={{ maxHeight: { mobile: '30rem', tablet: '30rem', desktop: '25rem', padding: '.5rem' }, overflow: 'auto' }}>
+            {comments.length ? (
+              comments.map(c => {
+                return (
+                  <Box key={c.wordle_comment_id} style={{ display: 'flex', margin: '.25em' }}>
+                    <Typography color="#55f" sx={{ marginRight: '.5em' }}>
+                      [{c.username}]
+                    </Typography>
+                    <Typography>{c.comment}</Typography>
+                  </Box>
+                );
+              })
+            ) : (
+              <Typography color="#aaa">No comments yet</Typography>
+            )}
+          </Paper>
+        </Div>
       </Drawer>
     </Div>
   );
