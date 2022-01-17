@@ -363,7 +363,8 @@ export async function getPuzzles({
   const [where, bindvars] = SQL.autoWhere({ wordle_league_id, league_slug });
 
   if (user_id) {
-    where.push('((m.active and m.user_id=$(user_id)) or create_user_id=$(user_id))');
+    // where.push('((m.active and m.user_id=$(user_id)) or create_user_id=$(user_id))');
+    where.push('((m.active and m.user_id=$(user_id)))');
     bindvars.user_id = user_id;
   }
 
