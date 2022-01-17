@@ -117,9 +117,6 @@ export function eliminateGuessHelper(guess: string, result: string): [string[][]
     } else if (result[i] === '-') {
       remove(allowed[i], guess[i]);
     } else if ((!pos_required.includes(guess[i]) && !required.includes(guess[i])) || lc[guess[i]] === lcno[guess[i]]) {
-      // console.log('pr', guess[i], pos_required.includes(guess[i]));
-      // console.log('r', guess[i], required.includes(guess[i]));
-      // console.log('c', guess[i], lc[guess[i]] === lcno[guess[i]]);
       not_allowed.push(guess[i]);
     } else {
       remove(allowed[i], guess[i]);
@@ -130,15 +127,7 @@ export function eliminateGuessHelper(guess: string, result: string): [string[][]
 }
 
 export function eliminateGuess(inWords: string[], guess: string, result: string) {
-  // console.log(`---------------- ${guess} '${result}' - ${inWords.length}`);
-  // console.log(inWords.slice(0, 300));
-
   const [allowed, not_allowed, required] = eliminateGuessHelper(guess, result);
-  // console.log(
-  //   allowed.map(a => a.join('')),
-  //   not_allowed.join(''),
-  //   required.join(''),
-  // );
 
   return inWords.filter(word => {
     const tmp_required = [...required];
@@ -156,7 +145,6 @@ export function eliminateGuess(inWords: string[], guess: string, result: string)
       const cp = [...allowed[i]];
       remove(cp, c);
       if (cp.length) {
-        // console.log(word, 'remove tmpr', i, c);
         remove(tmp_required, c);
       }
     }
