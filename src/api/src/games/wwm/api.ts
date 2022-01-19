@@ -378,7 +378,11 @@ const addLeague = async (request: Request, response: Response, next: NextFunctio
     create_user_id: response.locals.user.user_id,
   };
 
-  await queries.addLeague(data);
+  const l = await queries.addLeague(data);
+  queries.addLeagueMember({
+    user_id: response.locals.user.user_id,
+    wordle_league_id: l.wordle_league_id,
+  });
 
   return response.status(200).json({ status: 'ok', league_slug });
 };
@@ -391,7 +395,7 @@ const comments = async (request: Request, response: Response, next: NextFunction
     return next(new exceptions.HttpNotFound('League not found'));
   }
 
-  return response.status(200).json(await queries.getComments({ wordle_answer_id, sort: '-create_date' }));
+  return response.status(200).json(await queries.getComments({ wordle_answer_id, sort: 'create_date' }));
 };
 
 const addComment = async (request: Request, response: Response, next: NextFunction) => {

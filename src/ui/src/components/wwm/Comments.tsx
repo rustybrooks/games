@@ -58,11 +58,15 @@ export function Comments({ wordle_answer_id }: { wordle_answer_id: number | stri
     }
   };
 
+  const saveComment = async () => {
+    await addComment(wordle_answer_id, comment.trim());
+    setComment('');
+    setComments(await getComments(wordle_answer_id));
+  };
+
   const handleCommentKey = async (event: any) => {
     if (event.key.toLowerCase() === 'enter' && comment.trim().length) {
-      await addComment(wordle_answer_id, comment.trim());
-      setComment('');
-      setComments(await getComments(wordle_answer_id));
+      saveComment();
     }
   };
 
@@ -87,16 +91,21 @@ export function Comments({ wordle_answer_id }: { wordle_answer_id: number | stri
       >
         <Div sx={{ margin: '.5rem' }}>
           {user ? (
-            <TextField
-              id="outlined-multiline-flexible"
-              label="Comment"
-              multiline
-              maxRows={4}
-              sx={{ width: '100%' }}
-              value={comment}
-              onChange={handleComment}
-              onKeyDown={handleCommentKey}
-            />
+            <Div sx={{ display: 'flex' }}>
+              <TextField
+                id="outlined-multiline-flexible"
+                label="Comment"
+                multiline
+                maxRows={4}
+                sx={{ width: '100%', margin: '.2em' }}
+                value={comment}
+                onChange={handleComment}
+                onKeyDown={handleCommentKey}
+              />
+              <Button onClick={saveComment} variant="contained" sx={{ margin: '.2em' }}>
+                Post
+              </Button>
+            </Div>
           ) : null}
           <Paper sx={{ maxHeight: { mobile: '30rem', tablet: '30rem', desktop: '25rem', padding: '.5rem' }, overflow: 'auto' }}>
             {comments.length ? (

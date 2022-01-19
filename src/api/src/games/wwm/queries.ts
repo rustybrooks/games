@@ -19,7 +19,7 @@ export function roundedNow() {
 /* ******* leagues ******** */
 
 export async function addLeague(data: any) {
-  return SQL.insert('wordle_leagues', data);
+  return SQL.insert('wordle_leagues', data, true);
 }
 
 export async function getLeagues({
