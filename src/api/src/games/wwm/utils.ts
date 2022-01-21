@@ -78,9 +78,19 @@ export function wordList(length: number, source: string) {
   return words[wkey];
 }
 
-export function randomWord(length: number, wordFile: string) {
-  const wl = wordList(length, wordFile);
-  return wl[Math.floor(Math.random() * wl.length)];
+export function randomWord(length: number, wordFile: string, rejects: string[] = null) {
+  let word;
+
+  for (let i = 0; i < 100; i++) {
+    const wl = wordList(length, wordFile);
+    word = wl[Math.floor(Math.random() * wl.length)];
+    if (!rejects || !rejects.includes(word)) {
+      return word;
+    }
+    console.log('Rejecting', word, i);
+  }
+
+  return word;
 }
 
 export function isWordInList(word: string, wordFile: string) {

@@ -24,6 +24,7 @@ const leagues = async (request: Request, response: Response, next: NextFunction)
     'start_date',
     'time_to_live_hours',
     'is_member',
+    'is_creator',
   ];
   response.status(200).json(lg.map(l => Object.fromEntries(cols.map(c => [c, l[c]]))));
 };
@@ -63,6 +64,9 @@ const leaveLeague = async (request: Request, response: Response, next: NextFunct
     return next(new exceptions.HttpNotFound('League not found'));
   }
 
+  if (league.create_user_id == response.locals.user.user_id) {
+    return next(new exceptions.HttpNotFound('League owner can not leave league'));
+  }
   await queries.removeLeagueMember({ user_id: response.locals.user.user_id, wordle_league_id: league.wordle_league_id });
 
   return response.status(200).json({ details: 'ok' });
@@ -348,6 +352,10 @@ const addLeague = async (request: Request, response: Response, next: NextFunctio
   const { league_name, series_days, answer_interval_minutes, letters, max_guesses, time_to_live_hours, is_private, is_hard_mode } =
     getParams(request);
 
+  if (league_name.length < 5) {
+    return next(new exceptions.HttpBadRequest('League names need to be at least 5 letters', 'league_name_too_short'));
+  }
+
   const invite_code = is_private ? randomBytes(16).toString('hex') : null;
   const league_slug = utils.nameToSlug(league_name);
 
@@ -378,7 +386,6 @@ const addLeague = async (request: Request, response: Response, next: NextFunctio
   };
 
   const l = await queries.addLeague(data);
-  console.log('l = ', l);
   queries.addLeagueMember({
     user_id: response.locals.user.user_id,
     wordle_league_id: l.wordle_league_id,

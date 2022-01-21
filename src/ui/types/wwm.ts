@@ -21,11 +21,13 @@ export interface League {
   create_date: Date;
   start_date: Date;
   is_member: boolean;
+  is_creator: boolean;
   is_private: boolean;
   is_hard_mode: boolean;
   invite_code: string;
   source_word_list: string;
   accept_word_list: string;
+  create_user_id: number;
 }
 
 export interface LeagueSeries {
@@ -48,6 +50,7 @@ export interface ActivePuzzle {
   correct_answer: string;
   correct: boolean;
   completed: boolean;
+  num_comments: number;
 }
 
 export interface WWMStatus {

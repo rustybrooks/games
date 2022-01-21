@@ -205,6 +205,13 @@ const ourheadCells: eht.HeadCell<EnumeratedPuzzle>[] = [
     label: 'Your solution',
     formatter: answerFormatter,
   },
+  {
+    id: 'num_comments',
+    numeric: true,
+    disablePadding: false,
+    label: 'Comments',
+    // formatter: answerFormatter,
+  },
 ];
 
 export function WWMLeagueSeries({ league, seriesCallback }: { league: League; seriesCallback: any }) {

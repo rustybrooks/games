@@ -126,7 +126,7 @@ function WWMLeaguesX() {
   }
 
   function canLeave(row: League): boolean {
-    return row.is_member && user !== null;
+    return !row.is_creator;
   }
 
   function canJoin(row: League): boolean {
@@ -144,10 +144,10 @@ function WWMLeaguesX() {
   }
 
   function buttonCallback(row: League): eht.ButtonInfo<League> {
-    if (canLeave(row)) {
-      return { label: 'Leave', callback: leaveLeague, activeCallback: () => canLeave(row) || canJoin(row) };
+    if (!row.is_member) {
+      return { label: 'Join', callback: joinLeague, activeCallback: () => canJoin(row) };
     }
-    return { label: 'Join', callback: joinLeague, activeCallback: () => canLeave(row) || canJoin(row) };
+    return { label: 'Leave', callback: leaveLeague, activeCallback: () => canLeave(row) };
   }
 
   return (

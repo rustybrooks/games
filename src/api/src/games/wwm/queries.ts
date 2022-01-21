@@ -55,7 +55,8 @@ export async function getLeagues({
   if (user_id) {
     bindvars.user_id = user_id;
     where.push('(not is_private or (user_id is not null) or create_user_id=$(user_id))');
-    extraCols.push('case when wlm.user_id is null and create_user_id != $(user_id) then false else true end as is_member');
+    extraCols.push('case when wlm.user_id is null then false else true end as is_member');
+    extraCols.push('case when create_user_id != $(user_id) then false else true end as is_creator');
     joins.push(
       `left join wordle_league_members wlm on (wlm.wordle_league_id=wl.wordle_league_id and wlm.user_id=$(user_id) and wlm.active)`,
     );
@@ -229,6 +230,7 @@ export async function getAnswers({
   league_slug = null,
   active_after = null,
   active_between = null,
+  fields = null,
   page = null,
   limit = null,
   sort = null,
@@ -238,6 +240,7 @@ export async function getAnswers({
   league_slug?: string;
   active_after?: Date;
   active_between?: Date;
+  fields?: string[];
   page?: number;
   limit?: number;
   sort?: string | string[];
@@ -255,7 +258,7 @@ export async function getAnswers({
   }
 
   const query = `
-    select a.* 
+    select ${fields || 'a.*'} 
     from wordle_answers a
     join wordle_league_series ls using (wordle_league_series_id)
     join wordle_leagues l using (wordle_league_id)
@@ -299,7 +302,19 @@ export async function generateAnswer(league: any, activeAfter: Date) {
   });
   if (a.length) return a[0];
 
-  const rando = randomWord(league.letters, league.source_word_list || defaultSourceWordList).toLowerCase();
+  const ninetyDays = new Date(activeAfter);
+  ninetyDays.setDate(ninetyDays.getDate() - 90);
+  const prev = await getAnswers({
+    wordle_league_id: league.wordle_league_id,
+    active_after: ninetyDays,
+    fields: ['answer'],
+  });
+
+  const rando = randomWord(
+    league.letters,
+    league.source_word_list || defaultSourceWordList,
+    prev.map((row: any) => row.answer),
+  ).toLowerCase();
   // console.log('Adding', activeAfter, activeBefore, rando);
   return SQL.insert(
     'wordle_answers',
@@ -385,12 +400,13 @@ export async function getPuzzles({
              case 
                  when ws.completed then a.answer 
                  else null 
-             end as correct_answer
+             end as correct_answer,
+             coalesce((select count(*) from wordle_comments c where c.wordle_answer_id=a.wordle_answer_id), 0) as num_comments
       from wordle_leagues l
       join wordle_league_series s using (wordle_league_id)
       join wordle_answers a using (wordle_league_series_id)
       left join wordle_league_members m using (wordle_league_id)
-      --  or ws.user_id=l.create_user_id
+                --  or ws.user_id=l.create_user_id
       left join wordle_status ws on ((ws.user_id=m.user_id) and ws.wordle_answer_id=a.wordle_answer_id)
       ${SQL.whereClause(where)}
       ${SQL.orderBy(sort)}

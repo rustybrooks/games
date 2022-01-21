@@ -114,6 +114,7 @@ export function Comments({ wordle_answer_id, league }: { wordle_answer_id: numbe
                 value={comment}
                 onChange={handleComment}
                 onKeyDown={handleCommentKey}
+                inputRef={input => input && input.focus()}
               />
               <Button onClick={saveComment} variant="contained" sx={{ margin: '.2em' }}>
                 Post
