@@ -1,8 +1,11 @@
 import { useGetAndSet } from 'react-context-hook';
-import { Box, Button, Drawer, List, ListItemText, Paper, TextField, Typography } from '@mui/material';
-import { useEffect, useState, Fragment } from 'react';
+import { Box, Button, Drawer, Paper, TextField, Typography } from '@mui/material';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router';
 import * as constants from '../../constants';
+import { genLeague } from '../../routes';
 import { Div } from '../Styled';
+import { League } from '../../../types';
 
 const genUrl = (fn = '') => `${constants.BASE_URL}/api/games/wwm/${fn}`;
 
@@ -36,11 +39,12 @@ export async function addComment(wordle_answer_id: number | string, comment: str
   return data.json();
 }
 
-export function Comments({ wordle_answer_id }: { wordle_answer_id: number | string }) {
+export function Comments({ wordle_answer_id, league }: { wordle_answer_id: number | string; league: League }) {
   const [user, setUser]: [{ username: string }, any] = useGetAndSet('user');
   const [open, setOpen] = useState(false);
   const [comments, setComments] = useState([]);
   const [comment, setComment] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     (async () => {
@@ -77,8 +81,17 @@ export function Comments({ wordle_answer_id }: { wordle_answer_id: number | stri
   return (
     <Div>
       <Div sx={{ width: '100%', textAlign: 'center' }}>
-        <Button variant="contained" onClick={toggleDrawer(true)}>
+        <Button sx={{ margin: '.2em' }} variant="contained" onClick={toggleDrawer(true)}>
           {comments.length} comments
+        </Button>
+        <Button
+          sx={{ margin: '.2em' }}
+          variant="contained"
+          onClick={() => {
+            navigate(genLeague(league.league_slug));
+          }}
+        >
+          Visit League: {league.league_name}
         </Button>
       </Div>
       <Drawer

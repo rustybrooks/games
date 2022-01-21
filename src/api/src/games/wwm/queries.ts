@@ -19,7 +19,7 @@ export function roundedNow() {
 /* ******* leagues ******** */
 
 export async function addLeague(data: any) {
-  return SQL.insert('wordle_leagues', data, true);
+  return SQL.insert('wordle_leagues', data, '*');
 }
 
 export async function getLeagues({
@@ -182,7 +182,7 @@ export async function getleagueSeries({
 }
 
 export async function addLeagueSeries(data: { [id: string]: any }) {
-  return SQL.insert('wordle_league_series', data, 200, false, true);
+  return SQL.insert('wordle_league_series', data, '*');
 }
 
 export async function generateSeries(league: League, now: Date) {
@@ -203,7 +203,7 @@ export async function generateSeries(league: League, now: Date) {
   while (start < startCutoff) {
     const end = new Date(start);
     end.setDate(end.getDate() + league.series_days);
-    console.log('Add league series', league.league_slug, now, start, end);
+    // console.log('Add league series', league.league_slug, now, start, end);
     await addLeagueSeries({
       wordle_league_id: league.wordle_league_id,
       create_date: now,
@@ -215,7 +215,7 @@ export async function generateSeries(league: League, now: Date) {
 }
 
 export async function generateAllSeries(now: Date) {
-  console.log(new Date(), 'generateAllSeries');
+  // console.log(new Date(), 'generateAllSeries');
   for (const l of await getLeagues()) {
     await generateSeries(l, now);
   }
@@ -300,7 +300,7 @@ export async function generateAnswer(league: any, activeAfter: Date) {
   if (a.length) return a[0];
 
   const rando = randomWord(league.letters, league.source_word_list || defaultSourceWordList).toLowerCase();
-  console.log('Adding', activeAfter, activeBefore, rando);
+  // console.log('Adding', activeAfter, activeBefore, rando);
   return SQL.insert(
     'wordle_answers',
     {
@@ -337,7 +337,7 @@ export async function generateAnswers(league: League, now: Date) {
 }
 
 export async function generateAllAnswers(now: Date) {
-  console.log(new Date(), 'generateAllAnswers');
+  // console.log(new Date(), 'generateAllAnswers');
   for (const l of await getLeagues()) {
     await generateAnswers(l, now);
   }
@@ -396,7 +396,7 @@ export async function getPuzzles({
       ${SQL.orderBy(sort)}
       ${SQL.limit(page, limit)}
   `;
-  console.log(query, bindvars);
+  // console.log(query, bindvars);
   return SQL.select(query, bindvars);
 }
 
@@ -577,7 +577,7 @@ export async function addComment(data: {
   if (!data.create_date) {
     this_data.create_date = new Date();
   }
-  return SQL.insert('wordle_comments', this_data, true);
+  return SQL.insert('wordle_comments', this_data, '*');
 }
 
 export async function getComments({

@@ -162,3 +162,49 @@ export function checkHardMode(league: League, guess: string, result: string[], g
 
   return wordsLeft.includes(guess);
 }
+
+export function testWord(iter = 10000) {
+  const path = 'filtered/twl06.txt.filtered';
+  const wordCount: { [id: string]: number } = {};
+  for (let i = 0; i < iter; i += 1) {
+    const word = randomWord(5, path);
+    if (!(word in wordCount)) {
+      wordCount[word] = 0;
+    }
+    wordCount[word] += 1;
+  }
+
+  let dupes = 0;
+  for (const word of Object.keys(wordCount).sort()) {
+    if (wordCount[word] > 1) {
+      console.log(word, wordCount[word]);
+      dupes += 1;
+    }
+  }
+  console.log(`${dupes}/${iter}`);
+  // return wordCount;
+}
+
+export function testWord2() {
+  for (let i = 0; i < 50; i++) {
+    console.log('------');
+    testWord(250);
+  }
+}
+
+export function testRandInt(iter = 250) {
+  const maxVal = 2325;
+
+  const buckets = [...Array(maxVal).entries()].map((n, i) => 0);
+  for (let i = 0; i < iter; i += 1) {
+    const val = Math.floor(Math.random() * 1000000) % maxVal;
+    buckets[val] += 1;
+  }
+
+  for (let i = 0; i < maxVal; i += 1) {
+    //    console.log(i, [...Array(Math.round(buckets[i] / 5)).entries()].map(e => '*').join(''));
+    if (buckets[i] > 1) {
+      console.log(i, buckets[i]);
+    }
+  }
+}

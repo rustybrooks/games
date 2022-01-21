@@ -657,7 +657,7 @@ export function WWMBrowse() {
             onTouchEnd={handleTouchEnd}
             onTouchMove={handleTouchMove}
           />
-          <Comments wordle_answer_id={answerId} />
+          <Comments wordle_answer_id={answerId} league={league} />
         </div>
       ) : null}
     </div>

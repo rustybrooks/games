@@ -124,7 +124,6 @@ const check = async (request: Request, response: Response, next: NextFunction) =
   guesses.push(guess);
   const result = utils.evaluateGuess(answer.answer, guess);
 
-  console.log('is hard mode??', league.is_hard_mode);
   if (league.is_hard_mode) {
     if (!utils.checkHardMode(league, guess, result, guessesList, answer)) {
       return next(new exceptions.HttpBadRequest('Invalid guess - violates prior rules'));
@@ -379,6 +378,7 @@ const addLeague = async (request: Request, response: Response, next: NextFunctio
   };
 
   const l = await queries.addLeague(data);
+  console.log('l = ', l);
   queries.addLeagueMember({
     user_id: response.locals.user.user_id,
     wordle_league_id: l.wordle_league_id,
