@@ -37,6 +37,10 @@ const joinLeague = async (request: Request, response: Response, next: NextFuncti
   }
   const { league_slug, invite_code } = getParams(request);
 
+  if (!league_slug || !league_slug.length) {
+    return next(new exceptions.HttpNotFound('Must pass in league_slug'));
+  }
+
   const league = await queries.getLeague({ league_slug });
   if (!league) {
     return next(new exceptions.HttpNotFound('League not found'));
@@ -59,6 +63,10 @@ const leaveLeague = async (request: Request, response: Response, next: NextFunct
   }
   const { league_slug } = getParams(request);
 
+  if (!league_slug || !league_slug.length) {
+    return next(new exceptions.HttpNotFound('Must pass in league_slug'));
+  }
+
   const league = await queries.getLeague({ league_slug, user_id: response.locals.user.user_id });
   if (!league) {
     return next(new exceptions.HttpNotFound('League not found'));
@@ -79,6 +87,10 @@ const check = async (request: Request, response: Response, next: NextFunction) =
     return next(e);
   }
   const { guess, league_slug, wordle_answer_id } = getParams(request);
+
+  if (!league_slug || !league_slug.length) {
+    return next(new exceptions.HttpNotFound('Must pass in league_slug'));
+  }
 
   const league = await queries.getLeague({ league_slug, user_id: response.locals.user.user_id, isMemberOnly: true });
   if (!league) {
@@ -164,6 +176,10 @@ const guesses = async (request: Request, response: Response, next: NextFunction)
   }
   const { user_id, league_slug, wordle_answer_id, reduce } = getParams(request);
 
+  if (!league_slug || !league_slug.length) {
+    return next(new exceptions.HttpNotFound('Must pass in league_slug'));
+  }
+
   const league = await queries.getLeague({ league_slug, user_id: response.locals.user.user_id, isMemberOnly: true });
   if (!league) {
     const league2 = await queries.getLeague({ league_slug });
@@ -228,6 +244,7 @@ const puzzles = async (request: Request, response: Response, next: NextFunction)
   }
 
   const { league_slug, active, sort } = getParams(request);
+
   if (league_slug) {
     const league = await queries.getLeague({ league_slug, user_id: response.locals.user.user_id, isMemberOnly: true });
     if (!league) {
@@ -250,6 +267,10 @@ const completedUsers = async (request: Request, response: Response, next: NextFu
     return next(e);
   }
   const { league_slug, wordle_answer_id } = getParams(request);
+
+  if (!league_slug || !league_slug.length) {
+    return next(new exceptions.HttpNotFound('Must pass in league_slug'));
+  }
 
   const league = await queries.getLeague({ league_slug, user_id: response.locals.user.user_id, isMemberOnly: true });
   if (!league) {
@@ -281,6 +302,10 @@ const completedUsers = async (request: Request, response: Response, next: NextFu
 const leagueInfo = async (request: Request, response: Response, next: NextFunction) => {
   const { league_slug } = getParams(request);
 
+  if (!league_slug || !league_slug.length) {
+    return next(new exceptions.HttpNotFound('Must pass in league_slug'));
+  }
+
   const league = await queries.getLeague({ league_slug, user_id: response.locals.user ? response.locals.user.user_id : null });
   if (!league) {
     const league2 = await queries.getLeague({ league_slug });
@@ -295,6 +320,10 @@ const leagueInfo = async (request: Request, response: Response, next: NextFuncti
 
 const leagueSeries = async (request: Request, response: Response, next: NextFunction) => {
   const { league_slug } = getParams(request);
+
+  if (!league_slug || !league_slug.length) {
+    return next(new exceptions.HttpNotFound('Must pass in league_slug'));
+  }
 
   const league = await queries.getLeague({ league_slug, user_id: response.locals.user ? response.locals.user.user_id : null });
   if (!league) {
@@ -316,6 +345,10 @@ const leagueSeries = async (request: Request, response: Response, next: NextFunc
 const leagueSeriesStats = async (request: Request, response: Response, next: NextFunction) => {
   const { league_slug, wordle_league_series_id } = getParams(request);
 
+  if (!league_slug || !league_slug.length) {
+    return next(new exceptions.HttpNotFound('Must pass in league_slug'));
+  }
+
   const league = await queries.getLeague({ league_slug, user_id: response.locals.user ? response.locals.user.user_id : null });
   if (!league) {
     const league2 = await queries.getLeague({ league_slug });
@@ -331,6 +364,10 @@ const leagueSeriesStats = async (request: Request, response: Response, next: Nex
 
 const leagueNameCheck = async (request: Request, response: Response, next: NextFunction) => {
   const { league_name } = getParams(request);
+
+  if (!league_name || !league_name.length) {
+    return next(new exceptions.HttpNotFound('Must pass in league name'));
+  }
 
   const league_slug = utils.nameToSlug(league_name);
 
@@ -397,6 +434,10 @@ const addLeague = async (request: Request, response: Response, next: NextFunctio
 const comments = async (request: Request, response: Response, next: NextFunction) => {
   const { wordle_answer_id } = getParams(request);
 
+  if (!wordle_answer_id) {
+    return next(new exceptions.HttpNotFound('Must pass in wordle_answer_id'));
+  }
+
   const league = await queries.getLeague({ wordle_answer_id, user_id: response.locals.user ? response.locals.user.user_id : null });
   if (!league) {
     return next(new exceptions.HttpNotFound('League not found'));
@@ -413,6 +454,10 @@ const addComment = async (request: Request, response: Response, next: NextFuncti
   }
 
   const { wordle_answer_id, comment } = getParams(request);
+
+  if (!wordle_answer_id) {
+    return next(new exceptions.HttpNotFound('Must pass in wordle_answer_id'));
+  }
 
   const league = await queries.getLeague({ wordle_answer_id, user_id: response.locals.user ? response.locals.user.user_id : null });
   if (!league) {
