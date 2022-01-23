@@ -4,19 +4,16 @@
   "description": "games",
   "main": "./src/index.js",
   "dependencies": {
-    "@newrelic/native-metrics": "latest",
+    "@rustybrooks/api-framework": "^1.0.9",
     "@rustybrooks/pgexplorer": "latest",
-    "bcrypt": "latest",
-    "cors": "latest",
     "express": "latest",
     "jsonwebtoken": "latest",
-    "newrelic": "latest",
     "node-cron": "latest",
-    "sprintf-js": "latest"
+    "node-fetch": "^3.2.0"
   },
   "devDependencies": {
     "@jest/types": "latest",
-    "@rustybrooks/eslint-config-prettier": "^1.0.9",
+    "@rustybrooks/eslint-config-prettier": "^1.0.15",
     "@types/bcrypt": "latest",
     "@types/cors": "latest",
     "@types/express": "latest",
@@ -24,7 +21,6 @@
     "@types/jsonwebtoken": "latest",
     "@types/node": "latest",
     "@types/node-cron": "latest",
-    "@types/sprintf-js": "latest",
     "@types/supertest": "latest",
     "jest": "latest",
     "mockdate": "latest",

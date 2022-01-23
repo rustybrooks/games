@@ -46,7 +46,7 @@ export async function addUser({
 }
 
 export async function updateUser({ user_id, password }: { user_id: number; password: string }) {
-  return SQL.update('users', { user_id, password: bcrypt.hash(password, saltRounds) });
+  return SQL.update('users', 'user_id=$(user_id)', { user_id }, { password: await bcrypt.hash(password, saltRounds) });
 }
 
 export async function deleteUser({ username }: { username: string }) {

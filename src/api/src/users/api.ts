@@ -1,8 +1,7 @@
-import express, { Request, Response, NextFunction } from 'express';
+import express, { Request } from 'express';
 import * as jwt from 'jsonwebtoken';
-import { getParams } from '../utils';
+import { apiClass, apiConfig, HttpBadRequest, HttpForbidden } from '@rustybrooks/api-framework';
 import * as queries from './queries';
-import * as exceptions from '../exceptions';
 
 export const router = express.Router();
 
@@ -25,92 +24,78 @@ export const isLoggedIn = async (request: Request) => {
   return null;
 };
 
-export const requireLogin = (response: Response, next: NextFunction) => {
-  if (response.locals.user === null) {
-    throw new exceptions.HttpException(403, 'unauthorized', 'unauthorized');
-    // next(new exceptions.HttpException(403, 'unauthorized'));
-    // throw new exceptions.HaltException('halt'); // prevent further execution?
-  }
-};
-
-const signup = async (request: Request, response: Response, next: NextFunction) => {
-  const { username, email, password, password2 } = getParams(request);
-  const errors: { [id: string]: string } = {};
-  if (username.length < 4) {
-    errors.username = 'Username must be at least 4 characters';
-  }
-
-  const re = /^[a-z,A-Z,0-9,\-,_]+$/;
-  if (!username.match(re)) {
-    errors.username = 'Username must be composed of only letters, numbers, _ and -';
-  }
-
-  if (password !== password2) {
-    errors.password2 = 'Passwords do not match';
-  }
-
-  if (password.length < 8) {
-    errors.password = 'Password must be at least 8 characters';
-  }
-
-  if (!email) {
-    errors.email = 'Email required';
-  }
-
-  if (Object.keys(errors).length) {
-    return response.status(400).json({ details: errors });
-  }
-
-  try {
-    await queries.addUser({ username, password, email });
-    return response.status(200).json(queries.generateToken(username));
-  } catch (e) {
-    return response.status(400).json({ details: { username: 'Failed to create user' } });
-  }
-};
-
-const login = async (request: Request, response: Response, next: NextFunction) => {
-  const { username, password } = getParams(request);
-
-  if (username && password) {
-    const user = await queries.user({ username });
-    if (!user) {
-      return next(new exceptions.HttpForbidden());
+@apiClass()
+export class Users {
+  async signup({ username, email, password, password2 }: { username: string; email: string; password: string; password2: string }) {
+    const errors: { [id: string]: string } = {};
+    if (username.length < 4) {
+      errors.username = 'Username must be at least 4 characters';
     }
-    if (await queries.checkPassword(password, user.password)) {
-      return response.status(200).json(queries.generateToken(user.username));
+
+    const re = /^[a-z,A-Z,0-9,\-,_]+$/;
+    if (!username.match(re)) {
+      errors.username = 'Username must be composed of only letters, numbers, _ and -';
+    }
+
+    if (password !== password2) {
+      errors.password2 = 'Passwords do not match';
+    }
+
+    if (password.length < 8) {
+      errors.password = 'Password must be at least 8 characters';
+    }
+
+    if (!email) {
+      errors.email = 'Email required';
+    }
+
+    if (Object.keys(errors).length) {
+      throw new HttpBadRequest({ details: errors });
+    }
+
+    try {
+      await queries.addUser({ username, password, email });
+      return queries.generateToken(username);
+    } catch (e) {
+      throw new HttpBadRequest({ details: { username: 'Failed to create user' } });
     }
   }
 
-  return next(new exceptions.HttpForbidden());
-};
+  async login({ username, password }: { username: string; password: string }) {
+    if (username && password) {
+      const user = await queries.user({ username });
+      if (!user) {
+        throw new HttpForbidden();
+      }
+      if (await queries.checkPassword(password, user.password)) {
+        return queries.generateToken(user.username);
+      }
+    }
 
-const apiKey = async (request: Request, response: Response, next: NextFunction) => {
-  try {
-    requireLogin(response, next);
-  } catch (e) {
-    return next(e);
+    throw new HttpForbidden();
   }
 
-  response.status(200).json(response.locals.user.api_key);
-};
+  @apiConfig({ requireLogin: true })
+  async api_key({ _user = null }: { _user: any }) {
+    return _user.api_key;
+  }
 
-const changePassword = async (request: Request, response: Response, next: NextFunction) => {
-  requireLogin(response, next);
-  const { new_password } = getParams(request);
-  await queries.updateUser({ user_id: response.locals.user.user_id, password: new_password });
-};
+  @apiConfig({ requireLogin: true })
+  async change_password({ new_password, _user }: { new_password: string; _user: any }) {
+    await queries.updateUser({ user_id: _user.user_id, password: new_password });
+    return { status: 'ok' };
+  }
 
-const user = (request: Request, response: Response, next: NextFunction) => {
-  requireLogin(response, next);
+  @apiConfig({ requireLogin: true })
+  async index({ _user = null }: { _user: any }) {
+    return {
+      username: _user.username,
+    };
+  }
+}
 
-  response.status(200).json({
-    username: response.locals.user.username,
-  });
-};
-
-router.all('/', user);
-router.all('/signup', signup);
-router.all('/login', login);
-router.all('/api_key', apiKey);
-router.all('/change_password', changePassword);
+// router.all('/', user);
+// router.all('/signup', signup);
+// router.all('/login', login);
+// router.all('/api_key', apiKey);
+// router.all('/change_password', changePassword);
