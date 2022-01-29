@@ -86,14 +86,14 @@ function NavBar() {
       <AppBar position="static" css={{ flexGrow: 1 }}>
         <Toolbar>
           <div css={{ flexGrow: 1 }}>
-            <Button color="inherit" component={Link} to="/">
-              Home
-            </Button>
             <Button color="inherit" component={Link} to="/wwm">
-              Active Puzzles
+              Play
+            </Button>
+            <Button color="inherit" component={Link} to="/wwm/active">
+              Active
             </Button>
             <Button color="inherit" component={Link} to="/wwm/archived">
-              Archived Puzzles
+              Archived
             </Button>
             <Button color="inherit" component={Link} to="/wwm/leagues">
               Leagues
@@ -256,7 +256,8 @@ function AppX() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/test" element={<Test />} />
-          <Route path="/wwm" element={<ActivePuzzles />} />
+          <Route path="/wwm" element={<WWMBrowse />} />
+          <Route path="/wwm/active" element={<ActivePuzzles />} />
           <Route path="/wwm/archived" element={<ArchivedPuzzles />} />
           <Route path="/wwm/bots" element={<Bots />} />
           <Route path="/wwm/leagues" element={<Leagues />} />

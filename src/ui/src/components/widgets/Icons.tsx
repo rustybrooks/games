@@ -1,10 +1,4 @@
-interface IconProps {
-  size?: number;
-  flipy?: boolean;
-  flipx?: boolean;
-}
-
-export function UpDownArrow({ size = 1.0, flipy = false }: IconProps) {
+export function UpDownArrow({ size = 1.0, flipy = false }: { size?: number; flipy?: boolean }) {
   return (
     <svg
       focusable="false"
@@ -19,15 +13,25 @@ export function UpDownArrow({ size = 1.0, flipy = false }: IconProps) {
   );
 }
 
-export function RightLeftArrow({ size = 1.0, flipx = false }: IconProps) {
+export function RightLeftArrow({
+  size = 1.0,
+  flipx = false,
+  width = null,
+  height = null,
+}: {
+  size?: number;
+  flipx?: boolean;
+  width?: string;
+  height?: string;
+}) {
   return (
     <svg
       focusable="false"
       aria-hidden="true"
       viewBox="0 0 24 24"
       data-testid="KeyboardArrowLeftIcon"
-      width={`${size}em`}
-      height={`${size}em`}
+      width={width || `${size}em`}
+      height={height || `${size}em`}
       transform={`scale(${flipx ? -1 : 1}, 1)`}
     >
       <path d="M15.41 16.09l-4.58-4.59 4.58-4.59L14 5.5l-6 6 6 6z" />

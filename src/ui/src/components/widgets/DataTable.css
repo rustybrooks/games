@@ -4,13 +4,8 @@ table.datatable {
     box-sizing: border-box;
 }
 
-tr {
-}
-
 td.datatable, th.datatable {
     font-family: Roboto, Arial, sans-serif;
-    font-size: 13px;
-    padding: 6px 6px;
     border-spacing: 0;
     border-bottom: 1px solid rgb(224, 224, 224);
 }
@@ -32,6 +27,48 @@ div.table_pag_main {
     position: relative;
     display: flex;
     align-items: center;
-    padding-left: 6px;
-    padding-right: 2px;
+    padding-left: .5em;
+    padding-right: .1em;
+}
+
+@media only screen and (max-device-width: 650px) {
+    td.datatable, th.datatable {
+        font-size: 1.5em;
+        padding: .5em .5em;
+    }
+    p.pagination, select.pagination, option.pagination {
+        font-size: 2.25em;
+    }
+    button.pagination {
+        height: 7em;
+        width: 7em;
+    }
+}
+
+@media only screen and (max-device-width: 1200px) and (min-device-width: 651px) {
+    td.datatable, th.datatable {
+        font-size: 1em;
+        padding: 1em .5em;
+    }
+    p.pagination, select.pagination, option.pagination {
+        font-size: 1.5em;
+    }
+    button.pagination {
+        height: 5em;
+        width: 5em;
+    }
+}
+
+@media only screen and (min-device-width: 1200.1px) {
+    td.datatable, th.datatable {
+        font-size: 1em;
+        padding: 1em .5em;
+    }
+    p.pagination, select.pagination, option.pagination {
+        font-size: 1em;
+    }
+    button.pagination {
+        height: 3em;
+        width: 3em;
+    }
 }

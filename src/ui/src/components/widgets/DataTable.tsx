@@ -128,17 +128,20 @@ export function TablePagination({
           display: 'block',
         }}
       />
-      <p style={{ display: 'block', flexShrink: 0, marginLeft: '10px', marginRight: '10px' }}>Rows per page:</p>
+      <p className="pagination" style={{ display: 'block', flexShrink: 0, marginLeft: '10px', marginRight: '10px' }}>
+        Rows per page:
+      </p>
       <div style={{ position: 'relative', display: 'inline-flex', marginLeft: '10px', marginRight: '10px' }}>
-        <select name="rows_per_page" onChange={onRowsPerPageChange} value={rowsPerPage}>
+        <select className="pagination" name="rows_per_page" onChange={onRowsPerPageChange} value={rowsPerPage}>
           {rowsPerPageOptions.map(p => (
-            <option key={p} value={p}>
+            <option className="pagination" key={p} value={p}>
               {p}
             </option>
           ))}
         </select>
       </div>
       <p
+        className="pagination"
         style={{
           display: 'block',
           flexShrink: 0,
@@ -147,13 +150,13 @@ export function TablePagination({
         {page * rowsPerPage + 1} - {Math.min(count, (page + 1) * rowsPerPage)} of {count}
       </p>
       <div style={{ position: 'relative', display: 'inline-flex', marginLeft: '10px', marginRight: '5px' }}>
-        <button type="button" onClick={() => onPageChange(Math.max(0, page - 1))} disabled={page <= 0}>
-          <icons.RightLeftArrow />
+        <button className="pagination" type="button" onClick={() => onPageChange(Math.max(0, page - 1))} disabled={page <= 0}>
+          <icons.RightLeftArrow height="100%" width="100%" />
         </button>
       </div>
       <div style={{ position: 'relative', display: 'inline-flex' }}>
-        <button type="button" onClick={() => onPageChange(Math.min(maxPage, page + 1))} disabled={page >= maxPage}>
-          <icons.RightLeftArrow flipx />
+        <button className="pagination" type="button" onClick={() => onPageChange(Math.min(maxPage, page + 1))} disabled={page >= maxPage}>
+          <icons.RightLeftArrow height="100%" width="100%" flipx />
         </button>
       </div>
     </div>
