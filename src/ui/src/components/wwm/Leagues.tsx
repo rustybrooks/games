@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useGetAndSet } from 'react-context-hook';
 import { Typography, Paper, Link } from '@mui/material';
 import { formatDistance } from 'date-fns';
-import * as eht from '../EnhancedTable';
+import * as dt from '../widgets/DataTable';
 import { ActivePuzzle, League } from '../../../types';
 import * as constants from '../../constants';
 import { genLeagueNew } from '../../routes';
@@ -49,7 +49,7 @@ function leagueFormatter(row: League, d: string) {
   return <Link href={`/wwm/leagues/${row.league_slug}`}>{d}</Link>;
 }
 
-const ourheadCells: eht.HeadCell<League>[] = [
+const ourheadCells: dt.HeadCell<League>[] = [
   {
     id: 'league_name',
     numeric: false,
@@ -143,7 +143,7 @@ function WWMLeaguesX() {
     return <Typography variant="h3">Loading...</Typography>;
   }
 
-  function buttonCallback(row: League): eht.ButtonInfo<League> {
+  function buttonCallback(row: League): dt.ButtonInfo<League> {
     if (!row.is_member) {
       return { label: 'Join', callback: joinLeague, activeCallback: () => canJoin(row) };
     }
@@ -160,12 +160,13 @@ function WWMLeaguesX() {
           league, <Link href={genLeagueNew()}>you can create a new league here.</Link>
         </Typography>
       </div>
-      <eht.EnhancedTable
+      <dt.DataTable
         rows={leagues}
         headCells={ourheadCells}
         mainColumn="league_slug"
         initialSortColumn="league_name"
         rowButtons={[buttonCallback]}
+        storageKey="leagues"
       />
     </Paper>
   );

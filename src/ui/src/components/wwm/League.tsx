@@ -4,12 +4,11 @@ import { Link, Typography } from '@mui/material';
 import { useParams } from 'react-router-dom';
 import { formatDistance } from 'date-fns';
 import { useNavigate } from 'react-router';
-import * as eht from '../EnhancedTable';
+import * as dt from '../widgets/DataTable';
 
 import * as constants from '../../constants';
 import { ActivePuzzle, League, LeagueSeries, LeagueStats, User } from '../../../types';
 
-import { Div, Table, Td, Tr } from '../Styled';
 import { TitleBox } from '../TitleBox';
 import { getPuzzles, getLeagues } from './Leagues';
 
@@ -53,7 +52,7 @@ function pctFormatter(row: any, d: any) {
   return d !== null ? `${(d * 100).toFixed(1)}%` : null;
 }
 
-const seriesHeadCells: eht.HeadCell<LeagueSeries>[] = [
+const seriesHeadCells: dt.HeadCell<LeagueSeries>[] = [
   {
     id: 'start_date',
     numeric: false,
@@ -70,7 +69,7 @@ const seriesHeadCells: eht.HeadCell<LeagueSeries>[] = [
   },
 ];
 
-const statsHeadCells: eht.HeadCell<LeagueStats>[] = [
+const statsHeadCells: dt.HeadCell<LeagueStats>[] = [
   {
     id: 'username',
     numeric: false,
@@ -170,7 +169,7 @@ function answerFormatter(row: EnumeratedPuzzle, a: string) {
   );
 }
 
-const ourheadCells: eht.HeadCell<EnumeratedPuzzle>[] = [
+const ourheadCells: dt.HeadCell<EnumeratedPuzzle>[] = [
   {
     id: 'league_name',
     numeric: false,
@@ -246,7 +245,7 @@ export function WWMLeagueSeries({ league, seriesCallback }: { league: League; se
   }, [league]);
 
   if (!series) {
-    return <Div>Loading</Div>;
+    return <div>Loading</div>;
   }
 
   async function navStats(row: LeagueSeries): Promise<void> {
@@ -254,7 +253,7 @@ export function WWMLeagueSeries({ league, seriesCallback }: { league: League; se
     setActive(row);
   }
 
-  function buttonCallback(row: LeagueSeries, a: LeagueSeries): eht.ButtonInfo<LeagueSeries> {
+  function buttonCallback(row: LeagueSeries, a: LeagueSeries): dt.ButtonInfo<LeagueSeries> {
     return {
       label: 'Show',
       callback: navStats,
@@ -264,7 +263,7 @@ export function WWMLeagueSeries({ league, seriesCallback }: { league: League; se
 
   return (
     <TitleBox title="League Series">
-      <eht.EnhancedTable
+      <dt.DataTable
         rows={series}
         headCells={seriesHeadCells}
         mainColumn="start_date"
@@ -274,6 +273,7 @@ export function WWMLeagueSeries({ league, seriesCallback }: { league: League; se
         initialRowsPerPage={10}
         minWidth="10rem"
         selectedRows={[active && active.start_date]}
+        storageKey="league-series"
       />
     </TitleBox>
   );
@@ -320,7 +320,7 @@ export function WWMLeagueSeriesStats({ league, series }: { league: League; serie
 
   return (
     <TitleBox title={`Series Stats - ${d1} to ${d2}`}>
-      <eht.EnhancedTable
+      <dt.DataTable
         rows={stats}
         headCells={statsHeadCells}
         mainColumn="username"
@@ -329,6 +329,7 @@ export function WWMLeagueSeriesStats({ league, series }: { league: League; serie
         rowButtons={[]}
         initialRowsPerPage={25}
         selectedRows={[user && user.username]}
+        storageKey="league-series-stats"
       />
     </TitleBox>
   );
@@ -338,47 +339,47 @@ export function WWMLeagueInfo({ league }: { league: League }) {
   const inviteLink = `${constants.BASE_URL}/wwm/leagues/${league.league_slug}/join${league.is_private ? `/${league.invite_code}` : ''}`;
 
   return (
-    <TitleBox title={league.league_name} width="25rem">
-      <Table sx={style.table}>
+    <TitleBox title={league.league_name}>
+      <table style={style.table}>
         <tbody>
-          <Tr>
-            <Td sx={style.tdHead}>Created</Td>
-            <Td sx={style.tdData}>{formatDistance(new Date(league.create_date), new Date(), { addSuffix: true })}</Td>
-            <Td sx={style.tdHead}>Series Length</Td>
-            <Td sx={style.tdData}>{league.series_days} days</Td>
-          </Tr>
-          <Tr>
-            <Td sx={style.tdHead}>Letters</Td>
-            <Td sx={style.tdData}>{league.letters}</Td>
-            <Td sx={style.tdHead}>Max Guesses</Td>
-            <Td sx={style.tdData}>{league.max_guesses}</Td>
-          </Tr>
-          <Tr>
-            <Td sx={style.tdHead}>Puzzle Lifetime</Td>
-            <Td sx={style.tdData}>{league.time_to_live_hours} hours</Td>
-            <Td sx={style.tdHead}>Hard Mode</Td>
-            <Td sx={style.tdData}>{league.is_hard_mode ? 'yes' : 'no'}</Td>
-          </Tr>
-          <Tr>
-            <Td sx={style.tdData} colSpan={2}>
+          <tr>
+            <td style={style.tdHead}>Created</td>
+            <td style={style.tdData}>{formatDistance(new Date(league.create_date), new Date(), { addSuffix: true })}</td>
+            <td style={style.tdHead}>Series Length</td>
+            <td style={style.tdData}>{league.series_days} days</td>
+          </tr>
+          <tr>
+            <td style={style.tdHead}>Letters</td>
+            <td style={style.tdData}>{league.letters}</td>
+            <td style={style.tdHead}>Max Guesses</td>
+            <td style={style.tdData}>{league.max_guesses}</td>
+          </tr>
+          <tr>
+            <td style={style.tdHead}>Puzzle Lifetime</td>
+            <td style={style.tdData}>{league.time_to_live_hours} hours</td>
+            <td style={style.tdHead}>Hard Mode</td>
+            <td style={style.tdData}>{league.is_hard_mode ? 'yes' : 'no'}</td>
+          </tr>
+          <tr>
+            <td style={style.tdData} colSpan={2}>
               League is: {league.is_private ? 'private' : 'public'}
               {league.is_private ? (
                 <span>
                   &nbsp; (<a href={inviteLink}>Invite Link</a>)
                 </span>
               ) : null}
-            </Td>
-            <Td sx={style.tdData} colSpan={2}>
+            </td>
+            <td style={style.tdData} colSpan={2}>
               You are {league.is_member ? '' : 'not'} a member
               {league.is_member ? null : (
                 <span>
                   &nbsp; (<Link href={inviteLink}>Join Now</Link>)
                 </span>
               )}
-            </Td>
-          </Tr>
+            </td>
+          </tr>
         </tbody>
-      </Table>
+      </table>
     </TitleBox>
   );
 }
@@ -408,7 +409,7 @@ export function LeaguePuzzles({ league, active }: { league: League; active: bool
     return navrow(row, 'browse');
   }
 
-  function buttonCallback(row: EnumeratedPuzzle): eht.ButtonInfo<EnumeratedPuzzle> {
+  function buttonCallback(row: EnumeratedPuzzle): dt.ButtonInfo<EnumeratedPuzzle> {
     if (row.completed) {
       return { label: 'Browse', callback: navBrowse, activeCallback: () => true };
     }
@@ -421,7 +422,7 @@ export function LeaguePuzzles({ league, active }: { league: League; active: bool
 
   return (
     <TitleBox title={active ? 'Active Puzzles' : 'Archived Puzzles'}>
-      <eht.EnhancedTable
+      <dt.DataTable
         rows={puzzles}
         headCells={ourheadCells}
         mainColumn="count"
@@ -429,6 +430,7 @@ export function LeaguePuzzles({ league, active }: { league: League; active: bool
         initialSortOrder={active ? 'asc' : 'desc'}
         initialRowsPerPage={5}
         rowButtons={[buttonCallback]}
+        storageKey="league-puzzles"
       />
     </TitleBox>
   );
@@ -462,15 +464,15 @@ export function League() {
   }, [leagueSlug, user]);
 
   if (!league) {
-    return <Div>Loading</Div>;
+    return <div>Loading</div>;
   }
 
   return (
-    <Div>
-      <table>
+    <div>
+      <table width="100%">
         <tbody>
           <tr>
-            <td valign="top">
+            <td valign="top" style={{ maxWidth: '300px', width: '33%' }}>
               <WWMLeagueInfo league={league} />
               <WWMLeagueSeries league={league} seriesCallback={setSeries} />
             </td>
@@ -482,6 +484,6 @@ export function League() {
           </tr>
         </tbody>
       </table>
-    </Div>
+    </div>
   );
 }

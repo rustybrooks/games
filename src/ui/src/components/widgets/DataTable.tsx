@@ -56,6 +56,7 @@ export interface Props<T> {
   initialRowsPerPage?: number;
   minWidth?: number | string;
   selectedRows?: any[];
+  storageKey?: string;
 }
 
 function TableSortLabel({
@@ -70,8 +71,8 @@ function TableSortLabel({
   children: any;
 }) {
   return (
-    <SpanBox className="SpanBox">
-      {active ? <icons.UpDownArrow /> : null} {children}
+    <SpanBox className="SpanBox" onClick={onClick}>
+      {active ? <icons.UpDownArrow flipy={direction === 'asc'} /> : null} {children}
     </SpanBox>
   );
 }
@@ -86,7 +87,7 @@ function DataTableHead<T>(props: DataTableProps<T>) {
     <thead>
       <tr>
         {headCells.map(headCell => (
-          <th key={headCell.id.toString()} align={headCell.numeric ? 'right' : 'left'}>
+          <th key={headCell.id.toString()} align={headCell.numeric ? 'right' : 'left'} className="datatable">
             <TableSortLabel
               active={orderBy === headCell.id}
               direction={orderBy === headCell.id ? order : 'asc'}
@@ -117,18 +118,10 @@ export function TablePagination({
   onPageChange: any;
   onRowsPerPageChange: any;
 }) {
+  const maxPage = Math.floor(count / rowsPerPage);
+
   return (
-    <div
-      style={{
-        position: 'relative',
-        display: 'flex',
-        // '-webkit-box-align': 'center',
-        alignItems: 'center',
-        paddingLeft: '16px',
-        minHeight: '52px',
-        paddingRight: '2px',
-      }}
-    >
+    <div className="table_pag_main" style={{}}>
       <div
         style={{
           flex: '1 1 100%',
@@ -137,7 +130,7 @@ export function TablePagination({
       />
       <p style={{ display: 'block', flexShrink: 0, marginLeft: '10px', marginRight: '10px' }}>Rows per page:</p>
       <div style={{ position: 'relative', display: 'inline-flex', marginLeft: '10px', marginRight: '10px' }}>
-        <select name="rows_per_page">
+        <select name="rows_per_page" onChange={onRowsPerPageChange} value={rowsPerPage}>
           {rowsPerPageOptions.map(p => (
             <option key={p} value={p}>
               {p}
@@ -154,12 +147,12 @@ export function TablePagination({
         {page * rowsPerPage + 1} - {Math.min(count, (page + 1) * rowsPerPage)} of {count}
       </p>
       <div style={{ position: 'relative', display: 'inline-flex', marginLeft: '10px', marginRight: '5px' }}>
-        <button type="button">
+        <button type="button" onClick={() => onPageChange(Math.max(0, page - 1))} disabled={page <= 0}>
           <icons.RightLeftArrow />
         </button>
       </div>
       <div style={{ position: 'relative', display: 'inline-flex' }}>
-        <button type="button">
+        <button type="button" onClick={() => onPageChange(Math.min(maxPage, page + 1))} disabled={page >= maxPage}>
           <icons.RightLeftArrow flipx />
         </button>
       </div>
@@ -177,24 +170,41 @@ export function DataTable<T>({
   initialRowsPerPage = 10,
   minWidth = 600,
   selectedRows = [],
+  storageKey = null,
 }: Props<T>) {
-  const [order, setOrder] = useState<Order>(initialSortOrder);
-  const [orderBy, setOrderBy] = useState<keyof T>(initialSortColumn);
+  const genStorageKey = (subkey: string) => {
+    return `datatable-${storageKey}-${subkey}` || `datatable-${mainColumn}-${initialSortColumn}-${subkey}`;
+  };
+
+  const [order, setOrder] = useState<Order>(() => {
+    return (localStorage.getItem(genStorageKey('order')) as SortDirection) || initialSortOrder;
+  });
+  const [orderBy, setOrderBy] = useState<keyof T>(() => {
+    const value = localStorage.getItem(genStorageKey('column'));
+    return (JSON.parse(value) as keyof T) || initialSortColumn;
+  });
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(initialRowsPerPage);
+  const [rowsPerPage, setRowsPerPage] = useState(() => {
+    return JSON.parse(localStorage.getItem(genStorageKey('rpp'))) || initialRowsPerPage;
+  });
 
   const handleRequestSort = (event: MouseEvent<unknown>, property: keyof T) => {
     const isAsc = orderBy === property && order === 'asc';
-    setOrder(isAsc ? 'desc' : 'asc');
+    const orderVal = isAsc ? 'desc' : 'asc';
+    localStorage.setItem(genStorageKey('column'), JSON.stringify(property));
+    localStorage.setItem(genStorageKey('order'), orderVal);
+    setOrder(orderVal);
     setOrderBy(property);
   };
 
-  const handleChangePage = (event: unknown, newPage: number) => {
+  const handleChangePage = (newPage: number) => {
     setPage(newPage);
   };
 
   const handleChangeRowsPerPage = (event: ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
+    const value = parseInt(event.target.value, 10);
+    localStorage.setItem(genStorageKey('rpp'), JSON.stringify(value));
+    setRowsPerPage(value);
     setPage(0);
   };
 
@@ -204,7 +214,7 @@ export function DataTable<T>({
 
   return (
     <div>
-      <table style={{ width: '100%' }}>
+      <table style={{ width: '100%' }} className="datatable">
         <DataTableHead
           headCells={headCells}
           order={order}
@@ -218,22 +228,15 @@ export function DataTable<T>({
             .sort(getComparator(order, orderBy))
             .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
             .map((row, index) => {
-              const labelId = `enhanced-table-checkbox-${index}`;
               return (
-                <tr tabIndex={-1} key={row[mainColumn].toString()}>
-                  {headCells.map(c =>
-                    c.id === mainColumn ? (
-                      <td key={c.id.toString()} id={labelId}>
-                        {c.formatter ? c.formatter(row, row[c.id]) : row[c.id]}
-                      </td>
-                    ) : (
-                      <td key={c.id.toString()} align={c.numeric ? 'right' : 'left'}>
-                        {c.formatter ? c.formatter(row, row[c.id]) : row[c.id]}
-                      </td>
-                    ),
-                  )}
+                <tr tabIndex={-1} key={row[mainColumn].toString()} className={selectedRows.includes(row[mainColumn]) ? 'selected' : null}>
+                  {headCells.map(c => (
+                    <td key={c.id.toString()} align={c.numeric ? 'right' : 'left'} className="datatable">
+                      {c.formatter ? c.formatter(row, row[c.id]) : row[c.id]}
+                    </td>
+                  ))}
                   {rowButtons && rowButtons.length ? (
-                    <td key="buttons">
+                    <td key="buttons" className="datatable">
                       {rowButtons.map(b => {
                         const buttonInfo = b(row);
 
@@ -257,7 +260,7 @@ export function DataTable<T>({
         </tbody>
       </table>
       <TablePagination
-        rowsPerPageOptions={[5, 10, 25]}
+        rowsPerPageOptions={[5, 10, 15, 20, 25]}
         count={rows.length}
         rowsPerPage={rowsPerPage}
         page={page}
