@@ -1,0 +1,25 @@
+table {
+    border-collapse: collapse;
+    text-indent: initial;
+    box-sizing: border-box;
+    min-width: 600px;
+}
+
+tr {
+}
+
+td, th {
+    font-family: Roboto, Arial, sans-serif;
+    padding: 6px 6px;
+    border-spacing: 0;
+    border-bottom: 1px solid rgb(224, 224, 224);
+}
+
+span.SpanBox {
+    flex-direction: inherit;
+    vertical-align: middle;
+    align-items: center;
+    display: inline-flex;
+    -webkit-box-pack: start;
+    justify-content: flex-start;
+}

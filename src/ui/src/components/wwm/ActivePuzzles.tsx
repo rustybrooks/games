@@ -1,28 +1,28 @@
 import { useEffect } from 'react';
 import { useGetAndSet } from 'react-context-hook';
-import { Paper, Typography, Link } from '@mui/material';
+import { Typography, Link } from '@mui/material';
 import { formatDistance } from 'date-fns';
 import { useNavigate } from 'react-router';
-import * as eht from '../EnhancedTable';
+import { Box } from '../widgets/Box';
+import * as dt from '../widgets/DataTable';
 import { ActivePuzzle, League } from '../../../types';
 import { getPuzzles, getLeagues } from './Leagues';
 import { TitleBox } from '../TitleBox';
-import { Div } from '../Styled';
 import { genLeagues, genPuzzlePlay } from '../../routes';
 
 type EnumeratedPuzzle = ActivePuzzle & { count: number };
 
-const style = {
-  position: 'absolute' as const,
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 700,
-  bgcolor: 'background.paper',
-  border: '2px solid #000',
-  boxShadow: 24,
-  p: 4,
-};
+// const style = {
+//   position: 'absolute' as const,
+//   top: '50%',
+//   left: '50%',
+//   transform: 'translate(-50%, -50%)',
+//   width: 700,
+//   bgcolor: 'background.paper',
+//   border: '2px solid #000',
+//   boxShadow: 24,
+//   p: 4,
+// };
 
 function dateFormatter(row: EnumeratedPuzzle, d: string) {
   return formatDistance(new Date(d), new Date(), { addSuffix: true });
@@ -42,7 +42,7 @@ function leagueFormatter(row: EnumeratedPuzzle, d: string) {
   return <Link href={`/wwm/leagues/${row.league_slug}`}>{d}</Link>;
 }
 
-const ourheadCells: eht.HeadCell<EnumeratedPuzzle>[] = [
+const ourheadCells: dt.HeadCell<EnumeratedPuzzle>[] = [
   {
     id: 'league_name',
     numeric: false,
@@ -86,7 +86,7 @@ const ourheadCells: eht.HeadCell<EnumeratedPuzzle>[] = [
   },
 ];
 
-export function ActivePuzzles({ active = true }) {
+export function ActivePuzzles({ active = true }: { active?: boolean }) {
   const [leagues, setLeagues] = useGetAndSet<League[]>('leagues');
   const [puzzles, setPuzzles] = useGetAndSet<EnumeratedPuzzle[]>('active-puzzles');
   const [user, setUser]: [{ username: string }, any] = useGetAndSet('user');
@@ -113,7 +113,7 @@ export function ActivePuzzles({ active = true }) {
     return navrow(row, 'browse');
   }
 
-  function buttonCallback(row: EnumeratedPuzzle): eht.ButtonInfo<EnumeratedPuzzle> {
+  function buttonCallback(row: EnumeratedPuzzle): dt.ButtonInfo<EnumeratedPuzzle> {
     if (row.completed) {
       return { label: 'Browse', callback: navBrowse, activeCallback: () => true };
     }
@@ -123,28 +123,24 @@ export function ActivePuzzles({ active = true }) {
   if (!user) {
     return (
       <TitleBox title="No Words with Melvins puzzles available" width="40rem" sx={{ margin: 'auto', marginTop: '5rem' }}>
-        <Div>
-          <Typography>
-            It looks like you're not logged in, so there aren't any puzzles for you to play. Log in using the menu at the top right, make
-            sure <Link href={genLeagues()}>you are in some leagues</Link>, and try again.
-          </Typography>
-        </Div>
+        <Box>
+          It looks like you're not logged in, so there aren't any puzzles for you to play. Log in using the menu at the top right, make sure{' '}
+          <Link href={genLeagues()}>you are in some leagues</Link>, and try again.
+        </Box>
       </TitleBox>
     );
   }
 
   return (
-    <Paper sx={{ mb: 2 }}>
-      <eht.EnhancedTable
-        rows={puzzles}
-        headCells={ourheadCells}
-        mainColumn="count"
-        initialSortColumn={active ? 'active_after' : 'active_before'}
-        initialSortOrder={active ? 'asc' : 'desc'}
-        initialRowsPerPage={10}
-        rowButtons={[buttonCallback]}
-      />
-    </Paper>
+    <dt.DataTable
+      rows={puzzles}
+      headCells={ourheadCells}
+      mainColumn="count"
+      initialSortColumn={active ? 'active_after' : 'active_before'}
+      initialSortOrder={active ? 'asc' : 'desc'}
+      initialRowsPerPage={10}
+      rowButtons={[buttonCallback]}
+    />
   );
 }
 
