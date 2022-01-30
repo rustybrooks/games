@@ -361,6 +361,7 @@ export async function generateAllAnswers(now: Date) {
 export async function getPuzzles({
   user_id,
   active = null,
+  played = null,
   wordle_league_id = null,
   league_slug = null,
   page = null,
@@ -369,6 +370,7 @@ export async function getPuzzles({
 }: {
   user_id: number;
   active?: boolean;
+  played?: boolean;
   wordle_league_id?: number;
   league_slug?: string;
   page?: number;
@@ -392,11 +394,19 @@ export async function getPuzzles({
     bindvars.now = new Date();
   }
 
+  if (played !== null) {
+    if (played) {
+      where.push('ws.completed');
+    } else {
+      where.push('not coalesce(ws.completed, false)');
+    }
+  }
+
   const query = `
       select league_slug, league_name, 
              a.wordle_answer_id, active_after, active_before, 
              s.start_date as series_start_date, s.end_date as series_end_date,
-             ws.num_guesses, ws.correct, ws.completed,
+             ws.num_guesses, ws.correct, coalesce(ws.completed, false) as completed,
              case 
                  when ws.completed then a.answer 
                  else null 
@@ -412,7 +422,7 @@ export async function getPuzzles({
       ${SQL.orderBy(sort)}
       ${SQL.limit(page, limit)}
   `;
-  // console.log(query, bindvars);
+  console.log(query, bindvars);
   return SQL.select(query, bindvars);
 }
 

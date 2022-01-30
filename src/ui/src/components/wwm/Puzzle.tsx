@@ -9,10 +9,11 @@ import { useGetAndSet } from 'react-context-hook';
 import { Button, Link, Modal, Typography } from '@mui/material';
 
 import { useParams } from 'react-router-dom';
-import { League } from '../../../types';
+import { formatDistance } from 'date-fns';
+import { League, ActivePuzzle } from '../../../types';
 import * as constants from '../../constants';
 
-import { getLeagues } from './Leagues';
+import { getLeagues, getPuzzles } from './Leagues';
 
 import { Cell, Div } from '../Styled';
 import { ModalBox } from '../ModalBox';
@@ -91,6 +92,7 @@ const genUrl = (fn = '') => `${constants.BASE_URL}/api/games/wwm/${fn}`;
 
 function WWMDisplay({
   league,
+  puzzle,
   results,
   onKeyPress = null,
   error = null,
@@ -101,6 +103,7 @@ function WWMDisplay({
   onTouchEnd = null,
 }: {
   league: League;
+  puzzle?: ActivePuzzle;
   results: { guess: string; result: string[]; reduction: number[] }[];
   onKeyPress?: (button: string) => Promise<void>;
   error?: string;
@@ -144,6 +147,13 @@ function WWMDisplay({
         <div style={{ margin: '0 auto' }}>
           <div style={{ textAlign: 'center' }}>
             League: {league.league_name} {league.is_hard_mode ? '- hard mode' : ''}
+            {puzzle
+              ? `(${formatDistance(new Date(puzzle.active_after), new Date(), { addSuffix: true })} - ${formatDistance(
+                  new Date(puzzle.active_before),
+                  new Date(),
+                  { addSuffix: true },
+                )})`
+              : ''}
           </div>
         </div>
         <table css={style.table} style={{ margin: '0 auto' }}>
@@ -207,7 +217,7 @@ function WWMDisplay({
             <Keyboard
               display={{
                 '{enter}': 'enter',
-                '{bksp}': 'backspace',
+                '{bksp}': 'bksp',
               }}
               layout={{
                 default: ['q w e r t y u i o p', 'a s d f g h j k l', '{enter} z x c v b n m {bksp}'],
@@ -224,11 +234,11 @@ function WWMDisplay({
   );
 }
 
-export function Puzzle() {
-  const { answerId, leagueSlug } = useParams();
+export function Puzzle({ answerId, leagueSlug, puzzle = null }: { answerId: string; leagueSlug: string; puzzle?: ActivePuzzle }) {
   const navigate = useNavigate();
 
-  const [status, setStatus] = useState({ answer: '', error: '', complete: false });
+  const [error, setError] = useState('');
+  const [status, setStatus] = useState({ answer: '', complete: false });
   const [leagues, setLeagues] = useGetAndSet<League[]>('leagues');
   const [results, setResults] = useState<{ guess: string; result: string[]; reduction: number[] }[]>([]);
   const gridIdx = useRef(0);
@@ -241,41 +251,44 @@ export function Puzzle() {
     league = leagues.find(l => l.league_slug === leagueSlug);
   }
 
-  async function sendGuess(word: string) {
-    const r = await fetch(genUrl('puzzles/check'), {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-API-KEY': localStorage.getItem('api-key'),
-      },
-      body: JSON.stringify({
-        guess: word,
-        wordle_answer_id: answerId,
-        league_slug: leagueSlug,
-      }),
-    });
-    if (r.status === 200) {
-      const data = await r.json();
-      gridIdx.current = data.guesses.length;
-      while (data.guesses.length < league.max_guesses) {
-        data.guesses.push({ guess: '', result: [], reduction: [-1, -1] });
-      }
-      if (data.correct) {
-        setStatus({ ...status, answer: 'Correct answer!', complete: true });
-        setOpen(true);
-      } else if (data.answer) {
-        setStatus({ ...status, error: `Answer was: ${data.answer.toUpperCase()}`, complete: true });
-        setOpen(true);
-      } else if (status.error.length) {
-        setStatus({ ...status, error: '' });
-      }
+  const sendGuess = useCallback(
+    async (word: string) => {
+      const r = await fetch(genUrl('puzzles/check'), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-API-KEY': localStorage.getItem('api-key'),
+        },
+        body: JSON.stringify({
+          guess: word,
+          wordle_answer_id: answerId,
+          league_slug: leagueSlug,
+        }),
+      });
+      if (r.status === 200) {
+        const data = await r.json();
+        gridIdx.current = data.guesses.length;
+        while (data.guesses.length < league.max_guesses) {
+          data.guesses.push({ guess: '', result: [], reduction: [-1, -1] });
+        }
+        if (data.correct) {
+          setStatus({ answer: 'Correct answer!', complete: true });
+          setOpen(true);
+        } else if (data.answer) {
+          setStatus({ answer: `Answer was: ${data.answer.toUpperCase()}`, complete: true });
+          setOpen(true);
+        } else {
+          setError('');
+        }
 
-      setResults(data.guesses);
-    } else {
-      const data = await r.json();
-      setStatus({ ...status, error: data.detail });
-    }
-  }
+        setResults(data.guesses);
+      } else {
+        const data = await r.json();
+        setError(data.details);
+      }
+    },
+    [answerId, league?.max_guesses, leagueSlug],
+  );
 
   const getGuesses = useCallback(async () => {
     const r = await fetch(genUrl('puzzles/guesses'), {
@@ -299,21 +312,21 @@ export function Puzzle() {
       }
 
       if (data.correct) {
-        setStatus({ ...status, answer: 'Correct answer!', complete: true });
+        setStatus({ answer: 'Correct answer!', complete: true });
         setOpen(true);
       } else if (data.answer) {
-        setStatus({ ...status, error: `Answer was: ${data.answer.toUpperCase()}`, complete: true });
+        setStatus({ answer: `Answer was: ${data.answer.toUpperCase()}`, complete: true });
         setOpen(true);
-      } else if (status.error.length) {
-        setStatus({ ...status, error: '' });
+      } else {
+        setError('');
       }
 
       setResults(data.guesses);
     } else {
       const data = await r.json();
-      setStatus({ ...status, error: data.detail });
+      setError(data.details);
     }
-  }, [answerId, league?.max_guesses, leagueSlug, status]);
+  }, [answerId, league?.max_guesses, leagueSlug]);
 
   const onKeyPress = useCallback(
     async (button: string) => {
@@ -337,9 +350,7 @@ export function Puzzle() {
       if (buttonx === '{bksp}' || buttonx === 'backspace') {
         const newResults = [...results];
         newResults[gridIdx.current].guess = word.slice(0, word.length - 1);
-        if (status.error.length) {
-          setStatus({ ...status, error: '' });
-        }
+        setError('');
         setResults(newResults);
       } else if (buttonx === '{enter}' || buttonx === 'enter') {
         sendGuess(word);
@@ -349,14 +360,12 @@ export function Puzzle() {
           word += buttonx;
           const newResults = [...results];
           newResults[gridIdx.current].guess = word;
-          if (status.error.length) {
-            setStatus({ ...status, error: '' });
-          }
+          setError('');
           setResults(newResults);
         }
       }
     },
-    [answerId, league?.letters, leagueSlug, navigate, results, sendGuess, status],
+    [answerId, league?.letters, leagueSlug, navigate, results, sendGuess],
   );
 
   const handleKeyDown = useCallback(
@@ -373,7 +382,7 @@ export function Puzzle() {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [handleKeyDown, results]);
+  }, [handleKeyDown]);
 
   useEffect(() => {
     if (!leagues || !leagues.length) {
@@ -381,17 +390,17 @@ export function Puzzle() {
         setLeagues(await getLeagues());
       })();
     }
-  }, [answerId, leagues, setLeagues]);
+  }, [leagues, setLeagues]);
 
   useEffect(() => {
     if (league) getGuesses();
   }, [getGuesses, league]);
 
-  if (!results.length || (!results.length && status.error)) {
+  if (!results.length || (!results.length && error.length)) {
     return (
       <div css={{ textAlign: 'center', padding: '10px' }}>
-        <Typography variant="h3" color={status.error ? 'red' : 'black'}>
-          {status.error || 'Loading...'}
+        <Typography variant="h3" color={error.length ? 'red' : 'black'}>
+          {error || 'Loading...'}
         </Typography>
       </div>
     );
@@ -399,11 +408,11 @@ export function Puzzle() {
 
   return (
     <div>
-      <WWMDisplay league={league} results={results} onKeyPress={onKeyPress} error={status.error} answer={status.answer} />
+      <WWMDisplay league={league} puzzle={puzzle} results={results} onKeyPress={onKeyPress} error={error} answer={status.answer} />
       <Modal open={open} onClose={handleClose} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
         <ModalBox width="30rem">
-          <Typography id="modal-modal-title" variant="h6" component="h2" color={status.error && status.error.length ? 'red' : 'green'}>
-            {status.error && status.error.length ? status.error : status.answer}
+          <Typography id="modal-modal-title" variant="h6" component="h2" color={error && error.length ? 'red' : 'green'}>
+            {error && error.length ? error : status.answer}
           </Typography>
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>
             You have completed this puzzle
@@ -426,6 +435,34 @@ export function Puzzle() {
   );
 }
 
+export function WWMPuzzle() {
+  const { answerId, leagueSlug } = useParams();
+  return <Puzzle answerId={answerId} leagueSlug={leagueSlug} />;
+}
+
+export function WWMPlay() {
+  const [user, setUser] = useGetAndSet('user');
+  const [puzzle, setPuzzle] = useState<ActivePuzzle>();
+
+  const nextPuzzle = useCallback(() => {
+    if (user) {
+      (async () => {
+        const puzzles = await getPuzzles(true, null, false, 1);
+        if (puzzles.length) {
+          setPuzzle(puzzles[0]);
+        }
+      })();
+    }
+  }, [user]);
+
+  useEffect(nextPuzzle, [nextPuzzle]);
+
+  if (!puzzle) {
+    return <div>Loading...</div>;
+  }
+  return <Puzzle answerId={`${puzzle.wordle_answer_id}`} leagueSlug={puzzle.league_slug} puzzle={puzzle} />;
+}
+
 export function WWMBrowse() {
   const { answerId, leagueSlug, username } = useParams();
   const navigate = useNavigate();
@@ -438,12 +475,6 @@ export function WWMBrowse() {
   const [user, setUser] = useGetAndSet('user');
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
-
-  // useEffect(() => {
-  //   if (user && answerId === undefined) {
-  //     const puzzles = await getPuzzles(true, 1))
-  //   }
-  // }, []);
 
   const swipeUser = useCallback(
     (amt: number) => {

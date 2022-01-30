@@ -10,18 +10,20 @@ export class Puzzles {
   async index({
     league_slug,
     active,
+    played,
     sort,
     limit = null,
     _user,
   }: {
     league_slug: string;
     active: boolean;
+    played: boolean;
     sort: string | string[];
     limit?: number;
     _user: User;
   }) {
     await checkLeague(league_slug, _user, false, false);
-    return queries.getPuzzles({ user_id: _user.user_id, sort: sort || 'active_after', active, league_slug });
+    return queries.getPuzzles({ user_id: _user.user_id, sort: sort || 'active_after', active, league_slug, played });
   }
 
   @apiConfig({ requireLogin: true })

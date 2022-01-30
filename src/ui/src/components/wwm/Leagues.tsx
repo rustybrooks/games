@@ -9,10 +9,16 @@ import { genLeagueNew } from '../../routes';
 
 const genUrl = (fn = '') => `${constants.BASE_URL}/api/games/wwm/${fn}`;
 
-export async function getPuzzles(active = true, league_slug: string = null, limit: number = null): Promise<ActivePuzzle[]> {
+export async function getPuzzles(
+  active = true,
+  league_slug: string = null,
+  played: boolean = null,
+  limit: number = null,
+): Promise<ActivePuzzle[]> {
   const body: any = {
     active,
     limit,
+    played,
     sort: active ? 'active_after' : '-active_before',
   };
   if (league_slug) {

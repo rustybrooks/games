@@ -21,6 +21,8 @@ import {
   JoinLeaguePlay,
   ArchivedPuzzles,
   NewLeague,
+  WWMPuzzle,
+  WWMPlay,
 } from './components';
 
 const styles = {
@@ -256,7 +258,7 @@ function AppX() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/test" element={<Test />} />
-          <Route path="/wwm" element={<WWMBrowse />} />
+          <Route path="/wwm" element={<WWMPlay />} />
           <Route path="/wwm/active" element={<ActivePuzzles />} />
           <Route path="/wwm/archived" element={<ArchivedPuzzles />} />
           <Route path="/wwm/bots" element={<Bots />} />
@@ -266,7 +268,7 @@ function AppX() {
           <Route path="/wwm/leagues/:leagueSlug/join" element={<JoinLeague />} />
           <Route path="/wwm/leagues/:leagueSlug/join/:inviteCode" element={<JoinLeague />} />
           <Route path="/wwm/leagues/:leagueSlug/join_play/:answerId" element={<JoinLeaguePlay />} />
-          <Route path="/wwm/puzzles/:leagueSlug/:answerId/play" element={<Puzzle />} />
+          <Route path="/wwm/puzzles/:leagueSlug/:answerId/play" element={<WWMPuzzle />} />
           <Route path="/wwm/puzzles/:leagueSlug/:answerId/browse" element={<WWMBrowse />} />
           <Route path="/wwm/puzzles/:leagueSlug/:answerId/browse/:username" element={<WWMBrowse />} />
         </Routes>
