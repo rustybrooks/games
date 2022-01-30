@@ -1,12 +1,12 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useGetAndSet } from 'react-context-hook';
 import { Link, Typography } from '@mui/material';
 import { formatDistance } from 'date-fns';
 import { useNavigate } from 'react-router';
 import { Box } from '../widgets/Box';
 import * as dt from '../widgets/DataTable';
-import { ActivePuzzle, League } from '../../../types';
-import { getLeagues, getPuzzles } from './Leagues';
+import { ActivePuzzle } from '../../../types';
+import { getPuzzles } from './Leagues';
 import { TitleBox } from '../TitleBox';
 import { genLeagues } from '../../routes';
 
@@ -75,19 +75,17 @@ const ourheadCells: dt.HeadCell<EnumeratedPuzzle>[] = [
 ];
 
 export function ActivePuzzles({ active = true }: { active?: boolean }) {
-  const [leagues, setLeagues] = useGetAndSet<League[]>('leagues');
-  const [puzzles, setPuzzles] = useGetAndSet<EnumeratedPuzzle[]>('active-puzzles');
+  const [puzzles, setPuzzles] = useState<EnumeratedPuzzle[]>([]);
   const [user, setUser]: [{ username: string }, any] = useGetAndSet('user');
   const navigate = useNavigate();
 
   useEffect(() => {
     (async () => {
-      if (!leagues.length) setLeagues(await getLeagues());
       if (user) {
         setPuzzles((await getPuzzles(active)).map((x, i) => ({ ...x, count: i })));
       }
     })();
-  }, [active, leagues?.length, user]);
+  }, [active, user]);
 
   async function navrow(row: EnumeratedPuzzle, postfix: string) {
     navigate(`/wwm/puzzles/${row.league_slug}/${row.wordle_answer_id}/${postfix}`);

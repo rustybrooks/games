@@ -13,13 +13,30 @@ import { formatDistance } from 'date-fns';
 import { League, ActivePuzzle } from '../../../types';
 import * as constants from '../../constants';
 
-import { getLeagues, getPuzzles } from './Leagues';
+import { getPuzzles } from './Leagues';
 
 import { Cell, Div } from '../Styled';
 import { ModalBox } from '../ModalBox';
 import { genActivePuzzles, genJoinLeagueAndPlay, genLeague, genPlayNext, genPuzzleBrowse, genPuzzlePlay } from '../../routes';
 import { TitleBox } from '../TitleBox';
 import { Comments } from './Comments';
+
+async function getLeague(leagueSlug: string, callback: any) {
+  const r = await fetch(genUrl('leagues/info'), {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-API-KEY': localStorage.getItem('api-key'),
+    },
+    body: JSON.stringify({
+      league_slug: leagueSlug,
+    }),
+  });
+  if (r.status === 200) {
+    const data = await r.json();
+    callback(data);
+  }
+}
 
 function guessesToCategories(results: any) {
   const rightKeys: string[] = [];
@@ -233,17 +250,17 @@ export function Puzzle({ answerId, leagueSlug, puzzle = null }: { answerId: stri
 
   const [error, setError] = useState('');
   const [status, setStatus] = useState({ answer: '', complete: false });
-  const [leagues, setLeagues] = useGetAndSet<League[]>('leagues');
+  const [user, setUser] = useGetAndSet('user');
+  const [league, setLeague] = useState<League>(null);
   const [results, setResults] = useState<{ guess: string; result: string[]; reduction: number[] }[]>([]);
   const gridIdx = useRef(0);
   const [open, setOpen] = useState(false);
 
   const handleClose = () => setOpen(false);
 
-  let league: League = null;
-  if (leagues) {
-    league = leagues.find(l => l.league_slug === leagueSlug);
-  }
+  useEffect(() => {
+    getLeague(leagueSlug, setLeague);
+  }, [leagueSlug, user]);
 
   const sendGuess = useCallback(
     async (word: string) => {
@@ -379,14 +396,6 @@ export function Puzzle({ answerId, leagueSlug, puzzle = null }: { answerId: stri
   }, [handleKeyDown]);
 
   useEffect(() => {
-    if (!leagues || !leagues.length) {
-      (async () => {
-        setLeagues(await getLeagues());
-      })();
-    }
-  }, [leagues, setLeagues]);
-
-  useEffect(() => {
     if (league) getGuesses();
   }, [getGuesses, league]);
 
@@ -471,14 +480,18 @@ export function WWMBrowse() {
   const { answerId, leagueSlug, username } = useParams();
   const navigate = useNavigate();
 
-  const [leagues, setLeagues] = useGetAndSet<League[]>('leagues');
   const [results, setResults] = useState<{ guess: string; result: string[]; reduction: number[] }[]>([]);
   const [completed, setCompleted] = useState([]);
   const [browseUser, setBrowseUser] = useState(null);
   const [error, setError] = useState(null);
   const [user, setUser] = useGetAndSet('user');
+  const [league, setLeague] = useState<League>();
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
+
+  useEffect(() => {
+    getLeague(leagueSlug, setLeague);
+  }, [leagueSlug, user]);
 
   const swipeUser = useCallback(
     (amt: number) => {
@@ -489,7 +502,7 @@ export function WWMBrowse() {
       navigate(genPuzzleBrowse(leagueSlug, answerId, newUser.username));
       setBrowseUser(newUser);
     },
-    [answerId, browseUser?.username, completed, leagueSlug, navigate],
+    [answerId, browseUser?.username, completed, leagueSlug],
   );
 
   const handleTouchStart = useCallback((e: any) => {
@@ -510,11 +523,6 @@ export function WWMBrowse() {
       swipeUser(-1);
     }
   }, [swipeUser, touchEnd, touchStart]);
-
-  let league: League = null;
-  if (leagues) {
-    league = leagues.find(l => l.league_slug === leagueSlug);
-  }
 
   async function getCompletedUsers() {
     const r = await fetch(genUrl('puzzles/completed'), {
@@ -582,16 +590,10 @@ export function WWMBrowse() {
   }
 
   useEffect(() => {
-    if (!leagues || !leagues.length) {
-      (async () => {
-        setLeagues(await getLeagues());
-      })();
-    }
-
     if (league) {
       getCompletedUsers();
     }
-  }, [answerId, leagues, user]);
+  }, [answerId, league, user]);
 
   useEffect(() => {
     (async () => {
@@ -609,6 +611,10 @@ export function WWMBrowse() {
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [results]);
+
+  if (!league) {
+    return <div>Loading</div>;
+  }
 
   if (error) {
     return (

@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useGetAndSet } from 'react-context-hook';
 import { Typography, Paper, Link } from '@mui/material';
 import { formatDistance } from 'date-fns';
@@ -101,7 +101,7 @@ const ourheadCells: dt.HeadCell<League>[] = [
 /// ///////////////////////
 
 function WWMLeaguesX() {
-  const [leagues, setLeagues] = useGetAndSet<League[]>('leagues');
+  const [leagues, setLeagues] = useState<League[]>([]);
   const [user, setUser]: [{ username: string }, any] = useGetAndSet('user');
 
   async function joinLeague(row: League): Promise<void> {
