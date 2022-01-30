@@ -17,7 +17,7 @@ import { getLeagues, getPuzzles } from './Leagues';
 
 import { Cell, Div } from '../Styled';
 import { ModalBox } from '../ModalBox';
-import { genActivePuzzles, genJoinLeagueAndPlay, genLeague, genPuzzleBrowse, genPuzzlePlay } from '../../routes';
+import { genActivePuzzles, genJoinLeagueAndPlay, genLeague, genPlayNext, genPuzzleBrowse, genPuzzlePlay } from '../../routes';
 import { TitleBox } from '../TitleBox';
 import { Comments } from './Comments';
 
@@ -147,13 +147,7 @@ function WWMDisplay({
         <div style={{ margin: '0 auto' }}>
           <div style={{ textAlign: 'center' }}>
             League: {league.league_name} {league.is_hard_mode ? '- hard mode' : ''}
-            {puzzle
-              ? `(${formatDistance(new Date(puzzle.active_after), new Date(), { addSuffix: true })} - ${formatDistance(
-                  new Date(puzzle.active_before),
-                  new Date(),
-                  { addSuffix: true },
-                )})`
-              : ''}
+            {puzzle ? `(active until ${formatDistance(new Date(puzzle.active_before), new Date(), { addSuffix: true })})` : ''}
           </div>
         </div>
         <table css={style.table} style={{ margin: '0 auto' }}>
@@ -422,8 +416,8 @@ export function Puzzle({ answerId, leagueSlug, puzzle = null }: { answerId: stri
             <Button sx={{ margin: '.5rem' }} onClick={() => setOpen(false)} variant="outlined">
               Close
             </Button>
-            <Button sx={{ margin: '.5rem' }} onClick={() => navigate(genActivePuzzles())} variant="outlined">
-              Back to Puzzles
+            <Button sx={{ margin: '.5rem' }} onClick={() => navigate(genPlayNext())} variant="outlined">
+              Play Another
             </Button>
             <Button sx={{ margin: '.5rem' }} onClick={() => navigate(genPuzzleBrowse(leagueSlug, answerId))} variant="contained">
               See other solutions

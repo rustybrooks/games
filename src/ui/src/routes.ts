@@ -1,5 +1,9 @@
-export function genActivePuzzles() {
+export function genPlayNext() {
   return '/wwm';
+}
+
+export function genActivePuzzles() {
+  return '/wwm/active';
 }
 
 export function genPuzzleBrowse(leagueSlug: string, answerId: string, username: string = null) {
