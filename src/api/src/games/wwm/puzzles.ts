@@ -23,7 +23,7 @@ export class Puzzles {
     _user: User;
   }) {
     await checkLeague(league_slug, _user, false, false);
-    return queries.getPuzzles({ user_id: _user.user_id, sort: sort || 'active_after', active, league_slug, played });
+    return queries.getPuzzles({ user_id: _user.user_id, sort: sort || 'active_after', limit, active, league_slug, played });
   }
 
   @apiConfig({ requireLogin: true })
@@ -38,7 +38,7 @@ export class Puzzles {
     wordle_answer_id: number;
     _user: User;
   }) {
-    const league = await checkLeague(league_slug, _user);
+    const league = await checkLeague(league_slug, _user, true);
 
     const abDate = new Date();
     const answer = await queries.answer({ league_slug, wordle_answer_id, active_between: abDate });
@@ -121,7 +121,7 @@ export class Puzzles {
     reduce: boolean;
     _user: User;
   }) {
-    const league = await checkLeague(league_slug, _user);
+    const league = await checkLeague(league_slug, _user, true);
 
     const answer = await queries.answer({ league_slug, wordle_answer_id });
     if (!answer) {

@@ -10,7 +10,6 @@ import { checkLeague } from './index';
 export class Leagues {
   async index({ sort = 'league_name', _user = null }: { sort: string; _user: User }) {
     const lg = await queries.getLeagues({ sort, user_id: _user ? _user.user_id : null, isMemberOnly: false });
-    // console.log('lg', lg);
     const cols: (keyof League)[] = [
       'league_slug',
       'league_name',

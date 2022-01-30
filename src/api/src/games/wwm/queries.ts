@@ -54,7 +54,11 @@ export async function getLeagues({
   const extraCols = [];
   if (user_id) {
     bindvars.user_id = user_id;
-    where.push('(not is_private or (user_id is not null) or create_user_id=$(user_id))');
+    if (isMemberOnly) {
+      where.push('user_id is not null');
+    } else {
+      where.push('(not is_private or user_id is not null)');
+    }
     extraCols.push('case when wlm.user_id is null then false else true end as is_member');
     extraCols.push('case when create_user_id != $(user_id) then false else true end as is_creator');
     joins.push(
@@ -63,7 +67,6 @@ export async function getLeagues({
   } else if (isMemberOnly) {
     where.push('not is_private');
   }
-  // console.log(extraCols, user_id);
   const query = `
       select wl.*${extraCols.length ? `, ${extraCols.join(', ')}` : ''}
       from wordle_leagues wl
@@ -72,7 +75,6 @@ export async function getLeagues({
       ${SQL.orderBy(sort)}
       ${SQL.limit(page, limit)}
   `;
-  // console.log(query, bindvars);
   return SQL.select(query, bindvars);
 }
 
@@ -204,7 +206,6 @@ export async function generateSeries(league: League, now: Date) {
   while (start < startCutoff) {
     const end = new Date(start);
     end.setDate(end.getDate() + league.series_days);
-    // console.log('Add league series', league.league_slug, now, start, end);
     await addLeagueSeries({
       wordle_league_id: league.wordle_league_id,
       create_date: now,
@@ -216,7 +217,6 @@ export async function generateSeries(league: League, now: Date) {
 }
 
 export async function generateAllSeries(now: Date) {
-  // console.log(new Date(), 'generateAllSeries');
   for (const l of await getLeagues()) {
     await generateSeries(l, now);
   }
@@ -266,7 +266,6 @@ export async function getAnswers({
     ${SQL.orderBy(sort)}
     ${SQL.limit(page, limit)}
   `;
-  // console.log(query, bindvars);
   return SQL.select(query, bindvars);
 }
 
@@ -290,7 +289,6 @@ export async function generateAnswer(league: any, activeAfter: Date) {
     sort: '-start_date',
   });
   if (!series.length) {
-    // console.log('No series for league, not creating answer', league);
     return null;
   }
 
@@ -315,7 +313,6 @@ export async function generateAnswer(league: any, activeAfter: Date) {
     league.source_word_list || defaultSourceWordList,
     prev.map((row: any) => row.answer),
   ).toLowerCase();
-  // console.log('Adding', activeAfter, activeBefore, rando);
   return SQL.insert(
     'wordle_answers',
     {
@@ -352,7 +349,6 @@ export async function generateAnswers(league: League, now: Date) {
 }
 
 export async function generateAllAnswers(now: Date) {
-  // console.log(new Date(), 'generateAllAnswers');
   for (const l of await getLeagues()) {
     await generateAnswers(l, now);
   }
@@ -422,7 +418,6 @@ export async function getPuzzles({
       ${SQL.orderBy(sort)}
       ${SQL.limit(page, limit)}
   `;
-  console.log(query, bindvars);
   return SQL.select(query, bindvars);
 }
 

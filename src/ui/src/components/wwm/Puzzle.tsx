@@ -437,6 +437,7 @@ export function WWMPuzzle() {
 export function WWMPlay() {
   const [user, setUser] = useGetAndSet('user');
   const [puzzle, setPuzzle] = useState<ActivePuzzle>();
+  const [loaded, setLoaded] = useState(false);
 
   const nextPuzzle = useCallback(() => {
     if (user) {
@@ -445,6 +446,7 @@ export function WWMPlay() {
         if (puzzles.length) {
           setPuzzle(puzzles[0]);
         }
+        setLoaded(true);
       })();
     }
   }, [user]);
@@ -452,8 +454,16 @@ export function WWMPlay() {
   useEffect(nextPuzzle, [nextPuzzle]);
 
   if (!puzzle) {
+    if (loaded) {
+      return (
+        <TitleBox title="No available puzzles" width="40rem" sx={{ margin: 'auto', marginTop: '5rem' }}>
+          No more puzzle available for you at this time. Join more leagues, or come back later for new puzzles.
+        </TitleBox>
+      );
+    }
     return <div>Loading...</div>;
   }
+
   return <Puzzle answerId={`${puzzle.wordle_answer_id}`} leagueSlug={puzzle.league_slug} puzzle={puzzle} />;
 }
 
@@ -479,7 +489,7 @@ export function WWMBrowse() {
       navigate(genPuzzleBrowse(leagueSlug, answerId, newUser.username));
       setBrowseUser(newUser);
     },
-    [answerId, browseUser.username, completed, leagueSlug, navigate],
+    [answerId, browseUser?.username, completed, leagueSlug, navigate],
   );
 
   const handleTouchStart = useCallback((e: any) => {
@@ -672,7 +682,7 @@ export function WWMBrowse() {
             key={c.username}
             sx={{ marginRight: '4px', marginBottom: '2px' }}
             color={c.correct ? 'success' : 'error'}
-            variant="outlined"
+            variant={c.username === browseUser?.username ? 'contained' : 'outlined'}
             size="small"
             onClick={() => {
               setBrowseUser(c);
