@@ -97,7 +97,11 @@ function DataTableHead<T>(props: DataTableProps<T>) {
             </TableSortLabel>
           </th>
         ))}
-        {rowButtons && rowButtons.length ? <th key="buttons">&nbsp;</th> : null}
+        {rowButtons && rowButtons.length ? (
+          <th className="datatable" key="buttons">
+            &nbsp;
+          </th>
+        ) : null}
       </tr>
     </thead>
   );

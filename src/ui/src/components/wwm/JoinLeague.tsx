@@ -1,7 +1,7 @@
 import { Link, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useGetAndSet } from 'react-context-hook';
 import * as constants from '../../constants';
 import { League } from '../../../types/wwm';
@@ -39,7 +39,7 @@ export function JoinLeague() {
   const [league, setLeague] = useState<League>();
   const [user, setUser]: [{ username: string }, any] = useGetAndSet('user');
 
-  async function join() {
+  const join = useCallback(async () => {
     const data = await joinLeague(leagueSlug, inviteCode);
     const j = await data.json();
     if (data.status === 200) {
@@ -49,13 +49,13 @@ export function JoinLeague() {
     } else {
       setError(j.detail);
     }
-  }
+  }, [inviteCode, leagueSlug]);
 
   useEffect(() => {
-    if (leagueSlug && inviteCode && user) {
+    if (leagueSlug && user) {
       join();
     }
-  }, [leagueSlug, inviteCode, user]);
+  }, [leagueSlug, inviteCode, user, join]);
 
   if (!error.length && !league) {
     return (

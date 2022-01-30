@@ -48,21 +48,21 @@ div.table_pag_main {
 @media only screen and (max-device-width: 1200px) and (min-device-width: 651px) {
     td.datatable, th.datatable {
         font-size: 1em;
-        padding: 1em .5em;
+        padding: .5em .5em;
     }
     p.pagination, select.pagination, option.pagination {
         font-size: 1.5em;
     }
     button.pagination {
-        height: 5em;
-        width: 5em;
+        height: 4em;
+        width: 4em;
     }
 }
 
 @media only screen and (min-device-width: 1200.1px) {
     td.datatable, th.datatable {
         font-size: 1em;
-        padding: 1em .5em;
+        padding: .5em .5em;
     }
     p.pagination, select.pagination, option.pagination {
         font-size: 1em;

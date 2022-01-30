@@ -7,7 +7,19 @@ import { checkLeague } from './index';
 @apiClass()
 export class Puzzles {
   @apiConfig({ requireLogin: true })
-  async index({ league_slug, active, sort, _user }: { league_slug: string; active: boolean; sort: string | string[]; _user: User }) {
+  async index({
+    league_slug,
+    active,
+    sort,
+    limit = null,
+    _user,
+  }: {
+    league_slug: string;
+    active: boolean;
+    sort: string | string[];
+    limit?: number;
+    _user: User;
+  }) {
     await checkLeague(league_slug, _user, false, false);
     return queries.getPuzzles({ user_id: _user.user_id, sort: sort || 'active_after', active, league_slug });
   }

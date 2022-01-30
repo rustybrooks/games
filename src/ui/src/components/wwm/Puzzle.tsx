@@ -6,7 +6,7 @@ import Keyboard from 'react-simple-keyboard';
 import 'react-simple-keyboard/build/css/index.css';
 
 import { useGetAndSet } from 'react-context-hook';
-import { Button, Link, Modal, Paper, Typography } from '@mui/material';
+import { Button, Link, Modal, Typography } from '@mui/material';
 
 import { useParams } from 'react-router-dom';
 import { League } from '../../../types';
@@ -142,9 +142,9 @@ function WWMDisplay({
     >
       <Div sx={style.container} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}>
         <div style={{ margin: '0 auto' }}>
-          {/* <div style={{ textAlign: 'center' }}> */}
-          {/*  <Typography variant="h2">League: {league.league_name}</Typography> */}
-          {/* </div> */}
+          <div style={{ textAlign: 'center' }}>
+            League: {league.league_name} {league.is_hard_mode ? '- hard mode' : ''}
+          </div>
         </div>
         <table css={style.table} style={{ margin: '0 auto' }}>
           <tbody>
@@ -277,7 +277,7 @@ export function Puzzle() {
     }
   }
 
-  async function getGuesses() {
+  const getGuesses = useCallback(async () => {
     const r = await fetch(genUrl('puzzles/guesses'), {
       method: 'POST',
       headers: {
@@ -311,55 +311,60 @@ export function Puzzle() {
       setResults(data.guesses);
     } else {
       const data = await r.json();
-      console.log('set error', data);
       setStatus({ ...status, error: data.detail });
     }
-  }
+  }, [answerId, league?.max_guesses, leagueSlug, status]);
 
-  const onKeyPress = async (button: string) => {
-    const buttonx = button.toLowerCase();
+  const onKeyPress = useCallback(
+    async (button: string) => {
+      const buttonx = button.toLowerCase();
 
-    // console.log('onkey', status);
-    if (status.complete) {
-      // console.log('puzzle complete', buttonx);
+      // console.log('onkey', status);
+      if (status.complete) {
+        // console.log('puzzle complete', buttonx);
 
-      if (buttonx === 'enter') {
-        navigate(genPuzzleBrowse(leagueSlug, answerId));
-        setOpen(false);
+        if (buttonx === 'enter') {
+          navigate(genPuzzleBrowse(leagueSlug, answerId));
+          setOpen(false);
+        }
+
+        return;
       }
 
-      return;
-    }
+      const res = results[gridIdx.current];
+      let word = res.guess;
 
-    const res = results[gridIdx.current];
-    let word = res.guess;
-
-    if (buttonx === '{bksp}' || buttonx === 'backspace') {
-      const newResults = [...results];
-      newResults[gridIdx.current].guess = word.slice(0, word.length - 1);
-      if (status.error.length) {
-        setStatus({ ...status, error: '' });
-      }
-      setResults(newResults);
-    } else if (buttonx === '{enter}' || buttonx === 'enter') {
-      sendGuess(word);
-    } else if (word.length < league.letters && buttonx.length === 1) {
-      const myre = /[a-z]/;
-      if (myre.test(buttonx)) {
-        word += buttonx;
+      if (buttonx === '{bksp}' || buttonx === 'backspace') {
         const newResults = [...results];
-        newResults[gridIdx.current].guess = word;
+        newResults[gridIdx.current].guess = word.slice(0, word.length - 1);
         if (status.error.length) {
           setStatus({ ...status, error: '' });
         }
         setResults(newResults);
+      } else if (buttonx === '{enter}' || buttonx === 'enter') {
+        sendGuess(word);
+      } else if (word.length < league.letters && buttonx.length === 1) {
+        const myre = /[a-z]/;
+        if (myre.test(buttonx)) {
+          word += buttonx;
+          const newResults = [...results];
+          newResults[gridIdx.current].guess = word;
+          if (status.error.length) {
+            setStatus({ ...status, error: '' });
+          }
+          setResults(newResults);
+        }
       }
-    }
-  };
+    },
+    [answerId, league?.letters, leagueSlug, navigate, results, sendGuess, status],
+  );
 
-  const handleKeyDown = (event: any) => {
-    onKeyPress(event.key);
-  };
+  const handleKeyDown = useCallback(
+    (event: any) => {
+      onKeyPress(event.key);
+    },
+    [onKeyPress],
+  );
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown, false);
@@ -368,7 +373,7 @@ export function Puzzle() {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [results]);
+  }, [handleKeyDown, results]);
 
   useEffect(() => {
     if (!leagues || !leagues.length) {
@@ -376,11 +381,11 @@ export function Puzzle() {
         setLeagues(await getLeagues());
       })();
     }
-  }, [answerId]);
+  }, [answerId, leagues, setLeagues]);
 
   useEffect(() => {
     if (league) getGuesses();
-  }, [league]);
+  }, [getGuesses, league]);
 
   if (!results.length || (!results.length && status.error)) {
     return (
@@ -434,15 +439,23 @@ export function WWMBrowse() {
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
 
-  function swipeUser(amt: number) {
-    const idx = completed.findIndex(c => c.username === browseUser.username);
+  // useEffect(() => {
+  //   if (user && answerId === undefined) {
+  //     const puzzles = await getPuzzles(true, 1))
+  //   }
+  // }, []);
 
-    const newidx = (((idx + amt) % completed.length) + completed.length) % completed.length;
-    console.log('idx', idx, newidx);
-    const newUser = completed[newidx];
-    navigate(genPuzzleBrowse(leagueSlug, answerId, newUser.username));
-    setBrowseUser(newUser);
-  }
+  const swipeUser = useCallback(
+    (amt: number) => {
+      const idx = completed.findIndex(c => c.username === browseUser.username);
+
+      const newidx = (((idx + amt) % completed.length) + completed.length) % completed.length;
+      const newUser = completed[newidx];
+      navigate(genPuzzleBrowse(leagueSlug, answerId, newUser.username));
+      setBrowseUser(newUser);
+    },
+    [answerId, browseUser.username, completed, leagueSlug, navigate],
+  );
 
   const handleTouchStart = useCallback((e: any) => {
     setTouchStart(e.targetTouches[0].clientX);
@@ -564,9 +577,10 @@ export function WWMBrowse() {
 
   if (error) {
     return (
+      /* eslint-disable-next-line jsx-a11y/no-static-element-interactions */
       <div
         onKeyPress={event => {
-          event.key.toLowerCase() === 'enter' ? navigate(genPuzzlePlay(leagueSlug, answerId)) : null;
+          return event.key.toLowerCase() === 'enter' ? navigate(genPuzzlePlay(leagueSlug, answerId)) : null;
         }}
       >
         <TitleBox title={`${league.league_name}`} width="40rem" sx={{ margin: 'auto', marginTop: '5rem' }}>
@@ -631,7 +645,7 @@ export function WWMBrowse() {
         {completed.map(c => (
           <Button
             key={c.username}
-            sx={{ marginRight: '4px' }}
+            sx={{ marginRight: '4px', marginBottom: '2px' }}
             color={c.correct ? 'success' : 'error'}
             variant="outlined"
             size="small"
@@ -640,7 +654,7 @@ export function WWMBrowse() {
               navigate(genPuzzleBrowse(leagueSlug, answerId, c.username));
             }}
           >
-            {c.username} -{c.num_guesses}
+            {c.username} - {c.num_guesses}
           </Button>
         ))}
       </div>

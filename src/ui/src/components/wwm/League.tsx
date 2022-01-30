@@ -336,7 +336,7 @@ export function WWMLeagueSeriesStats({ league, series }: { league: League; serie
 }
 
 export function WWMLeagueInfo({ league }: { league: League }) {
-  const inviteLink = `${constants.BASE_URL}/wwm/leagues/${league.league_slug}/join${league.is_private ? `/${league.invite_code}` : ''}`;
+  const inviteLink = `/wwm/leagues/${league.league_slug}/join${league.is_private ? `/${league.invite_code}` : ''}`;
 
   return (
     <TitleBox title={league.league_name}>

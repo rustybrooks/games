@@ -1,28 +1,16 @@
 import { useEffect } from 'react';
 import { useGetAndSet } from 'react-context-hook';
-import { Typography, Link } from '@mui/material';
+import { Link, Typography } from '@mui/material';
 import { formatDistance } from 'date-fns';
 import { useNavigate } from 'react-router';
 import { Box } from '../widgets/Box';
 import * as dt from '../widgets/DataTable';
 import { ActivePuzzle, League } from '../../../types';
-import { getPuzzles, getLeagues } from './Leagues';
+import { getLeagues, getPuzzles } from './Leagues';
 import { TitleBox } from '../TitleBox';
-import { genLeagues, genPuzzlePlay } from '../../routes';
+import { genLeagues } from '../../routes';
 
 type EnumeratedPuzzle = ActivePuzzle & { count: number };
-
-// const style = {
-//   position: 'absolute' as const,
-//   top: '50%',
-//   left: '50%',
-//   transform: 'translate(-50%, -50%)',
-//   width: 700,
-//   bgcolor: 'background.paper',
-//   border: '2px solid #000',
-//   boxShadow: 24,
-//   p: 4,
-// };
 
 function dateFormatter(row: EnumeratedPuzzle, d: string) {
   return formatDistance(new Date(d), new Date(), { addSuffix: true });
