@@ -36,6 +36,23 @@ const style: { [id: string]: any } = {
   },
 };
 
+async function getLeague(leagueSlug: string) {
+  const r = await fetch(genUrl('leagues/info'), {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-API-KEY': localStorage.getItem('api-key'),
+    },
+    body: JSON.stringify({
+      league_slug: leagueSlug,
+    }),
+  });
+  if (r.status === 200) {
+    return r.json();
+  }
+  return null;
+}
+
 function dateFormatter(row: any, d: string) {
   return formatDistance(new Date(d), new Date(), { addSuffix: true });
 }
@@ -442,25 +459,12 @@ export function League() {
   const [series, setSeries] = useState<LeagueSeries>(null);
   const [user, setUser] = useGetAndSet('user');
 
-  async function getLeague() {
-    const r = await fetch(genUrl('leagues/info'), {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-API-KEY': localStorage.getItem('api-key'),
-      },
-      body: JSON.stringify({
-        league_slug: leagueSlug,
-      }),
-    });
-    if (r.status === 200) {
-      const data = await r.json();
-      setLeague(data);
-    }
-  }
-
   useEffect(() => {
-    getLeague();
+    if (user) {
+      (async () => {
+        setLeague(await getLeague(leagueSlug));
+      })();
+    }
   }, [leagueSlug, user]);
 
   if (!league) {

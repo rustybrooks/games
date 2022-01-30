@@ -6,7 +6,6 @@ import * as icons from './Icons';
 import './DataTable.css';
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T, defaultVal: any) {
-  console.log(orderBy, a[orderBy], b[orderBy], a[orderBy] < b[orderBy], a[orderBy] > b[orderBy]);
   if ((b[orderBy] || defaultVal) < (a[orderBy] || defaultVal)) {
     return -1;
   }
@@ -222,8 +221,6 @@ export function DataTable<T>({
   const handleButtonClick = (row: T, fn: (row: T) => Promise<void>) => {
     fn(row);
   };
-
-  console.log('render');
 
   const sortCol = headCells.find(h => h.id === orderBy);
 
