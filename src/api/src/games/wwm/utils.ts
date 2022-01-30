@@ -1,5 +1,7 @@
+import { HttpBadRequest, HttpNotFound } from '@rustybrooks/api-framework';
 import * as fs from 'fs';
-import { League, Guess } from '../../../../ui/types';
+import { Guess, League } from '../../../../ui/types';
+import * as queries from './queries';
 
 export const defaultSourceWordList = 'filtered/twl06.txt.filtered';
 export const defaultAnswerWordList = 'sources/collins.2019.txt.clean';
@@ -81,7 +83,7 @@ export function wordList(length: number, source: string) {
 export function randomWord(length: number, wordFile: string, rejects: string[] = null) {
   let word;
 
-  for (let i = 0; i < 100; i++) {
+  for (let i = 0; i < 100; i += 1) {
     const wl = wordList(length, wordFile);
     word = wl[Math.floor(Math.random() * wl.length)];
     if (!rejects || !rejects.includes(word)) {
@@ -171,3 +173,30 @@ export function checkHardMode(league: League, guess: string, result: string[], g
   return wordsLeft.includes(guess);
 }
 
+export async function checkLeague(
+  league_slug: string,
+  user: { [id: string]: any },
+  isMemberOnly = true,
+  requireSlug = true,
+): Promise<League> {
+  if (requireSlug) {
+    if (!league_slug || !league_slug.length) {
+      throw new HttpBadRequest('Must pass in league_slug');
+    }
+  }
+
+  if (league_slug) {
+    const league = await queries.getLeague({ league_slug, user_id: user?.user_id, isMemberOnly });
+    if (league) {
+      return league;
+    }
+    if (!league) {
+      const league2 = await queries.getLeague({ league_slug });
+      if (league2) {
+        throw new HttpBadRequest('You are not in this league', 'not_in_league');
+      }
+      throw new HttpNotFound('League not found');
+    }
+  }
+  return null;
+}

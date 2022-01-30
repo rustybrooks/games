@@ -1,11 +1,11 @@
 import { useGetAndSet } from 'react-context-hook';
 import { Box, Button, FormControlLabel, FormGroup, MenuItem, Switch, TextField, Typography } from '@mui/material';
-import { ChangeEvent, FormEvent, useCallback, useState } from 'react';
+import { ChangeEvent, useCallback, useState } from 'react';
 import { useNavigate } from 'react-router';
 import * as constants from '../../constants';
 import { Div } from '../Styled';
 import { debounce } from '../../utils';
-import { TitleBox } from '../TitleBox';
+import { TitleBox } from '../widgets/TitleBox';
 import { genLeague } from '../../routes';
 
 const genUrl = (fn = '') => `${constants.BASE_URL}/api/games/wwm/${fn}`;
@@ -94,7 +94,7 @@ export function NewLeague() {
   if (!user) {
     return (
       <div>
-        <TitleBox title="Unauthorized" width="40rem" sx={{ margin: 'auto', marginTop: '5rem' }}>
+        <TitleBox title="Unauthorized" width="40rem" style={{ margin: 'auto', marginTop: '5rem' }}>
           <Div>
             <Typography>
               You can not create leagues unless you are registered and logged in. Use the Login button at the top right to log in.

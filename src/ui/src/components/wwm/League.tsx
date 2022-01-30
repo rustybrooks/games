@@ -9,7 +9,7 @@ import * as dt from '../widgets/DataTable';
 import * as constants from '../../constants';
 import { ActivePuzzle, League, LeagueSeries, LeagueStats, User } from '../../../types';
 
-import { TitleBox } from '../TitleBox';
+import { TitleBox } from '../widgets/TitleBox';
 import { getPuzzles, getLeagues } from './Leagues';
 
 const genUrl = (fn = '') => `${constants.BASE_URL}/api/games/wwm/${fn}`;

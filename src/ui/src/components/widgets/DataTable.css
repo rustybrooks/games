@@ -4,6 +4,10 @@ table.datatable {
     box-sizing: border-box;
 }
 
+th.datatable {
+    cursor: pointer;
+}
+
 td.datatable, th.datatable {
     font-family: Roboto, Arial, sans-serif;
     border-spacing: 0;

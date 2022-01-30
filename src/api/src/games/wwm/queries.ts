@@ -249,12 +249,16 @@ export async function getAnswers({
     wordle_league_id,
     wordle_answer_id,
     league_slug,
-    active_after,
   });
 
   if (active_between) {
     where.push('$(active_between) between active_after and active_before');
     bindvars.active_between = active_between;
+  }
+
+  if (active_after) {
+    where.push('active_after >= $(active_after)');
+    bindvars.active_after = active_after;
   }
 
   const query = `

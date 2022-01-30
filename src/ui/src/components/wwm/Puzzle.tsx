@@ -18,7 +18,7 @@ import { getPuzzles } from './Leagues';
 import { Cell, Div } from '../Styled';
 import { ModalBox } from '../ModalBox';
 import { genActivePuzzles, genJoinLeagueAndPlay, genLeague, genPlayNext, genPuzzleBrowse, genPuzzlePlay } from '../../routes';
-import { TitleBox } from '../TitleBox';
+import { TitleBox } from '../widgets/TitleBox';
 import { Comments } from './Comments';
 
 async function getLeague(leagueSlug: string, callback: any) {
@@ -465,7 +465,7 @@ export function WWMPlay() {
   if (!puzzle) {
     if (loaded) {
       return (
-        <TitleBox title="No available puzzles" width="40rem" sx={{ margin: 'auto', marginTop: '5rem' }}>
+        <TitleBox title="No available puzzles" width="40rem" style={{ margin: 'auto', marginTop: '5rem' }}>
           No more puzzle available for you at this time. Join more leagues, or come back later for new puzzles.
         </TitleBox>
       );
@@ -624,7 +624,7 @@ export function WWMBrowse() {
           return event.key.toLowerCase() === 'enter' ? navigate(genPuzzlePlay(leagueSlug, answerId)) : null;
         }}
       >
-        <TitleBox title={`${league.league_name}`} width="40rem" sx={{ margin: 'auto', marginTop: '5rem' }}>
+        <TitleBox title={`${league.league_name}`} width="40rem" style={{ margin: 'auto', marginTop: '5rem' }}>
           {error === 'not_completed' ? (
             <Div>
               <Typography>

@@ -7,7 +7,7 @@ import { Box } from '../widgets/Box';
 import * as dt from '../widgets/DataTable';
 import { ActivePuzzle } from '../../../types';
 import { getPuzzles } from './Leagues';
-import { TitleBox } from '../TitleBox';
+import { TitleBox } from '../widgets/TitleBox';
 import { genLeagues } from '../../routes';
 
 type EnumeratedPuzzle = ActivePuzzle & { count: number };
@@ -108,7 +108,7 @@ export function ActivePuzzles({ active = true }: { active?: boolean }) {
 
   if (!user) {
     return (
-      <TitleBox title="No Words with Melvins puzzles available" width="40rem" sx={{ margin: 'auto', marginTop: '5rem' }}>
+      <TitleBox title="No Words with Melvins puzzles available" width="40rem" style={{ margin: 'auto', marginTop: '5rem' }}>
         <Box>
           It looks like you're not logged in, so there aren't any puzzles for you to play. Log in using the menu at the top right, make sure{' '}
           <Link href={genLeagues()}>you are in some leagues</Link>, and try again.
