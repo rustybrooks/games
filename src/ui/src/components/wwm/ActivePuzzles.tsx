@@ -87,7 +87,7 @@ export function ActivePuzzles({ active = true }: { active?: boolean }) {
         setPuzzles((await getPuzzles(active)).map((x, i) => ({ ...x, count: i })));
       }
     })();
-  }, [active, leagues.length, setLeagues, setPuzzles, user]);
+  }, [active, leagues?.length, user]);
 
   async function navrow(row: EnumeratedPuzzle, postfix: string) {
     navigate(`/wwm/puzzles/${row.league_slug}/${row.wordle_answer_id}/${postfix}`);
@@ -126,6 +126,8 @@ export function ActivePuzzles({ active = true }: { active?: boolean }) {
       mainColumn="count"
       initialSortColumn={active ? 'active_after' : 'active_before'}
       initialSortOrder={active ? 'asc' : 'desc'}
+      secondarySortColumn={active ? 'active_after' : 'active_before'}
+      secondarySortOrder={active ? 'asc' : 'desc'}
       initialRowsPerPage={10}
       rowButtons={[buttonCallback]}
       storageKey={`datatable-${active ? 'active' : 'inactive'}-puzzles`}

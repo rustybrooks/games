@@ -308,11 +308,9 @@ export async function generateAnswer(league: any, activeAfter: Date) {
     fields: ['answer'],
   });
 
-  const rando = randomWord(
-    league.letters,
-    league.source_word_list || defaultSourceWordList,
-    prev.map((row: any) => row.answer),
-  ).toLowerCase();
+  const prevWords = prev.map((row: any) => row.answer);
+  const rando = randomWord(league.letters, league.source_word_list || defaultSourceWordList, prevWords).toLowerCase();
+  console.log(rando, 'prevWords', prevWords);
   return SQL.insert(
     'wordle_answers',
     {

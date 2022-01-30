@@ -1,25 +1,26 @@
 import { useState, MouseEvent, ChangeEvent } from 'react';
 import { SortDirection } from '@mui/material';
 import { Button } from './Button';
-import { Box, SpanBox } from './Box';
+import { SpanBox } from './Box';
 import * as icons from './Icons';
 import './DataTable.css';
 
-function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
-  if (b[orderBy] < a[orderBy]) {
+function descendingComparator<T>(a: T, b: T, orderBy: keyof T, defaultVal: any) {
+  console.log(orderBy, a[orderBy], b[orderBy], a[orderBy] < b[orderBy], a[orderBy] > b[orderBy]);
+  if ((b[orderBy] || defaultVal) < (a[orderBy] || defaultVal)) {
     return -1;
   }
-  if (b[orderBy] > a[orderBy]) {
+  if ((b[orderBy] || defaultVal) > (a[orderBy] || defaultVal)) {
     return 1;
   }
   return 0;
 }
 type Order = 'asc' | 'desc';
 
-function getComparator<T>(order: Order, orderBy: keyof T): (a: T, b: T) => number {
+function getComparator<T>(order: Order, orderBy: keyof T, numeric: boolean): (a: T, b: T) => number {
   return order === 'desc'
-    ? (a: T, b: T) => descendingComparator<T>(a, b, orderBy)
-    : (a: T, b: T) => -descendingComparator<T>(a, b, orderBy);
+    ? (a: T, b: T) => descendingComparator<T>(a, b, orderBy, numeric ? 0 : '')
+    : (a: T, b: T) => -descendingComparator<T>(a, b, orderBy, numeric ? 0 : '');
 }
 
 interface DataTableProps<T> {
@@ -28,7 +29,6 @@ interface DataTableProps<T> {
   onRequestSort: (event: MouseEvent<unknown>, property: keyof T) => void;
   order: Order;
   orderBy: string;
-  // rowCount: number;
 }
 
 export interface HeadCell<T> {
@@ -52,6 +52,8 @@ export interface Props<T> {
   mainColumn: keyof T;
   initialSortColumn: keyof T;
   initialSortOrder?: Order;
+  secondarySortColumn?: keyof T;
+  secondarySortOrder?: Order;
   rowButtons: ButtonInfoFn<T>[];
   initialRowsPerPage?: number;
   minWidth?: number | string;
@@ -173,6 +175,8 @@ export function DataTable<T>({
   mainColumn,
   initialSortColumn,
   initialSortOrder = 'asc',
+  secondarySortColumn = null,
+  secondarySortOrder = null,
   rowButtons = null,
   initialRowsPerPage = 10,
   minWidth = 600,
@@ -219,6 +223,10 @@ export function DataTable<T>({
     fn(row);
   };
 
+  console.log('render');
+
+  const sortCol = headCells.find(h => h.id === orderBy);
+
   return (
     <div>
       <table style={{ width: '100%' }} className="datatable">
@@ -232,7 +240,7 @@ export function DataTable<T>({
         <tbody>
           {rows
             .slice()
-            .sort(getComparator(order, orderBy))
+            .sort(getComparator(order, orderBy, sortCol.numeric))
             .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
             .map((row, index) => {
               return (
