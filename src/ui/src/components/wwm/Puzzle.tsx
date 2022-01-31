@@ -16,11 +16,12 @@ import * as constants from '../../constants';
 
 import { getPuzzles } from './Leagues';
 
-import { Cell, Div } from '../Styled';
 import { ModalBox } from '../ModalBox';
 import { genActivePuzzles, genJoinLeagueAndPlay, genLeague, genPlayNext, genPuzzleBrowse, genPuzzlePlay } from '../../routes';
 import { TitleBox } from '../widgets/TitleBox';
 import { Comments } from './Comments';
+
+const genUrl = (fn = '') => `${constants.BASE_URL}/api/games/wwm/${fn}`;
 
 async function getLeague(leagueSlug: string, callback: any) {
   const r = await fetch(genUrl('leagues/info'), {
@@ -64,49 +65,6 @@ function guessesToCategories(results: any) {
     wrong: wrongKeys,
   };
 }
-
-const style: { [id: string]: any } = {
-  cell: {
-    width: { mobile: '7rem', tablet: '8rem', desktop: '4.2rem' },
-    height: { mobile: '7rem', tablet: '8rem', desktop: '4.2rem' },
-    background: 'white',
-    padding: '5px',
-    border: '2px solid #ccc',
-    textAlign: 'center',
-    verticalAlign: 'middle',
-    fontWeight: 'bold',
-  },
-
-  table: {
-    padding: '0px',
-    borderSpacing: '6px',
-    borderCollapse: 'separate',
-  },
-
-  container: {
-    width: { mobile: '100%', tablet: '100%', desktop: '40rem' },
-    margin: '0 auto',
-    marginTop: { mobile: '20px', tablet: '20px', desktop: '20px' },
-  },
-
-  keyboard: {
-    width: '100%',
-    height: { mobile: '500px', tablet: '100%', desktop: '30rem' },
-    textAlign: 'center',
-  },
-};
-
-const colors = {
-  wrong: '#787c7e',
-  right: '#6aaa64',
-  sorta: '#c9b458',
-};
-
-style.wrongCell = { backgroundColor: colors.wrong };
-style.rightCell = { backgroundColor: colors.right };
-style.sortaCell = { backgroundColor: colors.sorta };
-
-const genUrl = (fn = '') => `${constants.BASE_URL}/api/games/wwm/${fn}`;
 
 function WWMDisplay({
   league,
@@ -155,20 +113,20 @@ function WWMDisplay({
   }
 
   return (
-    <Div
-      sx={{
+    <div
+      style={{
         width: '100%',
         height: '100%',
       }}
     >
-      <Div sx={style.container} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}>
+      <div className="puzzle-container" onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}>
         <div style={{ margin: '0 auto' }}>
           <div style={{ textAlign: 'center' }}>
             League: {league.league_name} {league.is_hard_mode ? '- hard mode' : ''}
             {puzzle ? `(active until ${formatDistance(new Date(puzzle.active_before), new Date(), { addSuffix: true })})` : ''}
           </div>
         </div>
-        <table css={style.table} style={{ margin: '0 auto' }}>
+        <table className="puzzle-table" style={{ margin: '0 auto' }}>
           <tbody>
             {[...Array(league.max_guesses).keys()].map(y => {
               const result = results[y] || { guess: '', result: [], reduction: [-1, -1] };
@@ -181,22 +139,22 @@ function WWMDisplay({
                     if (r) {
                       switch (r) {
                         case '+':
-                          cn = 'rightCell';
+                          cn = 'right';
                           break;
                         case '-':
-                          cn = 'sortaCell';
+                          cn = 'sorta';
                           break;
                         case ' ':
-                          cn = 'wrongCell';
+                          cn = 'wrong';
                           break;
                         default:
-                          cn = 'cell';
+                          cn = '';
                       }
                     }
                     return (
-                      <Cell key={x} sx={{ ...style.cell, ...style[cn] }}>
+                      <td key={x} className={`puzzle-cell ${cn}`}>
                         <Typography variant="h1">{g.toUpperCase()}</Typography>
-                      </Cell>
+                      </td>
                     );
                   })}
                   {result.reduction[0] !== -1 ? (
@@ -225,7 +183,7 @@ function WWMDisplay({
           </tbody>
         </table>
         {showKeyboard ? (
-          <Div sx={style.keyboard}>
+          <div className="puzzle-keyboard">
             <Keyboard
               display={{
                 '{enter}': 'enter',
@@ -239,10 +197,10 @@ function WWMDisplay({
               theme="hg-theme-default hg-layout-default myTheme"
               onKeyPress={onKeyPress}
             />
-          </Div>
+          </div>
         ) : null}
-      </Div>
-    </Div>
+      </div>
+    </div>
   );
 }
 
@@ -432,7 +390,7 @@ export function Puzzle({
             You have completed this puzzle
           </Typography>
 
-          <Div sx={{ textAlign: 'right' }}>
+          <div style={{ textAlign: 'right' }}>
             <Button style={{ margin: '.5rem' }} onClick={() => setOpen(false)} variant="outlined">
               Close
             </Button>
@@ -442,7 +400,7 @@ export function Puzzle({
             <Button style={{ margin: '.5rem' }} onClick={() => navigate(genPuzzleBrowse(leagueSlug, answerId))} variant="contained">
               See other solutions
             </Button>
-          </Div>
+          </div>
         </ModalBox>
       </Modal>
     </div>
@@ -651,20 +609,20 @@ export function WWMBrowse() {
       >
         <TitleBox title={`${league.league_name}`} width="40rem" style={{ margin: 'auto', marginTop: '5rem' }}>
           {error === 'not_completed' ? (
-            <Div>
+            <div>
               <Typography>
                 You haven't completed this puzzle, so until you do, you can't see other people's results. If you'd like to play the puzle
                 now, click the Play button.
               </Typography>
-              <Div sx={{ textAlign: 'right' }}>
+              <div style={{ textAlign: 'right' }}>
                 <Button variant="contained" onClick={() => navigate(genPuzzlePlay(leagueSlug, answerId))}>
                   Play
                 </Button>
-              </Div>
-            </Div>
+              </div>
+            </div>
           ) : null}
           {error === 'not_found' ? (
-            <Div>
+            <div>
               <Typography>Wasn't able to find a Words with Melvins puzzle matching this url. Not sure what went wrong!</Typography>
               <br />
               <Typography>
@@ -672,25 +630,25 @@ export function WWMBrowse() {
                 Maybe <Link href={genActivePuzzles()}>look at the active puzzles</Link> and see what's there, or look at{' '}
                 <Link href={genLeague(leagueSlug)}>the league page</Link> for this leage?
               </Typography>
-            </Div>
+            </div>
           ) : null}
           {error === 'not_in_league' ? (
-            <Div>
+            <div>
               <Typography>You can not view the results of this puzzle because you are not a member of the league it's in.</Typography>
-              <Div sx={{ textAlign: 'right' }}>
+              <div style={{ textAlign: 'right' }}>
                 <Button variant="contained" onClick={() => navigate(genJoinLeagueAndPlay(leagueSlug, answerId))}>
                   Join League and Play
                 </Button>
-              </Div>
-            </Div>
+              </div>
+            </div>
           ) : null}
           {error === 'unauthorized' ? (
-            <Div>
+            <div>
               <Typography>
                 You can not view the results of this puzzle because you are not logged into the site. Use the Login button at the top right
                 to log in.
               </Typography>
-            </Div>
+            </div>
           ) : null}
         </TitleBox>
       </div>

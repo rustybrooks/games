@@ -1,4 +1,97 @@
 
+td.puzzle-cell {
+/*
+*/
+    background: white;
+    padding: 5px;
+    border: 2px solid #ccc;
+    text-align: center;
+    vertical-align: middle;
+    font-weight: bold;
+}
+
+td.puzzle-cell.wrong {
+    background-color: #787c7e;
+}
+
+td.puzzle-cell.right {
+    background-color: #6aaa64;
+}
+
+td.puzzle-cell.sorta {
+    background-color: #c9b458
+}
+
+table.puzzle-table {
+    padding: 0;
+    border-spacing: 6px;
+    border-collapse: separate;
+}
+
+div.puzzle-container {
+/*
+
+*/
+    margin: 0 auto;
+}
+
+div.puzzle-keyboard {
+/*
+ */
+    width: 100%;
+    text-align: center;
+}
+
+
+@media only screen and (max-device-width: 650px) {
+  td.puzzle-cell {
+    width: 7rem;
+    height: 7rem;
+  }
+
+  div.puzzle-container {
+    width: 100%;
+    margin-top: 20px;
+  }
+
+  div.puzzle-keyboard {
+    height: 500px;
+  }
+}
+
+@media only screen and (max-device-width: 1200px) and (min-device-width: 651px) {
+  td.puzzle-cell {
+    width: 8rem;
+    height: 8rem;
+  }
+
+  div.puzzle-container {
+    width: 100%;
+    margin-top: 20px;
+  }
+
+  div.puzzle-keyboard {
+    height: 100%;
+  }
+}
+
+@media only screen and (min-device-width: 1200.1px) {
+  td.puzzle-cell {
+    width: 4.2rem;
+    height: 4.2rem;
+  }
+
+  div.puzzle-container {
+    width: 40rem;
+    margin-top: 20px;
+  }
+
+  div.puzzle-keyboard {
+    height: 30rem;
+  }
+}
+
+/* keyboard stuff below */
 .simple-keyboard.hg-layout-default .hg-button.hg-wrong {
     background: #787c7e;
     color: white;
