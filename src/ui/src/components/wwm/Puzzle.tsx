@@ -6,10 +6,11 @@ import Keyboard from 'react-simple-keyboard';
 import 'react-simple-keyboard/build/css/index.css';
 
 import { useGetAndSet } from 'react-context-hook';
-import { Button, Link, Modal, Typography } from '@mui/material';
+import { Link, Modal, Typography } from '@mui/material';
 
 import { useParams } from 'react-router-dom';
 import { formatDistance } from 'date-fns';
+import { Button } from '../widgets/Button';
 import { League, ActivePuzzle } from '../../../types';
 import * as constants from '../../constants';
 
@@ -432,13 +433,13 @@ export function Puzzle({
           </Typography>
 
           <Div sx={{ textAlign: 'right' }}>
-            <Button sx={{ margin: '.5rem' }} onClick={() => setOpen(false)} variant="outlined">
+            <Button style={{ margin: '.5rem' }} onClick={() => setOpen(false)} variant="outlined">
               Close
             </Button>
-            <Button sx={{ margin: '.5rem' }} onClick={resetCallback} variant="outlined">
+            <Button style={{ margin: '.5rem' }} onClick={resetCallback} variant="outlined">
               Play Another
             </Button>
-            <Button sx={{ margin: '.5rem' }} onClick={() => navigate(genPuzzleBrowse(leagueSlug, answerId))} variant="contained">
+            <Button style={{ margin: '.5rem' }} onClick={() => navigate(genPuzzleBrowse(leagueSlug, answerId))} variant="contained">
               See other solutions
             </Button>
           </Div>
@@ -710,8 +711,8 @@ export function WWMBrowse() {
         {completed.map(c => (
           <Button
             key={c.username}
-            sx={{ marginRight: '4px', marginBottom: '2px' }}
-            color={c.correct ? 'success' : 'error'}
+            style={{ marginRight: '4px', marginBottom: '2px' }}
+            color={c.correct ? 'blue' : 'red'}
             variant={c.username === browseUser?.username ? 'contained' : 'outlined'}
             size="small"
             onClick={() => {

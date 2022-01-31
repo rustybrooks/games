@@ -259,6 +259,7 @@ export function DataTable<T>({
                             key={buttonInfo.label}
                             disabled={!buttonInfo.activeCallback(row)}
                             onClick={(event: any) => handleButtonClick(row, buttonInfo.callback)}
+                            variant="contained"
                           >
                             {buttonInfo.label}
                           </Button>

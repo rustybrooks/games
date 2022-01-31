@@ -10,7 +10,7 @@ import * as constants from '../../constants';
 import { ActivePuzzle, League, LeagueSeries, LeagueStats, User } from '../../../types';
 
 import { TitleBox } from '../widgets/TitleBox';
-import { getPuzzles, getLeagues } from './Leagues';
+import { getPuzzles } from './Leagues';
 
 const genUrl = (fn = '') => `${constants.BASE_URL}/api/games/wwm/${fn}`;
 
