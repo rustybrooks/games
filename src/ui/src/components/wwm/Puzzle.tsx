@@ -245,7 +245,17 @@ function WWMDisplay({
   );
 }
 
-export function Puzzle({ answerId, leagueSlug, puzzle = null }: { answerId: string; leagueSlug: string; puzzle?: ActivePuzzle }) {
+export function Puzzle({
+  answerId,
+  leagueSlug,
+  puzzle = null,
+  resetCallback,
+}: {
+  answerId: string;
+  leagueSlug: string;
+  puzzle?: ActivePuzzle;
+  resetCallback: any;
+}) {
   const navigate = useNavigate();
 
   const [error, setError] = useState('');
@@ -425,7 +435,7 @@ export function Puzzle({ answerId, leagueSlug, puzzle = null }: { answerId: stri
             <Button sx={{ margin: '.5rem' }} onClick={() => setOpen(false)} variant="outlined">
               Close
             </Button>
-            <Button sx={{ margin: '.5rem' }} onClick={() => navigate(genPlayNext())} variant="outlined">
+            <Button sx={{ margin: '.5rem' }} onClick={resetCallback} variant="outlined">
               Play Another
             </Button>
             <Button sx={{ margin: '.5rem' }} onClick={() => navigate(genPuzzleBrowse(leagueSlug, answerId))} variant="contained">
@@ -440,13 +450,19 @@ export function Puzzle({ answerId, leagueSlug, puzzle = null }: { answerId: stri
 
 export function WWMPuzzle() {
   const { answerId, leagueSlug } = useParams();
-  return <Puzzle answerId={answerId} leagueSlug={leagueSlug} />;
+  const navigate = useNavigate();
+  return <Puzzle answerId={answerId} leagueSlug={leagueSlug} resetCallback={() => navigate(genPlayNext())} />;
 }
 
 export function WWMPlay() {
   const [user, setUser] = useGetAndSet('user');
   const [puzzle, setPuzzle] = useState<ActivePuzzle>();
   const [loaded, setLoaded] = useState(false);
+
+  const reload = useCallback(() => {
+    setPuzzle(null);
+    setLoaded(false);
+  }, []);
 
   const nextPuzzle = useCallback(() => {
     if (user) {
@@ -458,9 +474,17 @@ export function WWMPlay() {
         setLoaded(true);
       })();
     }
-  }, [user]);
+  }, [user, loaded]);
 
   useEffect(nextPuzzle, [nextPuzzle]);
+
+  if (!user) {
+    return (
+      <TitleBox title="You must be logged in to play" width="40rem" style={{ margin: 'auto', marginTop: '5rem' }}>
+        You are not currently logged in - you must be logged in to play puzzles.
+      </TitleBox>
+    );
+  }
 
   if (!puzzle) {
     if (loaded) {
@@ -473,7 +497,7 @@ export function WWMPlay() {
     return <div>Loading...</div>;
   }
 
-  return <Puzzle answerId={`${puzzle.wordle_answer_id}`} leagueSlug={puzzle.league_slug} puzzle={puzzle} />;
+  return <Puzzle answerId={`${puzzle.wordle_answer_id}`} leagueSlug={puzzle.league_slug} puzzle={puzzle} resetCallback={reload} />;
 }
 
 export function WWMBrowse() {
