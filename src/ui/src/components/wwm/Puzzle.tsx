@@ -6,12 +6,12 @@ import Keyboard from 'react-simple-keyboard';
 import 'react-simple-keyboard/build/css/index.css';
 
 import { useGetAndSet } from 'react-context-hook';
-import { Link, Modal, Typography } from '@mui/material';
 
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { formatDistance } from 'date-fns';
+import { Modal } from '../widgets/Modal';
 import { Button } from '../widgets/Button';
-import { League, ActivePuzzle } from '../../../types';
+import { ActivePuzzle, League } from '../../../types';
 import * as constants from '../../constants';
 
 import { getPuzzles } from './Leagues';
@@ -153,30 +153,26 @@ function WWMDisplay({
                     }
                     return (
                       <td key={x} className={`puzzle-cell ${cn}`}>
-                        <Typography variant="h1">{g.toUpperCase()}</Typography>
+                        <h1>{g.toUpperCase()}</h1>
                       </td>
                     );
                   })}
-                  {result.reduction[0] !== -1 ? (
-                    <td>
-                      <Typography>{result.reduction[0]} left</Typography>
-                    </td>
-                  ) : null}
+                  {result.reduction[0] !== -1 ? <td>{result.reduction[0]} left</td> : null}
                 </tr>
               );
             })}
             <tr>
               <td colSpan={league.letters}>
                 {error ? (
-                  <Typography variant="h2" color="#d22">
+                  <h2 style={{ color: '#d22' }}>
                     {error}
                     &nbsp;
-                  </Typography>
+                  </h2>
                 ) : (
-                  <Typography variant="h2" color="#2d2">
+                  <h2 style={{ color: '#2d2' }}>
                     {answer}
                     &nbsp;
-                  </Typography>
+                  </h2>
                 )}
               </td>
             </tr>
@@ -371,9 +367,7 @@ export function Puzzle({
   if (!results.length || (!results.length && error.length)) {
     return (
       <div css={{ textAlign: 'center', padding: '10px' }}>
-        <Typography variant="h3" color={error.length ? 'red' : 'black'}>
-          {error || 'Loading...'}
-        </Typography>
+        <h3 style={{ color: error.length ? 'red' : 'black' }}>{error || 'Loading...'}</h3>
       </div>
     );
   }
@@ -381,23 +375,23 @@ export function Puzzle({
   return (
     <div>
       <WWMDisplay league={league} puzzle={puzzle} results={results} onKeyPress={onKeyPress} error={error} answer={status.answer} />
-      <Modal open={open} onClose={handleClose} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
+      <Modal open={open} onClose={handleClose}>
         <ModalBox width="30rem">
-          <Typography id="modal-modal-title" variant="h6" component="h2" color={error && error.length ? 'red' : 'green'}>
-            {error && error.length ? error : status.answer}
-          </Typography>
-          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            You have completed this puzzle
-          </Typography>
-
+          <h2 style={{ color: error && error.length ? 'red' : 'green' }}>{error && error.length ? error : status.answer}</h2>
+          You have completed this puzzle
           <div style={{ textAlign: 'right' }}>
-            <Button style={{ margin: '.5rem' }} onClick={() => setOpen(false)} variant="outlined">
+            <Button color="blue" style={{ margin: '.5rem' }} onClick={() => setOpen(false)} variant="outlined">
               Close
             </Button>
-            <Button style={{ margin: '.5rem' }} onClick={resetCallback} variant="outlined">
+            <Button color="blue" style={{ margin: '.5rem' }} onClick={resetCallback} variant="outlined">
               Play Another
             </Button>
-            <Button style={{ margin: '.5rem' }} onClick={() => navigate(genPuzzleBrowse(leagueSlug, answerId))} variant="contained">
+            <Button
+              color="blue"
+              style={{ margin: '.5rem' }}
+              onClick={() => navigate(genPuzzleBrowse(leagueSlug, answerId))}
+              variant="contained"
+            >
               See other solutions
             </Button>
           </div>
@@ -610,10 +604,8 @@ export function WWMBrowse() {
         <TitleBox title={`${league.league_name}`} width="40rem" style={{ margin: 'auto', marginTop: '5rem' }}>
           {error === 'not_completed' ? (
             <div>
-              <Typography>
-                You haven't completed this puzzle, so until you do, you can't see other people's results. If you'd like to play the puzle
-                now, click the Play button.
-              </Typography>
+              You haven't completed this puzzle, so until you do, you can't see other people's results. If you'd like to play the puzle now,
+              click the Play button.
               <div style={{ textAlign: 'right' }}>
                 <Button variant="contained" onClick={() => navigate(genPuzzlePlay(leagueSlug, answerId))}>
                   Play
@@ -623,18 +615,16 @@ export function WWMBrowse() {
           ) : null}
           {error === 'not_found' ? (
             <div>
-              <Typography>Wasn't able to find a Words with Melvins puzzle matching this url. Not sure what went wrong!</Typography>
+              Wasn't able to find a Words with Melvins puzzle matching this url. Not sure what went wrong!
               <br />
-              <Typography>
-                {/* eslint-disable-next-line react/no-unescaped-entities */}
-                Maybe <Link href={genActivePuzzles()}>look at the active puzzles</Link> and see what's there, or look at{' '}
-                <Link href={genLeague(leagueSlug)}>the league page</Link> for this leage?
-              </Typography>
+              {/* eslint-disable-next-line react/no-unescaped-entities */}
+              Maybe <Link to={genActivePuzzles()}>look at the active puzzles</Link> and see what's there, or look at{' '}
+              <Link to={genLeague(leagueSlug)}>the league page</Link> for this leage?
             </div>
           ) : null}
           {error === 'not_in_league' ? (
             <div>
-              <Typography>You can not view the results of this puzzle because you are not a member of the league it's in.</Typography>
+              You can not view the results of this puzzle because you are not a member of the league it's in.
               <div style={{ textAlign: 'right' }}>
                 <Button variant="contained" onClick={() => navigate(genJoinLeagueAndPlay(leagueSlug, answerId))}>
                   Join League and Play
@@ -644,10 +634,8 @@ export function WWMBrowse() {
           ) : null}
           {error === 'unauthorized' ? (
             <div>
-              <Typography>
-                You can not view the results of this puzzle because you are not logged into the site. Use the Login button at the top right
-                to log in.
-              </Typography>
+              You can not view the results of this puzzle because you are not logged into the site. Use the Login button at the top right to
+              log in.
             </div>
           ) : null}
         </TitleBox>
@@ -658,7 +646,7 @@ export function WWMBrowse() {
   if (!completed.length) {
     return (
       <div css={{ textAlign: 'center', padding: '10px' }}>
-        <Typography variant="h3">Loading...</Typography>
+        <h3>Loading...</h3>
       </div>
     );
   }
@@ -685,7 +673,7 @@ export function WWMBrowse() {
       {browseUser ? (
         <div>
           <div css={{ textAlign: 'center' }}>
-            <Typography variant="h3">{browseUser.username}</Typography>
+            <h3>{browseUser.username}</h3>
           </div>
           <WWMDisplay
             league={league}

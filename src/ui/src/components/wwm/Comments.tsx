@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import * as constants from '../../constants';
 import { genLeague } from '../../routes';
-import { Div } from '../Styled';
 import { League } from '../../../types';
 
 const genUrl = (fn = '') => `${constants.BASE_URL}/api/games/wwm/${fn}`;
@@ -79,8 +78,8 @@ export function Comments({ wordle_answer_id, league }: { wordle_answer_id: numbe
   }
 
   return (
-    <Div>
-      <Div sx={{ width: '100%', textAlign: 'center' }}>
+    <div>
+      <div style={{ width: '100%', textAlign: 'center' }}>
         <Button sx={{ margin: '.2em' }} variant="contained" onClick={toggleDrawer(true)}>
           {comments.length} comments
         </Button>
@@ -93,7 +92,7 @@ export function Comments({ wordle_answer_id, league }: { wordle_answer_id: numbe
         >
           Visit League: {league.league_name}
         </Button>
-      </Div>
+      </div>
       <Drawer
         anchor="bottom"
         open={open}
@@ -102,9 +101,9 @@ export function Comments({ wordle_answer_id, league }: { wordle_answer_id: numbe
           keepMounted: true,
         }}
       >
-        <Div sx={{ margin: '.5rem' }}>
+        <div style={{ margin: '.5rem' }}>
           {user ? (
-            <Div sx={{ display: 'flex' }}>
+            <div style={{ display: 'flex' }}>
               <TextField
                 id="outlined-multiline-flexible"
                 label="Comment"
@@ -119,7 +118,7 @@ export function Comments({ wordle_answer_id, league }: { wordle_answer_id: numbe
               <Button onClick={saveComment} variant="contained" sx={{ margin: '.2em' }}>
                 Post
               </Button>
-            </Div>
+            </div>
           ) : null}
           <Paper sx={{ maxHeight: { mobile: '30rem', tablet: '30rem', desktop: '25rem', padding: '.5rem' }, overflow: 'auto' }}>
             {comments.length ? (
@@ -137,8 +136,8 @@ export function Comments({ wordle_answer_id, league }: { wordle_answer_id: numbe
               <Typography color="#aaa">No comments yet</Typography>
             )}
           </Paper>
-        </Div>
+        </div>
       </Drawer>
-    </Div>
+    </div>
   );
 }
