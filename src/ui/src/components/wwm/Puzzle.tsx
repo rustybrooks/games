@@ -375,28 +375,26 @@ export function Puzzle({
   return (
     <div>
       <WWMDisplay league={league} puzzle={puzzle} results={results} onKeyPress={onKeyPress} error={error} answer={status.answer} />
-      <Modal open={open} onClose={handleClose}>
-        <ModalBox width="30rem">
-          <h2 style={{ color: error && error.length ? 'red' : 'green' }}>{error && error.length ? error : status.answer}</h2>
-          You have completed this puzzle
-          <div style={{ textAlign: 'right' }}>
-            <Button color="blue" style={{ margin: '.5rem' }} onClick={() => setOpen(false)} variant="outlined">
-              Close
-            </Button>
-            <Button color="blue" style={{ margin: '.5rem' }} onClick={resetCallback} variant="outlined">
-              Play Another
-            </Button>
-            <Button
-              color="blue"
-              style={{ margin: '.5rem' }}
-              onClick={() => navigate(genPuzzleBrowse(leagueSlug, answerId))}
-              variant="contained"
-            >
-              See other solutions
-            </Button>
-          </div>
-        </ModalBox>
-      </Modal>
+      <ModalBox width="30rem">
+        <h2 style={{ color: error && error.length ? 'red' : 'green' }}>{error && error.length ? error : status.answer}</h2>
+        You have completed this puzzle
+        <div style={{ textAlign: 'right' }}>
+          <Button color="blue" style={{ margin: '.5rem' }} onClick={() => setOpen(false)} variant="outlined">
+            Close
+          </Button>
+          <Button color="blue" style={{ margin: '.5rem' }} onClick={resetCallback} variant="outlined">
+            Play Another
+          </Button>
+          <Button
+            color="blue"
+            style={{ margin: '.5rem' }}
+            onClick={() => navigate(genPuzzleBrowse(leagueSlug, answerId))}
+            variant="contained"
+          >
+            See other solutions
+          </Button>
+        </div>
+      </ModalBox>
     </div>
   );
 }
