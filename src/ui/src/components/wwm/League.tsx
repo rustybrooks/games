@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useGetAndSet } from 'react-context-hook';
-import { Link, Typography } from '@mui/material';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { formatDistance } from 'date-fns';
 import { useNavigate } from 'react-router';
 import * as dt from '../widgets/DataTable';
@@ -173,17 +172,13 @@ const statsHeadCells: dt.HeadCell<LeagueStats>[] = [
 ];
 
 function leagueFormatter(row: EnumeratedPuzzle, d: string) {
-  return <Link href={`/wwm/leagues/${row.league_slug}`}>{d}</Link>;
+  return <Link to={`/wwm/leagues/${row.league_slug}`}>{d}</Link>;
 }
 
 function answerFormatter(row: EnumeratedPuzzle, a: string) {
   if (row.correct_answer === null) return '';
 
-  return (
-    <Typography variant="body2" color={row.correct ? 'green' : 'red'}>
-      {row.correct_answer.toUpperCase()}
-    </Typography>
-  );
+  return <p style={{ color: row.correct ? 'green' : 'red' }}>{row.correct_answer.toUpperCase()}</p>;
 }
 
 const ourheadCells: dt.HeadCell<EnumeratedPuzzle>[] = [
@@ -327,7 +322,7 @@ export function WWMLeagueSeriesStats({ league, series }: { league: League; serie
   if (!stats) {
     return (
       <TitleBox title="">
-        <Typography variant="h2">No stats available yet</Typography>
+        <h2>No stats available yet</h2>
       </TitleBox>
     );
   }
@@ -390,7 +385,7 @@ export function WWMLeagueInfo({ league }: { league: League }) {
               You are {league.is_member ? '' : 'not'} a member
               {league.is_member ? null : (
                 <span>
-                  &nbsp; (<Link href={inviteLink}>Join Now</Link>)
+                  &nbsp; (<Link to={inviteLink}>Join Now</Link>)
                 </span>
               )}
             </td>

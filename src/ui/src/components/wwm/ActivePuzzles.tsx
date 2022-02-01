@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useGetAndSet } from 'react-context-hook';
-import { Link, Typography } from '@mui/material';
 import { formatDistance } from 'date-fns';
 import { useNavigate } from 'react-router';
+import { Link } from 'react-router-dom';
 import { Box } from '../widgets/Box';
 import * as dt from '../widgets/DataTable';
 import { ActivePuzzle } from '../../../types';
@@ -19,15 +19,11 @@ function dateFormatter(row: EnumeratedPuzzle, d: string) {
 function answerFormatter(row: EnumeratedPuzzle, a: string) {
   if (row.correct_answer === null) return '';
 
-  return (
-    <Typography variant="body2" color={row.correct ? 'green' : 'red'}>
-      {row.correct_answer.toUpperCase()}
-    </Typography>
-  );
+  return <p style={{ color: row.correct ? 'green' : 'red' }}>{row.correct_answer.toUpperCase()}</p>;
 }
 
 function leagueFormatter(row: EnumeratedPuzzle, d: string) {
-  return <Link href={`/wwm/leagues/${row.league_slug}`}>{d}</Link>;
+  return <Link to={`/wwm/leagues/${row.league_slug}`}>{d}</Link>;
 }
 
 const ourheadCells: dt.HeadCell<EnumeratedPuzzle>[] = [
@@ -111,7 +107,7 @@ export function ActivePuzzles({ active = true }: { active?: boolean }) {
       <TitleBox title="No Words with Melvins puzzles available" width="40rem" style={{ margin: 'auto', marginTop: '5rem' }}>
         <Box>
           It looks like you're not logged in, so there aren't any puzzles for you to play. Log in using the menu at the top right, make sure{' '}
-          <Link href={genLeagues()}>you are in some leagues</Link>, and try again.
+          <Link to={genLeagues()}>you are in some leagues</Link>, and try again.
         </Box>
       </TitleBox>
     );

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useGetAndSet } from 'react-context-hook';
-import { Typography, Paper, Link } from '@mui/material';
 import { formatDistance } from 'date-fns';
+import { Link } from 'react-router-dom';
 import * as dt from '../widgets/DataTable';
 import { ActivePuzzle, League } from '../../../types';
 import * as constants from '../../constants';
@@ -53,7 +53,7 @@ export async function getLeagues(): Promise<League[]> {
 }
 
 function leagueFormatter(row: League, d: string) {
-  return <Link href={`/wwm/leagues/${row.league_slug}`}>{d}</Link>;
+  return <Link to={`/wwm/leagues/${row.league_slug}`}>{d}</Link>;
 }
 
 const ourheadCells: dt.HeadCell<League>[] = [
@@ -147,7 +147,7 @@ function WWMLeaguesX() {
   }, [user]);
 
   if (!leagues) {
-    return <Typography variant="h3">Loading...</Typography>;
+    return <h3>Loading...</h3>;
   }
 
   function buttonCallback(row: League): dt.ButtonInfo<League> {
@@ -158,14 +158,14 @@ function WWMLeaguesX() {
   }
 
   return (
-    <Paper sx={{ width: '100%', mb: 2 }}>
+    <div style={{ width: '100%' }}>
       <div>
-        <Typography sx={{ padding: '10px' }}>
+        <p style={{ padding: '10px' }}>
           These are all the available leagues that you can join, along with details about the conditions of the league. You need to have an
           account and be logged in to join a league. Once you join a league new puzzles will appear on the league's schedule and will remain
           active for the period defined for the league. If you don't see anything that interests you here, or you'd like to have a private
-          league, <Link href={genLeagueNew()}>you can create a new league here.</Link>
-        </Typography>
+          league, <Link to={genLeagueNew()}>you can create a new league here.</Link>
+        </p>
       </div>
       <dt.DataTable
         rows={leagues}
@@ -175,7 +175,7 @@ function WWMLeaguesX() {
         rowButtons={[buttonCallback]}
         storageKey="leagues"
       />
-    </Paper>
+    </div>
   );
 }
 

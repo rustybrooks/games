@@ -1,5 +1,4 @@
 import { useState, MouseEvent, ChangeEvent } from 'react';
-import { SortDirection } from '@mui/material';
 import { Button } from './Button';
 import { SpanBox } from './Box';
 import * as icons from './Icons';
@@ -60,17 +59,7 @@ export interface Props<T> {
   storageKey?: string;
 }
 
-function TableSortLabel({
-  active,
-  direction,
-  onClick,
-  children,
-}: {
-  active: boolean;
-  direction: SortDirection;
-  onClick: any;
-  children: any;
-}) {
+function TableSortLabel({ active, direction, onClick, children }: { active: boolean; direction: Order; onClick: any; children: any }) {
   return (
     <SpanBox className="SpanBox" onClick={onClick}>
       {active ? <icons.UpDownArrow flipy={direction === 'asc'} /> : null} {children}
@@ -187,7 +176,7 @@ export function DataTable<T>({
   };
 
   const [order, setOrder] = useState<Order>(() => {
-    return (localStorage.getItem(genStorageKey('order')) as SortDirection) || initialSortOrder;
+    return (localStorage.getItem(genStorageKey('order')) as Order) || initialSortOrder;
   });
   const [orderBy, setOrderBy] = useState<keyof T>(() => {
     const value = localStorage.getItem(genStorageKey('column'));

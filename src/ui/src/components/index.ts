@@ -1,6 +1,5 @@
 export * from './Home';
 export * from './Login';
-export * from './Test';
 export * from './wwm/Puzzle';
 export * from './wwm/Bots';
 export * from './wwm/ActivePuzzles';

@@ -1,4 +1,3 @@
-import { Typography } from '@mui/material';
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useGetAndSet } from 'react-context-hook';
@@ -55,9 +54,7 @@ export function JoinLeaguePlay() {
     <div style={{ width: '100%', height: '10rem', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
       {error.length ? (
         <div>
-          <Typography variant="h1" color="red">
-            {error}
-          </Typography>
+          <h1 style={{ color: 'red' }}>{error}</h1>
         </div>
       ) : null}
     </div>

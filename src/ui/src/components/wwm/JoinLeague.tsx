@@ -1,6 +1,4 @@
-import { Link, Typography } from '@mui/material';
-import { styled } from '@mui/material/styles';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { useCallback, useEffect, useState } from 'react';
 import { useGetAndSet } from 'react-context-hook';
 import * as constants from '../../constants';
@@ -8,18 +6,8 @@ import { League } from '../../../types/wwm';
 
 const genUrl = (fn = '') => `${constants.BASE_URL}/api/games/wwm/${fn}`;
 
-const Div = styled('div')``;
-
-const style: { [id: string]: any } = {
-  cell: {
-    width: { mobile: '100px', tablet: '200px', desktop: '300px' },
-    height: { mobile: '100px', tablet: '200px', desktop: '300px' },
-    background: { mobile: 'cyan', tablet: 'blue', desktop: 'magenta' },
-  },
-};
-
 async function joinLeague(leagueSlug: string, inviteCode: string) {
-  const data = await fetch(genUrl('leagues/join'), {
+  return fetch(genUrl('leagues/join'), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -30,7 +18,6 @@ async function joinLeague(leagueSlug: string, inviteCode: string) {
       invite_code: inviteCode,
     }),
   });
-  return data;
 }
 
 export function JoinLeague() {
@@ -60,28 +47,24 @@ export function JoinLeague() {
   if (!error.length && !league) {
     return (
       <div>
-        <Typography variant="h3">Loading...</Typography>
+        <h3>Loading...</h3>
       </div>
     );
   }
 
   return (
-    <Div sx={{ width: '100%', height: '10rem', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+    <div style={{ width: '100%', height: '10rem', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
       {error.length ? (
-        <Div sx={{}}>
-          <Typography variant="h1" color="red">
-            {error}
-          </Typography>
-        </Div>
+        <div>
+          <h1>{error}</h1>
+        </div>
       ) : (
-        <Div sx={{}}>
-          <Typography variant="h1">You have successfully joined league '{league.league_name}`</Typography>
+        <div>
+          <h1>You have successfully joined league '{league.league_name}`</h1>
 
-          <Typography>
-            <Link href={`/wwm/leagues/${leagueSlug}`}>You can visit the league page here</Link>
-          </Typography>
-        </Div>
+          <Link to={`/wwm/leagues/${leagueSlug}`}>You can visit the league page here</Link>
+        </div>
       )}
-    </Div>
+    </div>
   );
 }

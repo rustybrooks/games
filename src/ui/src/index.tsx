@@ -4,7 +4,6 @@ import { BrowserRouter, Route, Routes, Link } from 'react-router-dom';
 import { useGetAndSet, withStore } from 'react-context-hook';
 
 import { AppBar, Button, Drawer, Typography, Toolbar } from '@mui/material';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
 import * as constants from './constants';
 import {
   Bots,
@@ -14,7 +13,6 @@ import {
   WWMBrowse,
   Login,
   Home,
-  Test,
   JoinLeague,
   JoinLeaguePlay,
   ArchivedPuzzles,
@@ -147,8 +145,9 @@ declare module '@mui/material/styles' {
     desktop: true;
   }
 }
-
+/*
 const ff = ['Roboto', 'Arial', 'sans-serif'].join(',');
+
 
 const theme = createTheme({
   breakpoints: {
@@ -247,31 +246,29 @@ theme.typography.h2 = {
     fontSize: '1.5em',
   },
 };
+ */
 
 function AppX() {
   return (
-    <ThemeProvider theme={theme}>
-      <BrowserRouter>
-        <NavBar />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/test" element={<Test />} />
-          <Route path="/wwm" element={<WWMPlay />} />
-          <Route path="/wwm/active" element={<ActivePuzzles />} />
-          <Route path="/wwm/archived" element={<ArchivedPuzzles />} />
-          <Route path="/wwm/bots" element={<Bots />} />
-          <Route path="/wwm/leagues" element={<Leagues />} />
-          <Route path="/wwm/leagues/new" element={<NewLeague />} />
-          <Route path="/wwm/leagues/:leagueSlug" element={<League />} />
-          <Route path="/wwm/leagues/:leagueSlug/join" element={<JoinLeague />} />
-          <Route path="/wwm/leagues/:leagueSlug/join/:inviteCode" element={<JoinLeague />} />
-          <Route path="/wwm/leagues/:leagueSlug/join_play/:answerId" element={<JoinLeaguePlay />} />
-          <Route path="/wwm/puzzles/:leagueSlug/:answerId/play" element={<WWMPuzzle />} />
-          <Route path="/wwm/puzzles/:leagueSlug/:answerId/browse" element={<WWMBrowse />} />
-          <Route path="/wwm/puzzles/:leagueSlug/:answerId/browse/:username" element={<WWMBrowse />} />
-        </Routes>
-      </BrowserRouter>
-    </ThemeProvider>
+    <BrowserRouter>
+      <NavBar />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/wwm" element={<WWMPlay />} />
+        <Route path="/wwm/active" element={<ActivePuzzles />} />
+        <Route path="/wwm/archived" element={<ArchivedPuzzles />} />
+        <Route path="/wwm/bots" element={<Bots />} />
+        <Route path="/wwm/leagues" element={<Leagues />} />
+        <Route path="/wwm/leagues/new" element={<NewLeague />} />
+        <Route path="/wwm/leagues/:leagueSlug" element={<League />} />
+        <Route path="/wwm/leagues/:leagueSlug/join" element={<JoinLeague />} />
+        <Route path="/wwm/leagues/:leagueSlug/join/:inviteCode" element={<JoinLeague />} />
+        <Route path="/wwm/leagues/:leagueSlug/join_play/:answerId" element={<JoinLeaguePlay />} />
+        <Route path="/wwm/puzzles/:leagueSlug/:answerId/play" element={<WWMPuzzle />} />
+        <Route path="/wwm/puzzles/:leagueSlug/:answerId/browse" element={<WWMBrowse />} />
+        <Route path="/wwm/puzzles/:leagueSlug/:answerId/browse/:username" element={<WWMBrowse />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 const App = withStore(AppX, initialValue);
