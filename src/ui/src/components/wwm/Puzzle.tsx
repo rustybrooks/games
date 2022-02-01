@@ -375,7 +375,7 @@ export function Puzzle({
   return (
     <div>
       <WWMDisplay league={league} puzzle={puzzle} results={results} onKeyPress={onKeyPress} error={error} answer={status.answer} />
-      <ModalBox width="30rem">
+      <ModalBox width="30rem" onClose={handleClose} open={open}>
         <h2 style={{ color: error && error.length ? 'red' : 'green' }}>{error && error.length ? error : status.answer}</h2>
         You have completed this puzzle
         <div style={{ textAlign: 'right' }}>
