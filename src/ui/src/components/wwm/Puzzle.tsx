@@ -9,14 +9,13 @@ import { useGetAndSet } from 'react-context-hook';
 
 import { Link, useParams } from 'react-router-dom';
 import { formatDistance } from 'date-fns';
-import { Modal } from '../widgets/Modal';
 import { Button } from '../widgets/Button';
 import { ActivePuzzle, League } from '../../../types';
 import * as constants from '../../constants';
 
 import { getPuzzles } from './Leagues';
 
-import { ModalBox } from '../ModalBox';
+import { ModalBox } from '../widgets/ModalBox';
 import { genActivePuzzles, genJoinLeagueAndPlay, genLeague, genPlayNext, genPuzzleBrowse, genPuzzlePlay } from '../../routes';
 import { TitleBox } from '../widgets/TitleBox';
 import { Comments } from './Comments';

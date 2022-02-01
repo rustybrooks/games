@@ -1,0 +1,26 @@
+div.comment-box {
+    overflow: auto
+}
+
+@media only screen and (max-device-width: 650px) {
+    div.comment-box {
+        max-height: 30rem;
+    }
+}
+
+@media only screen and (max-device-width: 1200px) and (min-device-width: 651px) {
+    div.comment-box {
+        max-height: 30rem;
+    }
+}
+
+@media only screen and (min-device-width: 1200.1px) {
+    div.comment-box {
+        max-height: 25rem;
+    }
+}
+
+span.comment-name {
+    color: #55f;
+    margin-right: .5em;
+}

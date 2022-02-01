@@ -33,5 +33,5 @@ div.modal-sentinel {
 div.modal-parent {
     position: fixed;
     z-index: 1300;
-    inset: 0px;
+    inset: 0;
 }

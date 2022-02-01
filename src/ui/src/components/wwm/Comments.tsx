@@ -1,10 +1,15 @@
 import { useGetAndSet } from 'react-context-hook';
-import { Box, Button, Drawer, Paper, TextField, Typography } from '@mui/material';
+import { TextField } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import * as constants from '../../constants';
 import { genLeague } from '../../routes';
 import { League } from '../../../types';
+
+import { Button } from '../widgets/Button';
+import { Drawer } from '../widgets/Drawer';
+
+import './Comments.css';
 
 const genUrl = (fn = '') => `${constants.BASE_URL}/api/games/wwm/${fn}`;
 
@@ -80,11 +85,12 @@ export function Comments({ wordle_answer_id, league }: { wordle_answer_id: numbe
   return (
     <div>
       <div style={{ width: '100%', textAlign: 'center' }}>
-        <Button sx={{ margin: '.2em' }} variant="contained" onClick={toggleDrawer(true)}>
+        <Button color="blue" style={{ margin: '.2em' }} variant="contained" onClick={toggleDrawer(true)}>
           {comments.length} comments
         </Button>
         <Button
-          sx={{ margin: '.2em' }}
+          color="blue"
+          style={{ margin: '.2em' }}
           variant="contained"
           onClick={() => {
             navigate(genLeague(league.league_slug));
@@ -93,14 +99,7 @@ export function Comments({ wordle_answer_id, league }: { wordle_answer_id: numbe
           Visit League: {league.league_name}
         </Button>
       </div>
-      <Drawer
-        anchor="bottom"
-        open={open}
-        onClose={toggleDrawer(false)}
-        ModalProps={{
-          keepMounted: true,
-        }}
-      >
+      <Drawer anchor="bottom" open={open} onClose={toggleDrawer(false)}>
         <div style={{ margin: '.5rem' }}>
           {user ? (
             <div style={{ display: 'flex' }}>
@@ -115,27 +114,25 @@ export function Comments({ wordle_answer_id, league }: { wordle_answer_id: numbe
                 onKeyDown={handleCommentKey}
                 inputRef={input => input && input.focus()}
               />
-              <Button onClick={saveComment} variant="contained" sx={{ margin: '.2em' }}>
+              <Button color="blue" onClick={saveComment} variant="contained" style={{ margin: '.2em' }}>
                 Post
               </Button>
             </div>
           ) : null}
-          <Paper sx={{ maxHeight: { mobile: '30rem', tablet: '30rem', desktop: '25rem', padding: '.5rem' }, overflow: 'auto' }}>
+          <div className="comment-box">
             {comments.length ? (
               comments.map(c => {
                 return (
-                  <Box key={c.wordle_comment_id} style={{ display: 'flex', margin: '.25em' }}>
-                    <Typography color="#55f" sx={{ marginRight: '.5em' }}>
-                      [{c.username}]
-                    </Typography>
-                    <Typography>{c.comment}</Typography>
-                  </Box>
+                  <div key={c.wordle_comment_id} style={{ display: 'flex', margin: '.25em' }}>
+                    <span className="comment-name">[{c.username}]</span>
+                    {c.comment}
+                  </div>
                 );
               })
             ) : (
-              <Typography color="#aaa">No comments yet</Typography>
+              <span style={{ color: '#aaa' }}>No comments yet</span>
             )}
-          </Paper>
+          </div>
         </div>
       </Drawer>
     </div>
