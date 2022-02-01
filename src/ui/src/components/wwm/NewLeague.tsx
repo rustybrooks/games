@@ -1,12 +1,13 @@
 import { useGetAndSet } from 'react-context-hook';
-import { Box, Button, FormControlLabel, FormGroup, MenuItem, Switch, TextField, Typography } from '@mui/material';
+import { FormControlLabel, FormGroup, MenuItem, Switch, TextField, Box } from '@mui/material';
 import { ChangeEvent, useCallback, useState } from 'react';
 import { useNavigate } from 'react-router';
 import * as constants from '../../constants';
-import { Div } from '../Styled';
 import { debounce } from '../../utils';
 import { TitleBox } from '../widgets/TitleBox';
 import { genLeague } from '../../routes';
+
+import { Button } from '../widgets/Button';
 
 const genUrl = (fn = '') => `${constants.BASE_URL}/api/games/wwm/${fn}`;
 
@@ -95,11 +96,7 @@ export function NewLeague() {
     return (
       <div>
         <TitleBox title="Unauthorized" width="40rem" style={{ margin: 'auto', marginTop: '5rem' }}>
-          <Div>
-            <Typography>
-              You can not create leagues unless you are registered and logged in. Use the Login button at the top right to log in.
-            </Typography>
-          </Div>
+          <div>You can not create leagues unless you are registered and logged in. Use the Login button at the top right to log in.</div>
         </TitleBox>
       </div>
     );
@@ -108,7 +105,7 @@ export function NewLeague() {
   console.log('priv', priv, 'hard', hard);
 
   return (
-    <Div sx={{ width: '100%' }}>
+    <div style={{ width: '100%' }}>
       <Box component="form" sx={{ m: 1 }}>
         <TextField
           id="league-name"
@@ -218,18 +215,12 @@ export function NewLeague() {
           />
         </FormGroup>
 
-        <Div sx={{ textAlign: 'right' }}>
-          <Button
-            css={style.button}
-            variant="contained"
-            color="primary"
-            onClick={createLeague}
-            onChange={(event: any) => setPriv(event.target.value)}
-          >
+        <div style={{ textAlign: 'right' }}>
+          <Button style={style.button} variant="contained" color="blue" onClick={createLeague}>
             Create League
           </Button>
-        </Div>
+        </div>
       </Box>
-    </Div>
+    </div>
   );
 }

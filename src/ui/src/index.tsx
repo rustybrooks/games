@@ -2,13 +2,11 @@ import { useCallback, useEffect } from 'react';
 import { render } from 'react-dom';
 import { BrowserRouter, Route, Routes, Link } from 'react-router-dom';
 import { useGetAndSet, withStore } from 'react-context-hook';
-import { css } from '@emotion/react';
 
 import { AppBar, Button, Drawer, Typography, Toolbar } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import * as constants from './constants';
 import {
-  Puzzle,
   Bots,
   League,
   Leagues,
@@ -26,21 +24,21 @@ import {
 } from './components';
 
 const styles = {
-  root: css({
+  root: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     paddingRight: 0,
     paddingLeft: 0,
-  }),
+  },
 
-  tabLink: css({
+  tabLink: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     paddingRight: 0,
     paddingLeft: 0,
-  }),
+  },
 };
 
 const genUrl = (fn = '') => `${constants.BASE_URL}/api/user/${fn}`;
@@ -84,10 +82,10 @@ function NavBar() {
   }, []);
 
   return (
-    <div css={styles.root}>
-      <AppBar position="static" css={{ flexGrow: 1 }}>
+    <div style={styles.root}>
+      <AppBar position="static" style={{ flexGrow: 1 }}>
         <Toolbar>
-          <div css={{ flexGrow: 1 }}>
+          <div style={{ flexGrow: 1 }}>
             <Button color="inherit" component={Link} to="/wwm">
               Play
             </Button>

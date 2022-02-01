@@ -365,7 +365,7 @@ export function Puzzle({
 
   if (!results.length || (!results.length && error.length)) {
     return (
-      <div css={{ textAlign: 'center', padding: '10px' }}>
+      <div style={{ textAlign: 'center', padding: '10px' }}>
         <h3 style={{ color: error.length ? 'red' : 'black' }}>{error || 'Loading...'}</h3>
       </div>
     );
@@ -642,7 +642,7 @@ export function WWMBrowse() {
 
   if (!completed.length) {
     return (
-      <div css={{ textAlign: 'center', padding: '10px' }}>
+      <div style={{ textAlign: 'center', padding: '10px' }}>
         <h3>Loading...</h3>
       </div>
     );
@@ -650,7 +650,7 @@ export function WWMBrowse() {
 
   return (
     <div>
-      <div css={{ textAlign: 'center', padding: '10px' }}>
+      <div style={{ textAlign: 'center', padding: '10px' }}>
         {completed.map(c => (
           <Button
             key={c.username}
@@ -669,7 +669,7 @@ export function WWMBrowse() {
       </div>
       {browseUser ? (
         <div>
-          <div css={{ textAlign: 'center' }}>
+          <div style={{ textAlign: 'center' }}>
             <h3>{browseUser.username}</h3>
           </div>
           <WWMDisplay

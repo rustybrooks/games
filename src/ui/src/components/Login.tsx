@@ -1,26 +1,25 @@
 import { useCallback, useState } from 'react';
 
 import { useGetAndSet } from 'react-context-hook';
-import { css } from '@emotion/react';
 
 import { FormGroup, Tabs, Tab, Box, FormControl, TextField, Button } from '@mui/material';
 import * as constants from '../constants';
 
 const style = {
-  root: css({
+  root: {
     maxWidth: 600,
     minWidth: 400,
-    float: 'left',
-  }),
+    // float: 'left',
+  },
 
-  formControl: css({
+  formControl: {
     margin: '10px',
     minWidth: 120,
-  }),
+  },
 
-  button: css({
+  button: {
     margin: '10px',
-  }),
+  },
 };
 
 const genUrl = (fn = '') => `${constants.BASE_URL}/api/user/${fn}`;
@@ -93,7 +92,7 @@ function LoginX({ updateUser }: { updateUser: any }) {
   };
 
   return (
-    <div css={style.root}>
+    <div style={style.root}>
       <Tabs value={tab} onChange={handleTabChange}>
         <Tab label="Login" value="login" />
         <Tab label="Signup" value="signup" />
@@ -101,7 +100,7 @@ function LoginX({ updateUser }: { updateUser: any }) {
 
       <Box component="div" display={tab === 'signup' ? 'block' : 'none'}>
         <FormGroup>
-          <FormControl css={style.formControl}>
+          <FormControl style={style.formControl}>
             <TextField
               error={Boolean(errors.username)}
               helperText={errors.username}
@@ -112,7 +111,7 @@ function LoginX({ updateUser }: { updateUser: any }) {
             />
           </FormControl>
 
-          <FormControl css={style.formControl}>
+          <FormControl style={style.formControl}>
             <TextField
               error={Boolean(errors.email)}
               helperText={errors.email}
@@ -122,7 +121,7 @@ function LoginX({ updateUser }: { updateUser: any }) {
             />
           </FormControl>
 
-          <FormControl css={style.formControl}>
+          <FormControl style={style.formControl}>
             <TextField
               error={Boolean(errors.password)}
               helperText={errors.password}
@@ -133,7 +132,7 @@ function LoginX({ updateUser }: { updateUser: any }) {
             />
           </FormControl>
 
-          <FormControl css={style.formControl}>
+          <FormControl style={style.formControl}>
             <TextField
               error={Boolean(errors.password2)}
               helperText={errors.password2}
@@ -145,17 +144,17 @@ function LoginX({ updateUser }: { updateUser: any }) {
           </FormControl>
         </FormGroup>
 
-        <Button css={style.button} onClick={doCancel} variant="contained">
+        <Button style={style.button} onClick={doCancel} variant="contained">
           Cancel
         </Button>
-        <Button css={style.button} onClick={doSignup} variant="contained" color="primary">
+        <Button style={style.button} onClick={doSignup} variant="contained" color="primary">
           Sign up
         </Button>
       </Box>
 
       <Box component="div" display={tab === 'login' ? 'block' : 'none'}>
         <FormGroup>
-          <FormControl css={style.formControl}>
+          <FormControl style={style.formControl}>
             <TextField
               error={Boolean(errors.username)}
               helperText={errors.username}
@@ -166,7 +165,7 @@ function LoginX({ updateUser }: { updateUser: any }) {
             />
           </FormControl>
 
-          <FormControl css={style.formControl}>
+          <FormControl style={style.formControl}>
             <TextField
               error={Boolean(errors.password)}
               helperText={errors.password}
@@ -181,10 +180,10 @@ function LoginX({ updateUser }: { updateUser: any }) {
           </FormControl>
         </FormGroup>
 
-        <Button css={style.button} onClick={doCancel} variant="contained">
+        <Button style={style.button} onClick={doCancel} variant="contained">
           Cancel
         </Button>
-        <Button css={style.button} onClick={doLogin} variant="contained" color="primary">
+        <Button style={style.button} onClick={doLogin} variant="contained" color="primary">
           Login
         </Button>
       </Box>
