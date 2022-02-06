@@ -9,6 +9,7 @@ import { genLeague } from '../../routes';
 import { Button } from '../widgets/Button';
 import { TextInput } from '../widgets/TextInput';
 import { Select } from '../widgets/Select';
+import { Switch } from '../widgets/Switch';
 
 const genUrl = (fn = '') => `${constants.BASE_URL}/api/games/wwm/${fn}`;
 
@@ -66,7 +67,6 @@ export function NewLeague() {
       is_private: priv,
       is_hard_mode: hard,
     };
-    console.log('post body', body);
 
     const r = await fetch(genUrl('leagues/add'), {
       method: 'POST',
@@ -102,8 +102,6 @@ export function NewLeague() {
       </div>
     );
   }
-
-  console.log('priv', priv, 'hard', hard);
 
   return (
     <div style={{ width: '90%', padding: '1rem' }}>
@@ -143,7 +141,7 @@ export function NewLeague() {
             label="Length of Series"
             value={seriesDays}
             style={{ m: 1, width: '33%' }}
-            onChange={(event: any) => setSeriesDays(event.target.value)}
+            onChange={(e: any) => setSeriesDays(e)}
             items={[
               [7, 'Every Week'],
               [14, 'Every 2 weeks'],
@@ -156,7 +154,7 @@ export function NewLeague() {
             label="Puzzle Frequency"
             value={frequency}
             style={{ m: 1, width: '33%' }}
-            onChange={(event: any) => setFrequency(event.target.value)}
+            onChange={(e: any) => setFrequency(e)}
             items={[
               [1, 'Once a day'],
               [2, 'Twice a day'],
@@ -168,7 +166,7 @@ export function NewLeague() {
             label="Puzzle time to live"
             value={ttl}
             style={{ m: 1, width: '34%' }}
-            onChange={(event: any) => setTtl(event.target.value)}
+            onChange={(e: any) => setTtl(e)}
             items={[
               [6, '6 hours'],
               [12, '12 hours'],
@@ -178,21 +176,9 @@ export function NewLeague() {
           />
         </div>
 
-        <div>
-          {/* <FormControlLabel */}
-          {/*  control={<Switch id="hard-mode" />} */}
-          {/*  checked={hard} */}
-          {/*  label="Hard Mode" */}
-          {/*  style{{ m: 1 }} */}
-          {/*  onChange={(event: any) => setHard(event.target.checked)} */}
-          {/* /> */}
-          {/* <FormControlLabel */}
-          {/*  control={<Switch id="private" />} */}
-          {/*  checked={priv} */}
-          {/*  label="Private League" */}
-          {/*  style{{ m: 1 }} */}
-          {/*  onChange={(event: any) => setPriv(event.target.checked)} */}
-          {/* /> */}
+        <div style={{ display: 'flex', marginTop: '.5rem' }}>
+          <Switch label="Hard mode" checked={hard} onChange={(val: boolean) => setHard(val)} />
+          <Switch label="Private Leage" checked={priv} onChange={(val: boolean) => setPriv(val)} />
         </div>
 
         <div style={{ textAlign: 'right' }}>

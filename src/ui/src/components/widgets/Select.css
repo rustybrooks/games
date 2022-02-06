@@ -1,27 +1,27 @@
 
-details {
+details.custom-select {
     position: relative;
     margin-right: .25rem;
     margin-left: .25rem;
 }
 
-details[open] {
+details.custom-select[open] {
     z-index: 1;
 }
 
-summary {
+summary.custom-select {
     padding: 1rem;
     cursor: pointer;
     border-radius: 5px;
-    background-color: #ddd;
+    background-color: #eee;
     list-style: none;
 }
 
-summary::-webkit-details-marker {
+summary.custom-select::-webkit-details-marker {
     display: none;
 }
 
-details[open] summary:before {
+details.custom-select[open] summary.custom-select:before {
     content: '';
     display: block;
     width: 100vw;
@@ -32,7 +32,7 @@ details[open] summary:before {
     left: 0;
 }
 
-summary:after {
+summary.custom-select:after {
     content: '';
     display: inline-block;
     float: right;
@@ -46,21 +46,21 @@ summary:after {
     transition: transform ease-in-out 100ms
 }
 
-summary:focus {
+summary.custom-select:focus {
     outline: none;
 }
 
-details[open] summary:after {
+details.custom-select[open] summary.custom-select:after {
     transform: rotate(-45deg) translate(0%, 0%);
 }
 
-ul {
+ul.custom-select {
     width: 100%;
     background: #ddd;
     position: absolute;
-    top: calc(100% + .5rem);
+    top: calc(100% + .05rem);
     left: 0;
-    padding: 1rem;
+    padding: .6rem;
     margin: 0;
     box-sizing: border-box;
     border-radius: 5px;
@@ -68,49 +68,50 @@ ul {
     overflow-y: auto;
 }
 
-li {
+li.custom-select {
     list-style: none;
     margin: 0;
     padding: 1rem 0;
     border-bottom: 1px solid #ccc;
 }
 
-li:first-child {
+li.custom-select:first-child {
     padding-top: 0;
 }
 
-li:last-child {
+li.custom-select:last-child {
     padding-bottom: 0;
     border-bottom: none;
 }
 
 /* FAKE SELECT */
 
-summary.radios {
+summary.custom-select {
     counter-reset: radios;
 }
 
-input[type=radio] {
+input.custom-select[type=radio] {
     counter-increment: radios;
     appearance: none;
     display: none;
+    cursor: pointer;
 }
 
-input[type=radio]:checked {
+input.custom-select[type=radio]:checked {
     display: inline;
 }
 
-input[type=radio]:after {
+input.custom-select[type=radio]:after {
     content: attr(title);
     display: inline;
     font-size: 1rem;
 }
 
-ul.list {
+ul.custom-select {
     counter-reset: labels;
 }
 
-label {
+label.custom-select {
     width: 100%;
     display: block;
     cursor: pointer;
