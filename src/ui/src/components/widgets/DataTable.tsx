@@ -262,7 +262,7 @@ export function DataTable<T>({
         </tbody>
       </table>
       <TablePagination
-        rowsPerPageOptions={[5, 10, 15, 20, 25]}
+        rowsPerPageOptions={[5, 10, 15, 20, 25, 50]}
         count={rows.length}
         rowsPerPage={rowsPerPage}
         page={page}

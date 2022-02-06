@@ -1,5 +1,4 @@
 import { useGetAndSet } from 'react-context-hook';
-import { TextField } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import * as constants from '../../constants';
@@ -8,6 +7,7 @@ import { League } from '../../../types';
 
 import { Button } from '../widgets/Button';
 import { Drawer } from '../widgets/Drawer';
+import { TextInput } from '../widgets/TextInput';
 
 import './Comments.css';
 
@@ -103,16 +103,12 @@ export function Comments({ wordle_answer_id, league }: { wordle_answer_id: numbe
         <div style={{ margin: '.5rem' }}>
           {user ? (
             <div style={{ display: 'flex' }}>
-              <TextField
-                id="outlined-multiline-flexible"
+              <TextInput
                 label="Comment"
-                multiline
-                maxRows={4}
-                sx={{ width: '100%', margin: '.2em' }}
+                style={{ width: '100%', margin: '.2em' }}
                 value={comment}
                 onChange={handleComment}
                 onKeyDown={handleCommentKey}
-                inputRef={input => input && input.focus()}
               />
               <Button color="blue" onClick={saveComment} variant="contained" style={{ margin: '.2em' }}>
                 Post

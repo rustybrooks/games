@@ -1,5 +1,4 @@
 import { useGetAndSet } from 'react-context-hook';
-import { FormControlLabel, FormGroup, MenuItem, Switch, TextField, Box } from '@mui/material';
 import { ChangeEvent, useCallback, useState } from 'react';
 import { useNavigate } from 'react-router';
 import * as constants from '../../constants';
@@ -8,6 +7,8 @@ import { TitleBox } from '../widgets/TitleBox';
 import { genLeague } from '../../routes';
 
 import { Button } from '../widgets/Button';
+import { TextInput } from '../widgets/TextInput';
+import { Select } from '../widgets/Select';
 
 const genUrl = (fn = '') => `${constants.BASE_URL}/api/games/wwm/${fn}`;
 
@@ -105,122 +106,101 @@ export function NewLeague() {
   console.log('priv', priv, 'hard', hard);
 
   return (
-    <div style={{ width: '100%' }}>
-      <Box component="form" sx={{ m: 1 }}>
-        <TextField
-          id="league-name"
+    <div style={{ width: '90%', padding: '1rem' }}>
+      <div>
+        <TextInput
           value={leagueName}
           label="League Name"
-          margin="normal"
-          sx={{ m: 1, width: '90%' }}
+          // margin="normal"
+          style={{ width: '100%' }}
           onChange={leagueNameCallback}
-          error={Boolean(errors.leagueName)}
-          helperText={errors.leagueName}
-          autoFocus
+          // error={Boolean(errors.leagueName)}
+          // helperText={errors.leagueName}
+          // autoFocus
         />
 
-        <TextField id="league-slug" value={leagueSlug} label="League Slug" margin="normal" disabled sx={{ m: 1, width: '90%' }} />
+        <TextInput value={leagueSlug} label="League Slug" disabled style={{ width: '100%' }} />
 
-        <FormGroup row>
-          <TextField
-            select
-            id="letters"
+        <div style={{ display: 'flex', marginTop: '.5rem' }}>
+          <Select
             label="Number of letters"
             value={letters}
-            margin="normal"
-            sx={{ m: 1, width: '44%' }}
-            onChange={(event: any) => setLetters(event.target.value)}
-          >
-            <MenuItem value={4}>4</MenuItem>
-            <MenuItem value={5}>5</MenuItem>
-            <MenuItem value={6}>6</MenuItem>
-            <MenuItem value={7}>7</MenuItem>
-          </TextField>
-
-          <TextField
-            select
-            id="max-guesses"
+            style={{ width: '50%' }}
+            onChange={(e: any) => setLetters(e)}
+            items={[4, 5, 6, 7]}
+          />
+          <Select
             label="Number of guesses"
             value={guesses}
-            margin="normal"
-            sx={{ m: 1, width: '44%' }}
-            onChange={(event: any) => setGuesses(event.target.value)}
-          >
-            <MenuItem value={6}>6</MenuItem>
-            <MenuItem value={7}>7</MenuItem>
-            <MenuItem value={8}>8</MenuItem>
-          </TextField>
-        </FormGroup>
+            style={{ m: 1, width: '50%' }}
+            onChange={(e: any) => setGuesses(e)}
+            items={[6, 7, 8]}
+          />
+        </div>
 
-        <FormGroup row>
-          <TextField
-            select
-            id="series-days"
+        <div style={{ display: 'flex', marginTop: '.5rem' }}>
+          <Select
             label="Length of Series"
             value={seriesDays}
-            margin="normal"
-            sx={{ m: 1, width: '29%' }}
+            style={{ m: 1, width: '33%' }}
             onChange={(event: any) => setSeriesDays(event.target.value)}
-          >
-            <MenuItem value={7}>Every week</MenuItem>
-            <MenuItem value={14}>Every 2 weeks</MenuItem>
-            <MenuItem value={21}>Every 3 weeks</MenuItem>
-            <MenuItem value={28}>Every 4 weeks</MenuItem>
-          </TextField>
+            items={[
+              [7, 'Every Week'],
+              [14, 'Every 2 weeks'],
+              [21, 'Every 3 weeks'],
+              [28, 'Every 4 weeks'],
+            ]}
+          />
 
-          <TextField
-            select
-            id="puzzle-frequency"
+          <Select
             label="Puzzle Frequency"
             value={frequency}
-            margin="normal"
-            sx={{ m: 1, width: '29%' }}
+            style={{ m: 1, width: '33%' }}
             onChange={(event: any) => setFrequency(event.target.value)}
-          >
-            <MenuItem value={1}>Once a day</MenuItem>
-            <MenuItem value={2}>Twice a day</MenuItem>
-            <MenuItem value={4}>Four times a day</MenuItem>
-          </TextField>
+            items={[
+              [1, 'Once a day'],
+              [2, 'Twice a day'],
+              [4, 'Four times a day'],
+            ]}
+          />
 
-          <TextField
-            select
-            id="time-to-live"
+          <Select
             label="Puzzle time to live"
             value={ttl}
-            margin="normal"
-            sx={{ m: 1, width: '29%' }}
+            style={{ m: 1, width: '34%' }}
             onChange={(event: any) => setTtl(event.target.value)}
-          >
-            <MenuItem value={6}>6 hours</MenuItem>
-            <MenuItem value={12}>12 hours</MenuItem>
-            <MenuItem value={24}>1 day</MenuItem>
-            <MenuItem value={48}>2 days</MenuItem>
-          </TextField>
-        </FormGroup>
+            items={[
+              [6, '6 hours'],
+              [12, '12 hours'],
+              [24, '1 day'],
+              [48, '2 days'],
+            ]}
+          />
+        </div>
 
-        <FormGroup row>
-          <FormControlLabel
-            control={<Switch id="hard-mode" />}
-            checked={hard}
-            label="Hard Mode"
-            sx={{ m: 1 }}
-            onChange={(event: any) => setHard(event.target.checked)}
-          />
-          <FormControlLabel
-            control={<Switch id="private" />}
-            checked={priv}
-            label="Private League"
-            sx={{ m: 1 }}
-            onChange={(event: any) => setPriv(event.target.checked)}
-          />
-        </FormGroup>
+        <div>
+          {/* <FormControlLabel */}
+          {/*  control={<Switch id="hard-mode" />} */}
+          {/*  checked={hard} */}
+          {/*  label="Hard Mode" */}
+          {/*  style{{ m: 1 }} */}
+          {/*  onChange={(event: any) => setHard(event.target.checked)} */}
+          {/* /> */}
+          {/* <FormControlLabel */}
+          {/*  control={<Switch id="private" />} */}
+          {/*  checked={priv} */}
+          {/*  label="Private League" */}
+          {/*  style{{ m: 1 }} */}
+          {/*  onChange={(event: any) => setPriv(event.target.checked)} */}
+          {/* /> */}
+        </div>
 
         <div style={{ textAlign: 'right' }}>
           <Button style={style.button} variant="contained" color="blue" onClick={createLeague}>
             Create League
           </Button>
         </div>
-      </Box>
+      </div>
     </div>
   );
 }
