@@ -106,16 +106,7 @@ export function NewLeague() {
   return (
     <div style={{ width: '90%', padding: '1rem' }}>
       <div>
-        <TextInput
-          value={leagueName}
-          label="League Name"
-          // margin="normal"
-          style={{ width: '100%' }}
-          onChange={leagueNameCallback}
-          // error={Boolean(errors.leagueName)}
-          // helperText={errors.leagueName}
-          // autoFocus
-        />
+        <TextInput value={leagueName} label="League Name" style={{ width: '100%' }} onChange={leagueNameCallback} />
 
         <TextInput value={leagueSlug} label="League Slug" disabled style={{ width: '100%' }} />
 

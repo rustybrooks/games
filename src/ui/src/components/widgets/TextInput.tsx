@@ -10,7 +10,7 @@ export function TextInput({
   error = false,
   helperText = null,
   autoFocus = false,
-  type = null,
+  type = 'text',
 }: {
   label: string;
   style?: any;
@@ -26,13 +26,13 @@ export function TextInput({
   return (
     <input
       className="text-input"
-      type="text"
+      autoFocus={autoFocus}
+      type={type}
       disabled={disabled}
       value={value}
       style={style}
       placeholder={label}
       onChange={onChange}
-      onKeyDown={onKeyDown}
     />
   );
 }

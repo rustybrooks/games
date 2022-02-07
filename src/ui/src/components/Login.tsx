@@ -107,6 +107,7 @@ export function Login({ updateUser }: { updateUser: any }) {
           error={Boolean(errors.username)}
           helperText={errors.username}
           label="Username"
+          value={username}
           autoFocus
           onChange={(event: any) => setUsername(event.target.value)}
         />
@@ -116,6 +117,7 @@ export function Login({ updateUser }: { updateUser: any }) {
           error={Boolean(errors.email)}
           helperText={errors.email}
           label="Email"
+          value={email}
           onChange={(event: any) => setEmail(event.target.value)}
         />
 
@@ -124,6 +126,7 @@ export function Login({ updateUser }: { updateUser: any }) {
           error={Boolean(errors.password)}
           helperText={errors.password}
           label="Password"
+          value={password}
           type="password"
           onChange={(event: any) => setPassword(event.target.value)}
         />
@@ -133,6 +136,7 @@ export function Login({ updateUser }: { updateUser: any }) {
           error={Boolean(errors.password2)}
           helperText={errors.password2}
           label="Confirm Password"
+          value={password2}
           type="password"
           onChange={(event: any) => setPassword2(event.target.value)}
         />
@@ -151,6 +155,7 @@ export function Login({ updateUser }: { updateUser: any }) {
           error={Boolean(errors.username)}
           helperText={errors.username}
           label="Username"
+          value={username}
           onChange={(event: any) => setUsername(event.target.value)}
           autoFocus
         />
@@ -160,6 +165,7 @@ export function Login({ updateUser }: { updateUser: any }) {
           error={Boolean(errors.password)}
           helperText={errors.password}
           label="Password"
+          value={password}
           type="password"
           onChange={(event: any) => setPassword(event.target.value)}
           onKeyDown={(event: any) => (event.key.toLowerCase() === 'enter' ? doLogin() : null)}

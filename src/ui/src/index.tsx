@@ -117,7 +117,7 @@ function NavBar() {
           )}
         </Toolbar>
       </AppBar>
-      <Drawer anchor="right" open={loginOpen} onClose={closeDrawer}>
+      <Drawer anchor="right" open={loginOpen} onClose={closeDrawer} style={{ minWidth: '400px', maxWidth: '600px' }}>
         <div role="presentation">
           <Login updateUser={updateUser} />
         </div>
