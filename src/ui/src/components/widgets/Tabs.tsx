@@ -8,7 +8,7 @@ export function Tabs({ style = null, tabs = [], onChange = null, value }: { valu
           className="tabs"
           key={t[1]}
           tabIndex={t[1] === value ? 0 : -1}
-          style={{ ...style, background: t[1] === value ? '#269CE9' : null }}
+          style={{ ...style, background: t[1] === value ? '#269CE9' : null, color: t[1] === value ? 'white' : null }}
           type="button"
           role="tab"
           aria-selected="true"
