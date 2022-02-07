@@ -2,8 +2,11 @@ import { useCallback, useState } from 'react';
 
 import { useGetAndSet } from 'react-context-hook';
 
-import { FormGroup, Tabs, Tab, Box, FormControl, TextField, Button } from '@mui/material';
 import * as constants from '../constants';
+import { Button } from './widgets/Button';
+import { TextInput } from './widgets/TextInput';
+import { Box } from './widgets/Box';
+import { Tabs } from './widgets/Tabs';
 
 const style = {
   root: {
@@ -24,7 +27,7 @@ const style = {
 
 const genUrl = (fn = '') => `${constants.BASE_URL}/api/user/${fn}`;
 
-function LoginX({ updateUser }: { updateUser: any }) {
+export function Login({ updateUser }: { updateUser: any }) {
   const [tab, setTab] = useState('login');
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
@@ -33,10 +36,6 @@ function LoginX({ updateUser }: { updateUser: any }) {
   const [errors, setErrors]: [{ username?: string; email?: string; password?: string; password2?: string }, any] = useState({});
 
   const [loginOpen, setLoginOpen] = useGetAndSet('login-open');
-
-  const handleTabChange = (event: any, newTab: any) => {
-    setTab(newTab);
-  };
 
   function closeDrawer() {
     setLoginOpen(false);
@@ -93,102 +92,86 @@ function LoginX({ updateUser }: { updateUser: any }) {
 
   return (
     <div style={style.root}>
-      <Tabs value={tab} onChange={handleTabChange}>
-        <Tab label="Login" value="login" />
-        <Tab label="Signup" value="signup" />
-      </Tabs>
+      <Tabs
+        value={tab}
+        tabs={[
+          ['Login', 'login'],
+          ['Signup', 'signup'],
+        ]}
+        onChange={(e: string) => setTab(e)}
+      />
 
-      <Box component="div" display={tab === 'signup' ? 'block' : 'none'}>
-        <FormGroup>
-          <FormControl style={style.formControl}>
-            <TextField
-              error={Boolean(errors.username)}
-              helperText={errors.username}
-              id="susername"
-              label="Username"
-              autoFocus
-              onChange={event => setUsername(event.target.value)}
-            />
-          </FormControl>
+      <Box style={{ display: tab === 'signup' ? 'block' : 'none', textAlign: 'center' }}>
+        <TextInput
+          style={{ width: '90%' }}
+          error={Boolean(errors.username)}
+          helperText={errors.username}
+          label="Username"
+          autoFocus
+          onChange={(event: any) => setUsername(event.target.value)}
+        />
 
-          <FormControl style={style.formControl}>
-            <TextField
-              error={Boolean(errors.email)}
-              helperText={errors.email}
-              id="semail"
-              label="Email"
-              onChange={event => setEmail(event.target.value)}
-            />
-          </FormControl>
+        <TextInput
+          style={{ width: '90%' }}
+          error={Boolean(errors.email)}
+          helperText={errors.email}
+          label="Email"
+          onChange={(event: any) => setEmail(event.target.value)}
+        />
 
-          <FormControl style={style.formControl}>
-            <TextField
-              error={Boolean(errors.password)}
-              helperText={errors.password}
-              id="spassword"
-              label="Password"
-              type="password"
-              onChange={event => setPassword(event.target.value)}
-            />
-          </FormControl>
+        <TextInput
+          style={{ width: '90%' }}
+          error={Boolean(errors.password)}
+          helperText={errors.password}
+          label="Password"
+          type="password"
+          onChange={(event: any) => setPassword(event.target.value)}
+        />
 
-          <FormControl style={style.formControl}>
-            <TextField
-              error={Boolean(errors.password2)}
-              helperText={errors.password2}
-              id="spassword2"
-              label="Confirm Password"
-              type="password"
-              onChange={event => setPassword2(event.target.value)}
-            />
-          </FormControl>
-        </FormGroup>
+        <TextInput
+          style={{ width: '90%' }}
+          error={Boolean(errors.password2)}
+          helperText={errors.password2}
+          label="Confirm Password"
+          type="password"
+          onChange={(event: any) => setPassword2(event.target.value)}
+        />
 
         <Button style={style.button} onClick={doCancel} variant="contained">
           Cancel
         </Button>
-        <Button style={style.button} onClick={doSignup} variant="contained" color="primary">
+        <Button style={style.button} onClick={doSignup} variant="contained" color="blue">
           Sign up
         </Button>
       </Box>
 
-      <Box component="div" display={tab === 'login' ? 'block' : 'none'}>
-        <FormGroup>
-          <FormControl style={style.formControl}>
-            <TextField
-              error={Boolean(errors.username)}
-              helperText={errors.username}
-              id="username"
-              label="Username"
-              onChange={event => setUsername(event.target.value)}
-              autoFocus
-            />
-          </FormControl>
+      <Box style={{ display: tab === 'login' ? 'block' : 'none', textAlign: 'center' }}>
+        <TextInput
+          style={{ width: '90%' }}
+          error={Boolean(errors.username)}
+          helperText={errors.username}
+          label="Username"
+          onChange={(event: any) => setUsername(event.target.value)}
+          autoFocus
+        />
 
-          <FormControl style={style.formControl}>
-            <TextField
-              error={Boolean(errors.password)}
-              helperText={errors.password}
-              id="password"
-              label="Password"
-              type="password"
-              onChange={event => setPassword(event.target.value)}
-              onKeyPress={event => {
-                event.key.toLowerCase() === 'enter' ? doLogin() : null;
-              }}
-            />
-          </FormControl>
-        </FormGroup>
+        <TextInput
+          style={{ width: '90%' }}
+          error={Boolean(errors.password)}
+          helperText={errors.password}
+          label="Password"
+          type="password"
+          onChange={(event: any) => setPassword(event.target.value)}
+          onKeyDown={(event: any) => (event.key.toLowerCase() === 'enter' ? doLogin() : null)}
+        />
 
         <Button style={style.button} onClick={doCancel} variant="contained">
           Cancel
         </Button>
-        <Button style={style.button} onClick={doLogin} variant="contained" color="primary">
+        <Button style={style.button} onClick={doLogin} variant="contained" color="blue">
           Login
         </Button>
       </Box>
     </div>
   );
 }
-
-export const Login = LoginX;
