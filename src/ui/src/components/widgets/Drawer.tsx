@@ -19,7 +19,7 @@ export const Drawer = forwardRef((props: drawerProps, ref: any) => {
     <div className="drawer-parent" style={props.open ? openStyle : closedStyle} ref={ref}>
       <div className="drawer-background" onClick={props.onClose} />
       <div tabIndex={0} data-test="sentinelStart" />
-      <div className="drawerbox" tabIndex={-1}>
+      <div className={`drawerbox ${props.anchor}`} tabIndex={-1}>
         {props.children}
       </div>
     </div>

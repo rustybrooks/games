@@ -3,7 +3,7 @@ import { render } from 'react-dom';
 import { BrowserRouter, Route, Routes, Link } from 'react-router-dom';
 import { useGetAndSet, withStore } from 'react-context-hook';
 
-import { AppBar, Button, Drawer, Typography, Toolbar } from '@mui/material';
+import { AppBar, Button, Typography, Toolbar } from '@mui/material';
 import * as constants from './constants';
 import {
   Bots,
@@ -20,6 +20,7 @@ import {
   WWMPuzzle,
   WWMPlay,
 } from './components';
+import { Drawer } from './components/widgets/Drawer';
 
 const styles = {
   root: {
