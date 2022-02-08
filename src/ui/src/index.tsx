@@ -1,123 +1,22 @@
-import { useCallback, useEffect } from 'react';
 import { render } from 'react-dom';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { useGetAndSet, withStore } from 'react-context-hook';
+import { withStore } from 'react-context-hook';
 
-import * as constants from './constants';
 import {
-  Bots,
-  League,
-  Leagues,
   ActivePuzzles,
-  WWMBrowse,
-  Login,
+  ArchivedPuzzles,
+  Bots,
   Home,
   JoinLeague,
   JoinLeaguePlay,
-  ArchivedPuzzles,
+  League,
+  Leagues,
   NewLeague,
-  WWMPuzzle,
+  WWMBrowse,
   WWMPlay,
+  WWMPuzzle,
 } from './components';
-import { Drawer } from './components/widgets/Drawer';
-import { Button } from './components/widgets/Button';
-
-const styles = {
-  root: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingRight: 0,
-    paddingLeft: 0,
-  },
-
-  tabLink: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingRight: 0,
-    paddingLeft: 0,
-  },
-};
-
-const genUrl = (fn = '') => `${constants.BASE_URL}/api/user/${fn}`;
-
-function NavBar() {
-  const [loginOpen, setLoginOpen] = useGetAndSet('login-open', false);
-  const [loginWidget, setLoginWidget] = useGetAndSet('login-widget');
-  const [user, setUser]: [{ username: string }, any] = useGetAndSet('user');
-
-  const openDrawer = useCallback(() => {
-    setLoginOpen(true);
-  }, []);
-
-  const closeDrawer = useCallback(() => {
-    setLoginOpen(false);
-  }, []);
-
-  const logout = useCallback(() => {
-    localStorage.setItem('api-key', null);
-    setUser(null);
-  }, []);
-
-  const updateUser = useCallback(async () => {
-    const data = await fetch(genUrl(), {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-API-KEY': localStorage.getItem('api-key'),
-      },
-    });
-    if (data.status === 403) {
-      setUser(null);
-    } else {
-      setUser(await data.json());
-    }
-  }, []);
-
-  useEffect(() => {
-    setLoginWidget(this);
-    updateUser();
-  }, []);
-
-  return (
-    <div style={styles.root}>
-      <div style={{ flexGrow: 1 }}>
-        <div style={{ flexGrow: 1 }}>
-          <Button color="blue" to="/wwm">
-            Play
-          </Button>
-          <Button color="blue" to="/wwm/active">
-            Active
-          </Button>
-          <Button color="blue" to="/wwm/archived">
-            Archived
-          </Button>
-          <Button color="blue" to="/wwm/leagues">
-            Leagues
-          </Button>
-          <Button color="blue" to="/wwm/bots">
-            Bots
-          </Button>
-        </div>
-        {user ? (
-          <div>
-            ({user.username})<Button color="blue">Logout</Button>
-          </div>
-        ) : (
-          <Button color="blue" onClick={openDrawer}>
-            Login / Sign up
-          </Button>
-        )}
-      </div>
-      <Drawer anchor="right" open={loginOpen} onClose={closeDrawer} style={{ minWidth: '400px', maxWidth: '600px' }}>
-        <div role="presentation">
-          <Login updateUser={updateUser} />
-        </div>
-      </Drawer>
-    </div>
-  );
-}
+import { AppBar } from './components/AppBar';
 
 const initialValue: { [id: string]: any } = {
   'login-widget': null,
@@ -247,7 +146,7 @@ theme.typography.h2 = {
 function AppX() {
   return (
     <BrowserRouter>
-      <NavBar />
+      <AppBar />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/wwm" element={<WWMPlay />} />
