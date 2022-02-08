@@ -5,7 +5,6 @@ import { useGetAndSet } from 'react-context-hook';
 import * as constants from '../constants';
 import { Login } from '.';
 import { Drawer } from './widgets/Drawer';
-import { Button } from './widgets/Button';
 import './AppBar.css';
 
 const genUrl = (fn = '') => `${constants.BASE_URL}/api/user/${fn}`;
