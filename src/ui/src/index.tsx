@@ -1,9 +1,8 @@
 import { useCallback, useEffect } from 'react';
 import { render } from 'react-dom';
-import { BrowserRouter, Route, Routes, Link } from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { useGetAndSet, withStore } from 'react-context-hook';
 
-import { AppBar, Button, Typography, Toolbar } from '@mui/material';
 import * as constants from './constants';
 import {
   Bots,
@@ -21,6 +20,7 @@ import {
   WWMPlay,
 } from './components';
 import { Drawer } from './components/widgets/Drawer';
+import { Button } from './components/widgets/Button';
 
 const styles = {
   root: {
@@ -82,41 +82,34 @@ function NavBar() {
 
   return (
     <div style={styles.root}>
-      <AppBar position="static" style={{ flexGrow: 1 }}>
-        <Toolbar>
-          <div style={{ flexGrow: 1 }}>
-            <Button color="inherit" component={Link} to="/wwm">
-              Play
-            </Button>
-            <Button color="inherit" component={Link} to="/wwm/active">
-              Active
-            </Button>
-            <Button color="inherit" component={Link} to="/wwm/archived">
-              Archived
-            </Button>
-            <Button color="inherit" component={Link} to="/wwm/leagues">
-              Leagues
-            </Button>
-            <Button color="inherit" component={Link} to="/wwm/bots">
-              Bots
-            </Button>
+      <div style={{ flexGrow: 1 }}>
+        <div style={{ flexGrow: 1 }}>
+          <Button color="blue" to="/wwm">
+            Play
+          </Button>
+          <Button color="blue" to="/wwm/active">
+            Active
+          </Button>
+          <Button color="blue" to="/wwm/archived">
+            Archived
+          </Button>
+          <Button color="blue" to="/wwm/leagues">
+            Leagues
+          </Button>
+          <Button color="blue" to="/wwm/bots">
+            Bots
+          </Button>
+        </div>
+        {user ? (
+          <div>
+            ({user.username})<Button color="blue">Logout</Button>
           </div>
-          {user ? (
-            <div>
-              <Typography>
-                ({user.username})
-                <Button color="inherit" onClick={logout}>
-                  Logout
-                </Button>
-              </Typography>
-            </div>
-          ) : (
-            <Button color="inherit" onClick={openDrawer}>
-              Login / Sign up
-            </Button>
-          )}
-        </Toolbar>
-      </AppBar>
+        ) : (
+          <Button color="blue" onClick={openDrawer}>
+            Login / Sign up
+          </Button>
+        )}
+      </div>
       <Drawer anchor="right" open={loginOpen} onClose={closeDrawer} style={{ minWidth: '400px', maxWidth: '600px' }}>
         <div role="presentation">
           <Login updateUser={updateUser} />
@@ -134,6 +127,7 @@ const initialValue: { [id: string]: any } = {
   'active-puzzles': [],
 };
 
+/*
 declare module '@mui/material/styles' {
   interface BreakpointOverrides {
     xs: false; // removes the `xs` breakpoint
@@ -146,6 +140,7 @@ declare module '@mui/material/styles' {
     desktop: true;
   }
 }
+*/
 /*
 const ff = ['Roboto', 'Arial', 'sans-serif'].join(',');
 

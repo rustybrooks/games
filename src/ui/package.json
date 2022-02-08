@@ -11,13 +11,6 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@emotion/react": "latest",
-    "@emotion/styled": "latest",
-    "@mui/core": "latest",
-    "@mui/icons-material": "latest",
-    "@mui/lab": "latest",
-    "@mui/material": "latest",
-    "@mui/utils": "latest",
     "css-loader": "latest",
     "date-fns": "latest",
     "history": "latest",
@@ -29,10 +22,11 @@
     "react-simple-keyboard": "latest"
   },
   "devDependencies": {
+    "mini-css-extract-plugin": "latest",
+    "css-minimizer-webpack-plugin": "latest",
     "@babel/core": "^7.13.10",
     "@babel/preset-env": "^7.13.10",
     "@babel/preset-react": "^7.12.13",
-    "@mui/types": "latest",
     "@rustybrooks/eslint-config-prettier": "^1.0.9",
     "@types/react": "^17.0.1",
     "@types/react-dom": "^17.0.1",

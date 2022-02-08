@@ -8,6 +8,7 @@ interface Props {
   style?: any;
   onClick?: any;
   children: any;
+  to?: string;
 }
 
 export function Button({
@@ -18,6 +19,7 @@ export function Button({
   children = '',
   variant = 'outlined',
   style = null,
+  to = null,
 }: Props) {
   return (
     <button type="button" className={`${size} ${color || ''} ${variant} button`} style={style || {}} onClick={onClick}>

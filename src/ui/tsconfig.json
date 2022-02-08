@@ -3,7 +3,6 @@
   "compilerOptions": {
     "allowJs": true,
     "jsx": "react-jsx",
-    "jsxImportSource": "@emotion/react",
     "outDir": "dist",
     "lib": ["es2016", "dom"]
   }
