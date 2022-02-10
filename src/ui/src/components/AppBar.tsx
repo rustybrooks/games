@@ -47,41 +47,6 @@ export function AppBar() {
     updateUser();
   }, []);
 
-  /*
-  return (
-    <div style={styles.root}>
-      <div style={{ flexGrow: 1 }}>
-        <div style={{ flexGrow: 1 }}>
-          <Button color="blue" to="/wwm">
-            Play
-          </Button>
-          <Button color="blue" to="">
-            Active
-          </Button>
-          <Button color="blue" to="/wwm/archived">
-            Archived
-          </Button>
-          <Button color="blue" to="/wwm/leagues">
-            Leagues
-          </Button>
-          <Button color="blue" to="/wwm/bots">
-            Bots
-          </Button>
-        </div>
-        {user ? (
-          <div>
-            ({user.username})<Button color="blue">Logout</Button>
-          </div>
-        ) : (
-          <Button color="blue" onClick={openDrawer}>
-            Login / Sign up
-          </Button>
-        )}
-      </div>
-    </div>
-  );
- */
-
   return (
     <div>
       <header className="appbar-header">
@@ -117,7 +82,7 @@ export function AppBar() {
             {user ? (
               <div>
                 ({user.username})
-                <button className="appbar-login" tabIndex={0} type="button">
+                <button className="appbar-login" tabIndex={0} type="button" onClick={logout}>
                   Logout
                 </button>
               </div>

@@ -1,4 +1,5 @@
 import './TextInput.css';
+import { useEffect, useRef } from 'react';
 
 export function TextInput({
   label,
@@ -24,15 +25,18 @@ export function TextInput({
   type?: string;
 }) {
   return (
-    <input
-      className="text-input"
-      autoFocus={autoFocus}
-      type={type}
-      disabled={disabled}
-      value={value}
-      style={style}
-      placeholder={label}
-      onChange={onChange}
-    />
+    <div className="text-input">
+      <input
+        className="text-input"
+        autoFocus={autoFocus}
+        type={type}
+        disabled={disabled}
+        value={value}
+        style={style}
+        placeholder={label}
+        onChange={onChange}
+      />
+      {error ? <p className="text-input-error">{helperText}</p> : null}
+    </div>
   );
 }

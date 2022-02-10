@@ -50,14 +50,14 @@ export class Users {
     }
 
     if (Object.keys(errors).length) {
-      throw new HttpBadRequest({ details: errors });
+      throw new HttpBadRequest(errors);
     }
 
     try {
       await queries.addUser({ username, password, email });
       return queries.generateToken(username);
     } catch (e) {
-      throw new HttpBadRequest({ details: { username: 'Failed to create user' } });
+      throw new HttpBadRequest({ username: 'Failed to create user' });
     }
   }
 

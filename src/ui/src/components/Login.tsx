@@ -98,7 +98,10 @@ export function Login({ updateUser }: { updateUser: any }) {
           ['Login', 'login'],
           ['Signup', 'signup'],
         ]}
-        onChange={(e: string) => setTab(e)}
+        onChange={(e: string) => {
+          setErrors({});
+          setTab(e);
+        }}
       />
 
       <Box style={{ display: tab === 'signup' ? 'block' : 'none', textAlign: 'center' }}>
@@ -108,7 +111,7 @@ export function Login({ updateUser }: { updateUser: any }) {
           helperText={errors.username}
           label="Username"
           value={username}
-          autoFocus
+          autoFocus={true}
           onChange={(event: any) => setUsername(event.target.value)}
         />
 
@@ -157,7 +160,7 @@ export function Login({ updateUser }: { updateUser: any }) {
           label="Username"
           value={username}
           onChange={(event: any) => setUsername(event.target.value)}
-          autoFocus
+          autoFocus={true}
         />
 
         <TextInput
