@@ -159,6 +159,7 @@ function AppX() {
         <Route path="/wwm/leagues/:leagueSlug/join" element={<JoinLeague />} />
         <Route path="/wwm/leagues/:leagueSlug/join/:inviteCode" element={<JoinLeague />} />
         <Route path="/wwm/leagues/:leagueSlug/join_play/:answerId" element={<JoinLeaguePlay />} />
+        <Route path="/wwm/puzzles/:leagueSlug/:answerId" element={<WWMBrowse />} />
         <Route path="/wwm/puzzles/:leagueSlug/:answerId/play" element={<WWMPuzzle />} />
         <Route path="/wwm/puzzles/:leagueSlug/:answerId/browse" element={<WWMBrowse />} />
         <Route path="/wwm/puzzles/:leagueSlug/:answerId/browse/:username" element={<WWMBrowse />} />
