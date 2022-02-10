@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useGetAndSet } from 'react-context-hook';
 import { Link, useParams } from 'react-router-dom';
-import { formatDistance } from 'date-fns';
 import { useNavigate } from 'react-router';
 import * as dt from '../widgets/DataTable';
 
@@ -10,6 +9,7 @@ import { ActivePuzzle, League, LeagueSeries, LeagueStats, User } from '../../../
 
 import { TitleBox } from '../widgets/TitleBox';
 import { getPuzzles } from './Leagues';
+import { formatDistance } from '../../utils';
 
 const genUrl = (fn = '') => `${constants.BASE_URL}/api/games/wwm/${fn}`;
 
@@ -53,7 +53,7 @@ async function getLeague(leagueSlug: string) {
 }
 
 function dateFormatter(row: any, d: string) {
-  return formatDistance(new Date(d), new Date(), { addSuffix: true });
+  return formatDistance(new Date(d), new Date());
 }
 
 function floatFormatter2(row: any, d: any) {
@@ -327,8 +327,8 @@ export function WWMLeagueSeriesStats({ league, series }: { league: League; serie
     );
   }
 
-  const d1 = formatDistance(new Date(series.start_date), new Date(), { addSuffix: true });
-  const d2 = formatDistance(new Date(series.end_date), new Date(), { addSuffix: true });
+  const d1 = formatDistance(new Date(series.start_date), new Date());
+  const d2 = formatDistance(new Date(series.end_date), new Date());
 
   return (
     <TitleBox title={`Series Stats - ${d1} to ${d2}`}>
@@ -356,7 +356,7 @@ export function WWMLeagueInfo({ league }: { league: League }) {
         <tbody>
           <tr>
             <td style={style.tdHead}>Created</td>
-            <td style={style.tdData}>{formatDistance(new Date(league.create_date), new Date(), { addSuffix: true })}</td>
+            <td style={style.tdData}>{formatDistance(new Date(league.create_date), new Date())}</td>
             <td style={style.tdHead}>Series Length</td>
             <td style={style.tdData}>{league.series_days} days</td>
           </tr>

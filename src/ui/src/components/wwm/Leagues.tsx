@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useGetAndSet } from 'react-context-hook';
-import { formatDistance } from 'date-fns';
 import { Link } from 'react-router-dom';
 import * as dt from '../widgets/DataTable';
 import { ActivePuzzle, League } from '../../../types';
 import * as constants from '../../constants';
 import { genLeagueNew } from '../../routes';
+import { formatDistance } from '../../utils';
 
 const genUrl = (fn = '') => `${constants.BASE_URL}/api/games/wwm/${fn}`;
 
@@ -37,7 +37,7 @@ export async function getPuzzles(
 }
 
 function dateFormatter(row: League, d: string) {
-  return formatDistance(new Date(d), new Date(), { addSuffix: true });
+  return formatDistance(new Date(d), new Date());
 }
 
 // move this to utils or something

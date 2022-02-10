@@ -8,7 +8,6 @@ import 'react-simple-keyboard/build/css/index.css';
 import { useGetAndSet } from 'react-context-hook';
 
 import { Link, useParams } from 'react-router-dom';
-import { formatDistance } from 'date-fns';
 import { Button } from '../widgets/Button';
 import { ActivePuzzle, League } from '../../../types';
 import * as constants from '../../constants';
@@ -19,6 +18,7 @@ import { ModalBox } from '../widgets/ModalBox';
 import { genActivePuzzles, genJoinLeagueAndPlay, genLeague, genPlayNext, genPuzzleBrowse, genPuzzlePlay } from '../../routes';
 import { TitleBox } from '../widgets/TitleBox';
 import { Comments } from './Comments';
+import { formatDistance } from '../../utils';
 
 const genUrl = (fn = '') => `${constants.BASE_URL}/api/games/wwm/${fn}`;
 
@@ -122,7 +122,7 @@ function WWMDisplay({
         <div style={{ margin: '0 auto' }}>
           <div style={{ textAlign: 'center' }}>
             League: {league.league_name} {league.is_hard_mode ? '- hard mode' : ''}
-            {puzzle ? `(active until ${formatDistance(new Date(puzzle.active_before), new Date(), { addSuffix: true })})` : ''}
+            {puzzle ? `(active until ${formatDistance(new Date(puzzle.active_before), new Date())})` : ''}
           </div>
         </div>
         <table className="puzzle-table" style={{ margin: '0 auto' }}>
