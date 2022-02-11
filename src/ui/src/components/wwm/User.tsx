@@ -34,7 +34,7 @@ async function getUserStats(username: string): Promise<UserStats[]> {
   return null;
 }
 
-export function UserLeagues({ userStats, selectCallback }: { userStats: UserStats[]; selectCallback: any }) {
+export function UserLeagues({ userStats, selected, selectCallback }: { userStats: UserStats[]; selected: number; selectCallback: any }) {
   async function navStats(row: UserStats): Promise<void> {
     selectCallback(row);
   }
@@ -54,10 +54,11 @@ export function UserLeagues({ userStats, selectCallback }: { userStats: UserStat
         rows={userStats}
         headCells={ourheadCells}
         storageKey="user-stats-leagues"
-        mainColumn="league_name"
+        mainColumn="wordle_league_id"
         initialSortColumn="league_name"
         initialSortOrder="asc"
         rowButtons={[row => buttonCallback(row)]}
+        selectedRows={[selected]}
       />
     </TitleBox>
   );
@@ -74,8 +75,6 @@ export function UserLeagueStats({ userStats }: { userStats: UserStats }) {
     buckets[userStats.buckets[i]] = userStats.counts[i];
     max = Math.max(max, userStats.counts[i]);
   }
-
-  console.log(userStats, buckets, max);
 
   return (
     <TitleBox title={`Stats for ${userStats.league_name}`}>
@@ -142,7 +141,7 @@ export function User() {
         <tbody>
           <tr>
             <td valign="top" style={{ maxWidth: '300px', width: '33%' }}>
-              <UserLeagues userStats={userStats} selectCallback={(row: UserStats) => setLeague(row.wordle_league_id)} />
+              <UserLeagues userStats={userStats} selected={league} selectCallback={(row: UserStats) => setLeague(row.wordle_league_id)} />
             </td>
             <td valign="top">
               <UserLeagueStats userStats={userStats.find(u => u.wordle_league_id === league)} />

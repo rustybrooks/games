@@ -473,7 +473,7 @@ export function League() {
       <table width="100%">
         <tbody>
           <tr>
-            <td valign="top" style={{ maxWidth: '300px', width: '33%' }}>
+            <td valign="top" style={{ maxWidth: '25rem', width: '33%' }}>
               <WWMLeagueInfo league={league} />
               <WWMLeagueSeries league={league} seriesCallback={setSeries} />
             </td>
