@@ -1,0 +1,26 @@
+div.stat-box {
+    text-align: center;
+    padding: 2rem;
+}
+
+div.stat-number {
+    font-size: 2rem;
+}
+
+div.stat-title {
+    font-size: .85rem;
+}
+
+div.hist-both {
+    margin: .1rem 0;
+    padding: .2rem .25rem;
+    font-size: .85rem;
+}
+
+div.hist-bar {
+    color: white;
+    text-align: right;
+    vertical-align: middle;
+    padding:
+}
+

@@ -20,19 +20,19 @@ export function formatDistance(d1: Date, d2: Date) {
   const offsetMinutes = Math.abs(signedOffset) / (60 * 1000);
 
   if (offsetMinutes < 120) {
-    return signedOffset > 0 ? `${offsetMinutes} minutes ago` : `${offsetMinutes} minutes from now`;
+    return signedOffset > 0 ? `${Math.round(offsetMinutes)} minutes ago` : `${Math.round(offsetMinutes)} minutes from now`;
   }
 
   const offsetHours = Math.round(offsetMinutes / 60);
   if (offsetHours < 48) {
-    return signedOffset > 0 ? `${offsetHours} hours ago` : `${offsetHours} hours from now`;
+    return signedOffset > 0 ? `${Math.round(offsetHours)} hours ago` : `${Math.round(offsetHours)} hours from now`;
   }
 
   const offsetDays = Math.round(offsetHours / 24);
   if (offsetDays < 90) {
-    return signedOffset > 0 ? `${offsetDays} days ago` : `${offsetDays} days from now`;
+    return signedOffset > 0 ? `${Math.round(offsetDays)} days ago` : `${Math.round(offsetDays)} days from now`;
   }
 
   const offsetMonths = Math.round(offsetDays / 30);
-  return signedOffset > 0 ? `${offsetMonths} months ago` : `${offsetMonths} months from now`;
+  return signedOffset > 0 ? `${Math.round(offsetMonths)} months ago` : `${Math.round(offsetMonths)} months from now`;
 }

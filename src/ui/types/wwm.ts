@@ -90,3 +90,13 @@ export interface Comment {
   create_date: Date;
   wordle_answer_id: number;
 }
+
+export interface UserStats {
+  wordle_league_id: number;
+  league_name: string;
+  buckets: number[];
+  counts: number[];
+  completed: number;
+  correct: number;
+  pct_correct: number;
+}

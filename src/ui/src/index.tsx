@@ -1,6 +1,7 @@
 import { render } from 'react-dom';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { withStore } from 'react-context-hook';
+import './index.css';
 
 import {
   ActivePuzzles,
@@ -15,6 +16,7 @@ import {
   WWMBrowse,
   WWMPlay,
   WWMPuzzle,
+  User,
 } from './components';
 import { AppBar } from './components/AppBar';
 
@@ -163,6 +165,7 @@ function AppX() {
         <Route path="/wwm/puzzles/:leagueSlug/:answerId/play" element={<WWMPuzzle />} />
         <Route path="/wwm/puzzles/:leagueSlug/:answerId/browse" element={<WWMBrowse />} />
         <Route path="/wwm/puzzles/:leagueSlug/:answerId/browse/:username" element={<WWMBrowse />} />
+        <Route path="/wwm/users/:username/" element={<User />} />
       </Routes>
     </BrowserRouter>
   );

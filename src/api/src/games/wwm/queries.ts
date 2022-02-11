@@ -615,8 +615,50 @@ export async function getComments({
       from wordle_comments c
       join users using (user_id)
       ${SQL.whereClause(where)}
-        ${SQL.orderBy(sort)}
-        ${SQL.limit(page, limit)}
+      ${SQL.orderBy(sort)}
+      ${SQL.limit(page, limit)}
   `;
+  return SQL.select(query, bindvars);
+}
+
+/* ******* user stats ******** */
+
+export async function getUserStats({
+  username,
+  viewing_user_id = null,
+  page = null,
+  sort = null,
+  limit = null,
+}: { username: string; viewing_user_id: number } & QueryParams) {
+  const [where, bindvars] = SQL.autoWhere({ username });
+
+  where.push('exists (select 1 from wordle_league_members li where li.wordle_league_id=l.wordle_league_id and user_id=$(viewing_user_id))');
+  bindvars.viewing_user_id = viewing_user_id;
+
+  const completed = 'sum(case when completed then 1 else 0 end)';
+  const correct = 'sum(case when correct then 1 else 0 end)';
+  const query = `
+    select wordle_league_id, league_name, array_agg(bucket) as buckets, array_agg(count) as counts,
+           sum(correct) as correct, sum(completed) as completed, 100*sum(correct)/(case when sum(completed)=0 then 1 else sum(completed) end) as pct_correct
+    from (
+      select wordle_league_id,
+             league_name,
+             width_bucket(num_guesses, 1, 10, 10) as bucket,
+             count(*) as count,
+             ${correct} as correct,
+             ${completed} as completed
+      from wordle_status r
+      join wordle_answers a using (wordle_answer_id)
+      join wordle_league_series using (wordle_league_series_id)
+      join wordle_leagues l using (wordle_league_id)
+      join users u using (user_id)
+      ${SQL.whereClause(where)}
+      group by 1, 2, 3
+    ) sq
+    group by 1, 2
+    ${SQL.orderBy(sort)}
+    ${SQL.limit(page, limit)}  
+  `;
+
   return SQL.select(query, bindvars);
 }
