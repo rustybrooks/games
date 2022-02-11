@@ -632,7 +632,9 @@ export async function getUserStats({
 }: { username: string; viewing_user_id: number } & QueryParams) {
   const [where, bindvars] = SQL.autoWhere({ username });
 
-  where.push('exists (select 1 from wordle_league_members li where li.wordle_league_id=l.wordle_league_id and user_id=$(viewing_user_id))');
+  where.push(
+    'exists (select 1 from wordle_league_members li where li.wordle_league_id=l.wordle_league_id and (not is_private or user_id=$(viewing_user_id)))',
+  );
   bindvars.viewing_user_id = viewing_user_id;
 
   const completed = 'sum(case when completed then 1 else 0 end)';

@@ -3,7 +3,7 @@ td.puzzle-cell {
 /*
 */
     background: white;
-    padding: 5px;
+    /*padding: 5px;*/
     border: 2px solid #ccc;
     text-align: center;
     vertical-align: middle;
@@ -29,15 +29,10 @@ table.puzzle-table {
 }
 
 div.puzzle-container {
-/*
-
-*/
     margin: 0 auto;
 }
 
 div.puzzle-keyboard {
-/*
- */
     width: 100%;
     text-align: center;
 }
@@ -45,8 +40,9 @@ div.puzzle-keyboard {
 
 @media only screen and (max-device-width: 650px) {
   td.puzzle-cell {
-    width: 7rem;
-    height: 7rem;
+      width: 5.5rem;
+      height: 5.5rem;
+      font-size: 3rem;
   }
 
   div.puzzle-container {
@@ -61,8 +57,9 @@ div.puzzle-keyboard {
 
 @media only screen and (max-device-width: 1200px) and (min-device-width: 651px) {
   td.puzzle-cell {
-    width: 8rem;
-    height: 8rem;
+    width: 6rem;
+    height: 6rem;
+      font-size: 3rem;
   }
 
   div.puzzle-container {
@@ -79,6 +76,7 @@ div.puzzle-keyboard {
   td.puzzle-cell {
     width: 4.2rem;
     height: 4.2rem;
+    font-size: 2rem;
   }
 
   div.puzzle-container {
@@ -111,28 +109,28 @@ div.puzzle-keyboard {
 
 @media only screen and (max-device-width: 650px) {
     .react-simple-keyboard.simple-keyboard.hg-theme-default.hg-layout-default.myTheme.hg-layout-default {
-        height: 530px;
+        height: 500px;
     }
 
     .react-simple-keyboard.simple-keyboard.hg-theme-default.hg-layout-default.myTheme.hg-layout-default .hg-rows {
-        height: 530px;
+        height: 500px;
     }
 
     .react-simple-keyboard.simple-keyboard.hg-theme-default.hg-layout-default.myTheme.hg-layout-default .hg-rows .hg-row {
-        height: 170px;
+        height: 160px;
     }
 
     .react-simple-keyboard.simple-keyboard.hg-theme-default.hg-layout-default.myTheme.hg-layout-default .hg-rows .hg-row .hg-button{
-        height: 170px;
+        height: 160px;
     }
 
     .simple-keyboard.myTheme .hg-button {
-        height: 160px;
+        height: 150px;
         display: flex;
         align-items: center;
         justify-content: center;
         font-weight: bold;
-        font-size: 3.3em;
+        font-size: 2.5rem;
         background: #ccc;
     }
 }
@@ -145,6 +143,7 @@ div.puzzle-keyboard {
         justify-content: center;
         font-weight: bold;
         font-size: 32px;
+        background: #ccc;
     }
 }
 
@@ -156,6 +155,7 @@ div.puzzle-keyboard {
         justify-content: center;
         font-weight: bold;
         font-size: 16px;
+        background: #ccc;
     }
 }
 

@@ -24,6 +24,10 @@ div.appbar-login {
     color: rgb(255, 255, 255);
 }
 
+button.appbar-login, a.appbar-button {
+    font-size: 1rem;
+}
+
 button.appbar-login {
     display: inline-flex;
     -webkit-box-align: center;
@@ -46,7 +50,6 @@ button.appbar-login {
     padding: 6px 8px;
     border-radius: 4px;
     color: inherit;
-    font-size: 1rem;
 }
 
 a.appbar-button {
@@ -71,5 +74,26 @@ a.appbar-button {
     padding: 6px 8px;
     border-radius: 4px;
     color: inherit;
-    font-size: 1rem;
+}
+
+
+/* mobile */
+@media only screen and (max-device-width: 650px) {
+    button.appbar-login, a.appbar-button {
+        font-size: 1.4rem;
+    }
+}
+
+/* tablet */
+@media only screen and (max-device-width: 1200px) and (min-device-width: 651px) {
+    button.appbar-login, a.appbar-button {
+        font-size: 1.4rem;
+    }
+}
+
+/* desktop */
+@media only screen and (min-device-width: 1200.1px) {
+    button.appbar-login, a.appbar-button {
+        font-size: 1rem;
+    }
 }

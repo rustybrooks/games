@@ -10,6 +10,7 @@ import { ActivePuzzle, League, LeagueSeries, LeagueStats, User } from '../../../
 import { TitleBox } from '../widgets/TitleBox';
 import { getPuzzles } from './Leagues';
 import { formatDistance } from '../../utils';
+import { genUser } from '../../routes';
 
 const genUrl = (fn = '') => `${constants.BASE_URL}/api/games/wwm/${fn}`;
 
@@ -91,6 +92,7 @@ const statsHeadCells: dt.HeadCell<LeagueStats>[] = [
     numeric: false,
     disablePadding: false,
     label: 'User',
+    formatter: row => <Link to={genUser(row.username)}>{row.username}</Link>,
   },
   {
     id: 'score',

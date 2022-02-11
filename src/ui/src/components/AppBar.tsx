@@ -48,7 +48,7 @@ export function AppBar() {
   }, []);
 
   return (
-    <div>
+    <div style={{ width: '100%' }}>
       <header className="appbar-header">
         <div style={{ display: 'flex' }}>
           <div style={{ display: 'flex', flexGrow: 2 }}>
@@ -81,9 +81,8 @@ export function AppBar() {
           <div className="appbar-login">
             {user ? (
               <div>
-                ({user.username})
                 <button className="appbar-login" tabIndex={0} type="button" onClick={logout}>
-                  Logout
+                  ({user.username}) Logout
                 </button>
               </div>
             ) : (

@@ -41,3 +41,7 @@ export function genJoinLeagueAndPlay(leagueSlug: string, answerId: string = null
 export function genLeagueNew() {
   return '/wwm/leagues/new';
 }
+
+export function genUser(username: string) {
+  return `/wwm/users/${username}`;
+}

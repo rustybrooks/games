@@ -113,6 +113,7 @@ export function TablePagination({
   onRowsPerPageChange: any;
 }) {
   const maxPage = Math.floor(count / rowsPerPage);
+
   return (
     <div className="table_pag_main" style={{}}>
       <div
@@ -127,7 +128,7 @@ export function TablePagination({
       <div style={{ position: 'relative', display: 'inline-flex', marginLeft: '10px', marginRight: '10px' }}>
         <select className="pagination" name="rows_per_page" onChange={onRowsPerPageChange} value={rowsPerPage}>
           {rowsPerPageOptions.map(p => (
-            <option className="pagination" key={p} value={p} selected={p === rowsPerPage}>
+            <option className="pagination" key={p} value={p}>
               {p}
             </option>
           ))}

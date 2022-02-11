@@ -152,7 +152,7 @@ function WWMDisplay({
                     }
                     return (
                       <td key={x} className={`puzzle-cell ${cn}`}>
-                        <h1>{g.toUpperCase()}</h1>
+                        {g.toUpperCase()}
                       </td>
                     );
                   })}
