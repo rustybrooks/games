@@ -10,13 +10,13 @@ import {
   Home,
   JoinLeague,
   JoinLeaguePlay,
-  League,
+  LeagueView,
   Leagues,
   NewLeague,
   WWMBrowse,
   WWMPlay,
   WWMPuzzle,
-  User,
+  UserView,
 } from './components';
 import { AppBar } from './components/AppBar';
 
@@ -40,7 +40,7 @@ function AppX() {
         <Route path="/wwm/bots" element={<Bots />} />
         <Route path="/wwm/leagues" element={<Leagues />} />
         <Route path="/wwm/leagues/new" element={<NewLeague />} />
-        <Route path="/wwm/leagues/:leagueSlug" element={<League />} />
+        <Route path="/wwm/leagues/:leagueSlug" element={<LeagueView />} />
         <Route path="/wwm/leagues/:leagueSlug/join" element={<JoinLeague />} />
         <Route path="/wwm/leagues/:leagueSlug/join/:inviteCode" element={<JoinLeague />} />
         <Route path="/wwm/leagues/:leagueSlug/join_play/:answerId" element={<JoinLeaguePlay />} />
@@ -48,7 +48,7 @@ function AppX() {
         <Route path="/wwm/puzzles/:leagueSlug/:answerId/play" element={<WWMPuzzle />} />
         <Route path="/wwm/puzzles/:leagueSlug/:answerId/browse" element={<WWMBrowse />} />
         <Route path="/wwm/puzzles/:leagueSlug/:answerId/browse/:username" element={<WWMBrowse />} />
-        <Route path="/wwm/users/:username/" element={<User />} />
+        <Route path="/wwm/users/:username/" element={<UserView />} />
       </Routes>
     </BrowserRouter>
   );

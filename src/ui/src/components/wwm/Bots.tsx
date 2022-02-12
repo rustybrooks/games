@@ -5,7 +5,7 @@ import * as constants from '../../constants';
 const genUrl = (fn = '') => `${constants.BASE_URL}/api/user/${fn}`;
 
 export function Bots() {
-  const [user, setUser] = useGetAndSet('user');
+  const [user] = useGetAndSet('user');
   const [apikey, setApikey] = useState<string>('Loading...');
 
   async function apiKey() {

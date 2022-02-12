@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import * as constants from '../../constants';
-import { User, UserStats } from '../../../types';
+import { UserStats } from '../../../types';
 import { TitleBox } from '../widgets/TitleBox';
 import * as dt from '../widgets/DataTable';
 import './User.css';
@@ -114,7 +114,7 @@ export function UserLeagueStats({ userStats }: { userStats: UserStats }) {
   );
 }
 
-export function User() {
+export function UserView() {
   // const [user, setUser]: [{ username: string }, any] = useGetAndSet('user');
   const { username } = useParams();
   const [userStats, setUserStats] = useState<UserStats[]>();
@@ -124,7 +124,6 @@ export function User() {
     (async () => {
       if (username) {
         const stats = await getUserStats(username);
-        console.log(stats);
         setUserStats(stats);
         setLeague(stats[0].wordle_league_id);
       }

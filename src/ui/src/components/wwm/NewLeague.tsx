@@ -20,7 +20,7 @@ const style = {
 };
 
 export function NewLeague() {
-  const [user, setUser]: [{ username: string }, any] = useGetAndSet('user');
+  const [user]: [{ username: string }, any] = useGetAndSet('user');
   const [leagueName, setLeagueName] = useState('');
   const [leagueSlug, setLeagueSlug] = useState('');
   const [errors, setErrors]: [{ leagueName?: string; leagueSlug?: string }, any] = useState({});

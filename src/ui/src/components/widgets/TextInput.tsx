@@ -1,5 +1,4 @@
 import './TextInput.css';
-import { useEffect, useRef } from 'react';
 
 export function TextInput({
   label,

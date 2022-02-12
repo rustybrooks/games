@@ -11,7 +11,7 @@ const genUrl = (fn = '') => `${constants.BASE_URL}/api/user/${fn}`;
 
 export function AppBar() {
   const [loginOpen, setLoginOpen] = useGetAndSet('login-open', false);
-  const [loginWidget, setLoginWidget] = useGetAndSet('login-widget');
+  const [, setLoginWidget] = useGetAndSet('login-widget');
   const [user, setUser]: [{ username: string }, any] = useGetAndSet('user');
 
   const openDrawer = useCallback(() => {

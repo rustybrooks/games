@@ -35,7 +35,7 @@ export function Login({ updateUser }: { updateUser: any }) {
   const [password2, setPassword2] = useState('');
   const [errors, setErrors]: [{ username?: string; email?: string; password?: string; password2?: string }, any] = useState({});
 
-  const [loginOpen, setLoginOpen] = useGetAndSet('login-open');
+  const [, setLoginOpen] = useGetAndSet('login-open');
 
   function closeDrawer() {
     setLoginOpen(false);

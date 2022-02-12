@@ -1,5 +1,5 @@
 import './Select.css';
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 
 export function Select({
   label,

@@ -24,7 +24,7 @@ export function JoinLeague() {
   const { leagueSlug, inviteCode } = useParams();
   const [error, setError] = useState('');
   const [league, setLeague] = useState<League>();
-  const [user, setUser]: [{ username: string }, any] = useGetAndSet('user');
+  const [user]: [{ username: string }, any] = useGetAndSet('user');
 
   const join = useCallback(async () => {
     const data = await joinLeague(leagueSlug, inviteCode);

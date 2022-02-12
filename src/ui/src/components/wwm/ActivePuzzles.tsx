@@ -72,7 +72,7 @@ const ourheadCells: dt.HeadCell<EnumeratedPuzzle>[] = [
 
 export function ActivePuzzles({ active = true }: { active?: boolean }) {
   const [puzzles, setPuzzles] = useState<EnumeratedPuzzle[]>([]);
-  const [user, setUser]: [{ username: string }, any] = useGetAndSet('user');
+  const [user]: [{ username: string }, any] = useGetAndSet('user');
   const navigate = useNavigate();
 
   useEffect(() => {

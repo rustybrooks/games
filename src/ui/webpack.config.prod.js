@@ -1,8 +1,7 @@
 const { merge } = require('webpack-merge');
-const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
-const baseConfig = require('./webpack.config.base.js');
+const baseConfig = require('./webpack.config.base');
 // const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 module.exports = merge(baseConfig, {

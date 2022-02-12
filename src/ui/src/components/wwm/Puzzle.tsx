@@ -44,14 +44,15 @@ function guessesToCategories(results: any) {
   const wrongKeys = [];
   const sortaKeys = [];
   for (const r of results) {
-    if (!r.guess.length) continue;
-    for (const i in r.result) {
-      if (r.result[i] === '+') {
-        rightKeys.push(r.guess[i]);
-      } else if (r.result[i] === '-') {
-        sortaKeys.push(r.guess[i]);
-      } else {
-        wrongKeys.push(r.guess[i]);
+    if (r.guess.length) {
+      for (const i in r.result) {
+        if (r.result[i] === '+') {
+          rightKeys.push(r.guess[i]);
+        } else if (r.result[i] === '-') {
+          sortaKeys.push(r.guess[i]);
+        } else {
+          wrongKeys.push(r.guess[i]);
+        }
       }
     }
   }
@@ -214,7 +215,7 @@ export function Puzzle({
 
   const [error, setError] = useState('');
   const [status, setStatus] = useState({ answer: '', complete: false });
-  const [user, setUser] = useGetAndSet('user');
+  const [user] = useGetAndSet('user');
   const [league, setLeague] = useState<League>(null);
   const [results, setResults] = useState<{ guess: string; result: string[]; reduction: number[] }[]>([]);
   const gridIdx = useRef(0);
@@ -405,7 +406,7 @@ export function WWMPuzzle() {
 }
 
 export function WWMPlay() {
-  const [user, setUser] = useGetAndSet('user');
+  const [user] = useGetAndSet('user');
   const [puzzle, setPuzzle] = useState<ActivePuzzle>();
   const [loaded, setLoaded] = useState(false);
 
@@ -458,7 +459,7 @@ export function WWMBrowse() {
   const [completed, setCompleted] = useState([]);
   const [browseUser, setBrowseUser] = useState(null);
   const [error, setError] = useState(null);
-  const [user, setUser] = useGetAndSet('user');
+  const [user] = useGetAndSet('user');
   const [league, setLeague] = useState<League>();
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
@@ -592,7 +593,6 @@ export function WWMBrowse() {
 
   if (error) {
     return (
-      /* eslint-disable-next-line jsx-a11y/no-static-element-interactions */
       <div
         onKeyPress={event => {
           return event.key.toLowerCase() === 'enter' ? navigate(genPuzzlePlay(leagueSlug, answerId)) : null;

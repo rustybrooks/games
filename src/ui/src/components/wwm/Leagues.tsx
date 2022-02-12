@@ -102,10 +102,10 @@ const ourheadCells: dt.HeadCell<League>[] = [
 
 function WWMLeaguesX() {
   const [leagues, setLeagues] = useState<League[]>([]);
-  const [user, setUser]: [{ username: string }, any] = useGetAndSet('user');
+  const [user]: [{ username: string }, any] = useGetAndSet('user');
 
   async function joinLeague(row: League): Promise<void> {
-    const data = await fetch(genUrl('leagues/join'), {
+    await fetch(genUrl('leagues/join'), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -119,7 +119,7 @@ function WWMLeaguesX() {
   }
 
   async function leaveLeague(row: League): Promise<void> {
-    const data = await fetch(genUrl('leagues/leave'), {
+    await fetch(genUrl('leagues/leave'), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

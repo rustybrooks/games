@@ -295,7 +295,7 @@ export function WWMLeagueSeries({ league, seriesCallback }: { league: League; se
 
 export function WWMLeagueSeriesStats({ league, series }: { league: League; series: LeagueSeries }) {
   const [stats, setStats] = useState<LeagueStats[]>(null);
-  const [user, setUser] = useGetAndSet<User>('user');
+  const [user] = useGetAndSet<User>('user');
 
   async function getLeagueStats() {
     const r = await fetch(genUrl('leagues/series_stats'), {
@@ -401,7 +401,7 @@ export function WWMLeagueInfo({ league }: { league: League }) {
 export function LeaguePuzzles({ league, active }: { league: League; active: boolean }) {
   const [puzzles, setPuzzles] = useState<EnumeratedPuzzle[]>();
   const navigate = useNavigate();
-  const [user, setUser]: [{ username: string }, any] = useGetAndSet('user');
+  const [user]: [{ username: string }, any] = useGetAndSet('user');
 
   useEffect(() => {
     (async () => {
@@ -450,11 +450,11 @@ export function LeaguePuzzles({ league, active }: { league: League; active: bool
   );
 }
 
-export function League() {
+export function LeagueView() {
   const { leagueSlug } = useParams();
   const [league, setLeague] = useState<League>(null);
   const [series, setSeries] = useState<LeagueSeries>(null);
-  const [user, setUser] = useGetAndSet('user');
+  const [user] = useGetAndSet('user');
 
   useEffect(() => {
     if (user) {

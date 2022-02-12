@@ -44,7 +44,7 @@ export async function addComment(wordle_answer_id: number | string, comment: str
 }
 
 export function Comments({ wordle_answer_id, league }: { wordle_answer_id: number | string; league: League }) {
-  const [user, setUser]: [{ username: string }, any] = useGetAndSet('user');
+  const [user]: [{ username: string }, any] = useGetAndSet('user');
   const [open, setOpen] = useState(false);
   const [comments, setComments] = useState([]);
   const [comment, setComment] = useState('');
