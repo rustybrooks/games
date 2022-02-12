@@ -115,17 +115,19 @@ export function TablePagination({
   const maxPage = Math.floor(count / rowsPerPage);
 
   return (
-    <div className="table_pag_main" style={{}}>
+    <div className="table_pag_main">
       <div
         style={{
           flex: '1 1 100%',
-          display: 'block',
+          display: 'flex',
+          margin: 0,
+          padding: 0,
         }}
       />
-      <p className="pagination" style={{ display: 'block', flexShrink: 0, marginLeft: '10px', marginRight: '10px' }}>
-        Rows per page:
-      </p>
-      <div style={{ position: 'relative', display: 'inline-flex', marginLeft: '10px', marginRight: '10px' }}>
+      <span className="pagination" style={{ marginLeft: '.5rem', marginRight: '.5rem', display: 'flex', flexShrink: 0 }}>
+        Rows:
+      </span>
+      <div className="pagination-select">
         <select className="pagination" name="rows_per_page" onChange={onRowsPerPageChange} value={rowsPerPage}>
           {rowsPerPageOptions.map(p => (
             <option className="pagination" key={p} value={p}>
@@ -134,15 +136,15 @@ export function TablePagination({
           ))}
         </select>
       </div>
-      <p
+      <span
         className="pagination"
         style={{
-          display: 'block',
+          display: 'flex',
           flexShrink: 0,
         }}
       >
         {page * rowsPerPage + 1} - {Math.min(count, (page + 1) * rowsPerPage)} of {count}
-      </p>
+      </span>
       <div style={{ position: 'relative', display: 'inline-flex', marginLeft: '10px', marginRight: '5px' }}>
         <button className="pagination" type="button" onClick={() => onPageChange(Math.max(0, page - 1))} disabled={page <= 0}>
           <icons.RightLeftArrow height="100%" width="100%" />

@@ -122,13 +122,13 @@ const statsHeadCells: dt.HeadCell<LeagueStats>[] = [
     label: 'avg guesses',
     formatter: floatFormatter2,
   },
-  {
-    id: 'avg_guesses_correct',
-    numeric: true,
-    disablePadding: false,
-    label: 'avg guesses (correct)',
-    formatter: floatFormatter2,
-  },
+  // {
+  //   id: 'avg_guesses_correct',
+  //   numeric: true,
+  //   disablePadding: false,
+  //   label: 'avg guesses (correct)',
+  //   formatter: floatFormatter2,
+  // },
   // {
   //   id: 'max_guesses',
   //   numeric: true,
