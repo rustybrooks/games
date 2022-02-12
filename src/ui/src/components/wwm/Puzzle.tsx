@@ -126,7 +126,7 @@ function WWMDisplay({
             {puzzle ? `(active until ${formatDistance(new Date(puzzle.active_before), new Date())})` : ''}
           </div>
         </div>
-        <table className="puzzle-table" style={{ margin: '0 auto' }}>
+        <table className="puzzle-table" style={{ margin: 'auto' }}>
           <tbody>
             {[...Array(league.max_guesses).keys()].map(y => {
               const result = results[y] || { guess: '', result: [], reduction: [-1, -1] };
@@ -161,38 +161,33 @@ function WWMDisplay({
                 </tr>
               );
             })}
-            <tr>
-              <td colSpan={league.letters}>
-                {error ? (
-                  <h2 style={{ color: '#d22' }}>
-                    {error}
-                    &nbsp;
-                  </h2>
-                ) : (
-                  <h2 style={{ color: '#2d2' }}>
-                    {answer}
-                    &nbsp;
-                  </h2>
-                )}
-              </td>
-            </tr>
           </tbody>
         </table>
+        {error ? (
+          <div style={{ color: '#d22', textAlign: 'center' }}>
+            {error}
+            &nbsp;
+          </div>
+        ) : (
+          <div style={{ color: '#2d2', textAlign: 'center' }}>{answer}&nbsp;</div>
+        )}
         {showKeyboard ? (
           <div className="puzzle-keyboard">
-            <Keyboard
-              display={{
-                '{enter}': 'enter',
-                '{bksp}': 'bksp',
-              }}
-              layout={{
-                default: ['q w e r t y u i o p', 'a s d f g h j k l', '{enter} z x c v b n m {bksp}'],
-              }}
-              buttonTheme={buttonTheme}
-              layoutName="default"
-              theme="hg-theme-default hg-layout-default myTheme"
-              onKeyPress={onKeyPress}
-            />
+            <div style={{ width: '93%', margin: '0 auto' }}>
+              <Keyboard
+                display={{
+                  '{enter}': 'enter',
+                  '{bksp}': 'bksp',
+                }}
+                layout={{
+                  default: ['q w e r t y u i o p', 'a s d f g h j k l', '{enter} z x c v b n m {bksp}'],
+                }}
+                buttonTheme={buttonTheme}
+                layoutName="default"
+                theme="hg-theme-default hg-layout-default myTheme"
+                onKeyPress={onKeyPress}
+              />
+            </div>
           </div>
         ) : null}
       </div>
@@ -373,7 +368,7 @@ export function Puzzle({
   }
 
   return (
-    <div>
+    <div style={{ width: '100%', height: '100%' }}>
       <WWMDisplay league={league} puzzle={puzzle} results={results} onKeyPress={onKeyPress} error={error} answer={status.answer} />
       <ModalBox width="30rem" onClose={handleClose} open={open}>
         <h2 style={{ color: error && error.length ? 'red' : 'green' }}>{error && error.length ? error : status.answer}</h2>
@@ -655,7 +650,7 @@ export function WWMBrowse() {
           <Button
             key={c.username}
             style={{ marginRight: '4px', marginBottom: '2px' }}
-            color={c.correct ? 'blue' : 'red'}
+            color={c.correct ? 'green' : 'red'}
             variant={c.username === browseUser?.username ? 'contained' : 'outlined'}
             size="small"
             onClick={() => {

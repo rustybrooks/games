@@ -30,6 +30,7 @@ table.puzzle-table {
 
 div.puzzle-container {
     margin: 0 auto;
+    height: 100%;
 }
 
 div.puzzle-keyboard {
