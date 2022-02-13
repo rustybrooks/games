@@ -1,5 +1,5 @@
 div.comment-box {
-    overflow: auto
+    overflow: auto;
 }
 
 @media only screen and (max-device-width: 650px) {

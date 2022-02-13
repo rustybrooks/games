@@ -106,9 +106,9 @@ export function NewLeague() {
   return (
     <div style={{ width: '90%', padding: '1rem' }}>
       <div>
-        <TextInput value={leagueName} label="League Name" style={{ width: '100%' }} onChange={leagueNameCallback} />
+        <TextInput value={leagueName} label="League Name" style={{ width: '100%', margin: '.2rem' }} onChange={leagueNameCallback} />
 
-        <TextInput value={leagueSlug} label="League Slug" disabled style={{ width: '100%' }} />
+        <TextInput value={leagueSlug} label="League Slug" disabled style={{ width: '100%', margin: '.2rem' }} />
 
         <div style={{ display: 'flex', marginTop: '.5rem' }}>
           <Select

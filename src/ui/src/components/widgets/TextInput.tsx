@@ -1,17 +1,7 @@
 import './TextInput.css';
+import { ForwardedRef, forwardRef } from 'react';
 
-export function TextInput({
-  label,
-  value = '',
-  style = null,
-  onChange = null,
-  onKeyDown = null,
-  disabled = false,
-  error = false,
-  helperText = null,
-  autoFocus = false,
-  type = 'text',
-}: {
+interface Props {
   label: string;
   style?: any;
   value?: string | number;
@@ -22,20 +12,23 @@ export function TextInput({
   helperText?: string;
   autoFocus?: boolean;
   type?: string;
-}) {
+  ref?: any;
+}
+
+export const TextInput = forwardRef((props: Props, ref: ForwardedRef<HTMLInputElement>) => {
   return (
-    <div className="text-input">
+    <div className="text-input" style={props.style}>
       <input
         className="text-input"
-        autoFocus={autoFocus}
-        type={type}
-        disabled={disabled}
-        value={value}
-        style={style}
-        placeholder={label}
-        onChange={onChange}
+        autoFocus={props.autoFocus}
+        type={props.type}
+        disabled={props.disabled}
+        value={props.value}
+        placeholder={props.label}
+        onChange={props.onChange}
+        ref={ref}
       />
-      {error ? <p className="text-input-error">{helperText}</p> : null}
+      {props.error ? <p className="text-input-error">{props.helperText}</p> : null}
     </div>
   );
-}
+});

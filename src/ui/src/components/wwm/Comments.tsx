@@ -1,5 +1,5 @@
 import { useGetAndSet } from 'react-context-hook';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import * as constants from '../../constants';
 import { genLeague } from '../../routes';
@@ -50,15 +50,25 @@ export function Comments({ wordle_answer_id, league }: { wordle_answer_id: numbe
   const [comment, setComment] = useState('');
   const navigate = useNavigate();
 
+  const ref = useRef(null);
+
   useEffect(() => {
     (async () => {
       setComments(await getComments(wordle_answer_id));
     })();
   }, [user]);
 
-  const toggleDrawer = (newOpen: boolean) => () => {
-    setOpen(newOpen);
-  };
+  const toggleDrawer = useCallback(
+    (newOpen: boolean) => {
+      setOpen(newOpen);
+      if (newOpen) {
+        if (ref.current) {
+          setTimeout(() => ref.current.focus(), 10);
+        }
+      }
+    },
+    [ref],
+  );
 
   const handleComment = (event: any) => {
     if (event.target.value !== `${comment}\n` && event.target.value !== `${comment}\r\n`) {
@@ -85,7 +95,7 @@ export function Comments({ wordle_answer_id, league }: { wordle_answer_id: numbe
   return (
     <div>
       <div style={{ width: '100%', textAlign: 'center' }}>
-        <Button color="blue" style={{ margin: '.2em' }} variant="contained" onClick={toggleDrawer(true)}>
+        <Button color="blue" style={{ margin: '.2em' }} variant="contained" onClick={() => toggleDrawer(true)}>
           {comments.length} comments
         </Button>
         <Button
@@ -99,11 +109,12 @@ export function Comments({ wordle_answer_id, league }: { wordle_answer_id: numbe
           Visit League: {league.league_name}
         </Button>
       </div>
-      <Drawer anchor="bottom" open={open} onClose={toggleDrawer(false)}>
+      <Drawer anchor="bottom" open={open} onClose={() => toggleDrawer(false)}>
         <div style={{ margin: '.5rem' }}>
           {user ? (
-            <div style={{ display: 'flex' }}>
+            <div style={{ display: 'flex', width: '100%' }}>
               <TextInput
+                ref={ref}
                 label="Comment"
                 style={{ width: '100%', margin: '.2em' }}
                 value={comment}
@@ -119,7 +130,7 @@ export function Comments({ wordle_answer_id, league }: { wordle_answer_id: numbe
             {comments.length ? (
               comments.map(c => {
                 return (
-                  <div key={c.wordle_comment_id} style={{ display: 'flex', margin: '.25em' }}>
+                  <div key={c.wordle_comment_id} style={{ display: 'flex' }}>
                     <span className="comment-name">[{c.username}]</span>
                     {c.comment}
                   </div>
