@@ -6,7 +6,7 @@ interface Props {
   style?: any;
   value?: string | number;
   onChange?: any;
-  onKeyDown?: any;
+  onKeyPress?: any;
   disabled?: boolean;
   error?: boolean;
   helperText?: string;
@@ -26,6 +26,7 @@ export const TextInput = forwardRef((props: Props, ref: ForwardedRef<HTMLInputEl
         value={props.value}
         placeholder={props.label}
         onChange={props.onChange}
+        onKeyPress={props.onKeyPress}
         ref={ref}
       />
       {props.error ? <p className="text-input-error">{props.helperText}</p> : null}

@@ -154,7 +154,7 @@ export function Login({ updateUser }: { updateUser: any }) {
 
       <Box style={{ display: tab === 'login' ? 'block' : 'none', textAlign: 'center' }}>
         <TextInput
-          style={{ width: '90%' }}
+          style={{ width: '90%', margin: '.2rem' }}
           error={Boolean(errors.username)}
           helperText={errors.username}
           label="Username"
@@ -164,14 +164,14 @@ export function Login({ updateUser }: { updateUser: any }) {
         />
 
         <TextInput
-          style={{ width: '90%' }}
+          style={{ width: '90%', margin: '.2rem' }}
           error={Boolean(errors.password)}
           helperText={errors.password}
           label="Password"
           value={password}
           type="password"
           onChange={(event: any) => setPassword(event.target.value)}
-          onKeyDown={(event: any) => (event.key.toLowerCase() === 'enter' ? doLogin() : null)}
+          onKeyPress={(event: any) => (event.key.toLowerCase() === 'enter' ? doLogin() : null)}
         />
 
         <Button style={style.button} onClick={doCancel} variant="contained">

@@ -58,18 +58,6 @@ export function Comments({ wordle_answer_id, league }: { wordle_answer_id: numbe
     })();
   }, [user]);
 
-  const toggleDrawer = useCallback(
-    (newOpen: boolean) => {
-      setOpen(newOpen);
-      if (newOpen) {
-        if (ref.current) {
-          setTimeout(() => ref.current.focus(), 10);
-        }
-      }
-    },
-    [ref],
-  );
-
   const handleComment = (event: any) => {
     if (event.target.value !== `${comment}\n` && event.target.value !== `${comment}\r\n`) {
       setComment(event.target.value);
@@ -87,6 +75,20 @@ export function Comments({ wordle_answer_id, league }: { wordle_answer_id: numbe
       saveComment();
     }
   };
+
+  const toggleDrawer = useCallback(
+    (newOpen: boolean) => {
+      setOpen(newOpen);
+      if (newOpen) {
+        if (ref.current) {
+          setTimeout(() => {
+            ref.current.focus();
+          }, 10);
+        }
+      }
+    },
+    [ref],
+  );
 
   if (!user) {
     return <div />;
@@ -119,7 +121,7 @@ export function Comments({ wordle_answer_id, league }: { wordle_answer_id: numbe
                 style={{ width: '100%', margin: '.2em' }}
                 value={comment}
                 onChange={handleComment}
-                onKeyDown={handleCommentKey}
+                onKeyPress={handleCommentKey}
               />
               <Button color="blue" onClick={saveComment} variant="contained" style={{ margin: '.2em' }}>
                 Post
