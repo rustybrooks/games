@@ -405,9 +405,7 @@ export function LeaguePuzzles({ league, active }: { league: League; active: bool
 
   useEffect(() => {
     (async () => {
-      if (user) {
-        setPuzzles((await getPuzzles(active, league.league_slug)).map((x, i) => ({ ...x, count: i })));
-      }
+      setPuzzles((await getPuzzles(active, league.league_slug)).map((x, i) => ({ ...x, count: i })));
     })();
   }, [user]);
 
@@ -427,7 +425,10 @@ export function LeaguePuzzles({ league, active }: { league: League; active: bool
     if (row.completed) {
       return { label: 'Browse', callback: navBrowse, activeCallback: () => true };
     }
-    return { label: 'Play', callback: navPlay, activeCallback: () => active };
+    if (!active && new Date(row.active_before) < new Date()) {
+      return { label: 'Browse', callback: navBrowse, activeCallback: () => true };
+    }
+    return { label: 'Play', callback: navPlay, activeCallback: () => !!user };
   }
 
   if (!puzzles) {
@@ -457,11 +458,9 @@ export function LeagueView() {
   const [user] = useGetAndSet('user');
 
   useEffect(() => {
-    if (user) {
-      (async () => {
-        setLeague(await getLeague(leagueSlug));
-      })();
-    }
+    (async () => {
+      setLeague(await getLeague(leagueSlug));
+    })();
   }, [leagueSlug, user]);
 
   if (!league) {

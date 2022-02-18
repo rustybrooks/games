@@ -22,7 +22,7 @@ export function Button({
   to = null,
 }: Props) {
   return (
-    <button type="button" className={`${size} ${color || ''} ${variant} button`} style={style || {}} onClick={onClick}>
+    <button type="button" className={`${size} ${color || ''} ${variant} button`} style={style || {}} onClick={onClick} disabled={disabled}>
       {children}
     </button>
   );

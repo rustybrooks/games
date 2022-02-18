@@ -125,7 +125,9 @@ export function UserView() {
       if (username) {
         const stats = await getUserStats(username);
         setUserStats(stats);
-        setLeague(stats[0].wordle_league_id);
+        if (stats && stats.length) {
+          setLeague(stats[0].wordle_league_id);
+        }
       }
     })();
   }, [username]);

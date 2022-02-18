@@ -99,7 +99,10 @@ export function ActivePuzzles({ active = true }: { active?: boolean }) {
     if (row.completed) {
       return { label: 'Browse', callback: navBrowse, activeCallback: () => true };
     }
-    return { label: 'Play', callback: navPlay, activeCallback: () => active };
+    if (!active && new Date(row.active_before) < new Date()) {
+      return { label: 'Browse', callback: navBrowse, activeCallback: () => true };
+    }
+    return { label: 'Play', callback: navPlay, activeCallback: () => !!user };
   }
 
   if (!user) {

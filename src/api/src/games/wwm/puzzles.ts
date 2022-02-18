@@ -6,7 +6,6 @@ import { checkLeague } from './index';
 
 @apiClass()
 export class Puzzles {
-  @apiConfig({ requireLogin: true })
   async index({
     league_slug,
     active,
@@ -23,7 +22,8 @@ export class Puzzles {
     _user: User;
   }) {
     await checkLeague(league_slug, _user, false, false);
-    return queries.getPuzzles({ user_id: _user.user_id, sort: sort || 'active_after', limit, active, league_slug, played });
+    const x = queries.getPuzzles({ user_id: _user?.user_id, sort: sort || 'active_before', limit, active, league_slug, played });
+    return x;
   }
 
   @apiConfig({ requireLogin: true })
@@ -107,7 +107,6 @@ export class Puzzles {
     };
   }
 
-  @apiConfig({ requireLogin: true })
   async guesses({
     user_id,
     league_slug,
@@ -121,7 +120,7 @@ export class Puzzles {
     reduce: boolean;
     _user: User;
   }) {
-    const league = await checkLeague(league_slug, _user, true);
+    const league = await checkLeague(league_slug, _user, false);
 
     const answer = await queries.answer({ league_slug, wordle_answer_id });
     if (!answer) {
@@ -131,7 +130,9 @@ export class Puzzles {
     if (user_id) {
       const ourStatus = await queries.wordleStatuses({ wordle_answer_id, completed: true, user_id: _user.user_id });
       if (!ourStatus.length) {
-        throw new HttpBadRequest('You have not completed this puzzle', 'not_completed');
+        if (answer.active_before >= new Date()) {
+          throw new HttpBadRequest('You have not completed this puzzle', 'not_completed');
+        }
       }
     }
 
@@ -205,23 +206,27 @@ export class Puzzles {
     return { status: 'ok' };
   }
 
-  @apiConfig({ requireLogin: true })
   async completed({ league_slug, wordle_answer_id, _user }: { league_slug: string; wordle_answer_id: number; _user: User }) {
-    await checkLeague(league_slug, _user);
+    await checkLeague(league_slug, _user, false);
     const answer = await queries.answer({ league_slug, wordle_answer_id });
     if (!answer) {
       throw new HttpNotFound('Puzzle not found');
     }
 
-    const ourStatus = await queries.wordleStatuses({ wordle_answer_id, user_id: _user.user_id, completed: true });
+    const ourStatus = await queries.wordleStatuses({ wordle_answer_id, user_id: _user?.user_id, completed: true });
     if (!ourStatus.length) {
-      throw new HttpBadRequest('You have not completed this puzzle', 'not_completed');
+      console.log(answer.active_before, new Date());
+      if (answer.active_before >= new Date()) {
+        throw new HttpBadRequest('You have not completed this puzzle', 'not_completed');
+      }
     }
 
-    return queries.wordleStatuses({
+    const statuses = await queries.wordleStatuses({
       wordle_answer_id,
       completed: true,
       sort: ['correct::char(5) desc', 'num_guesses', 'ws.end_date'],
     });
+
+    return statuses;
   }
 }

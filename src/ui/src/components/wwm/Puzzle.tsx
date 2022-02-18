@@ -638,7 +638,7 @@ export function WWMBrowse() {
   if (!completed.length) {
     return (
       <div style={{ textAlign: 'center', padding: '10px' }}>
-        <h3>Loading...</h3>
+        <h3>No one has completed this puzzle so there's not much to see here. </h3>
       </div>
     );
   }

@@ -27,6 +27,7 @@ export async function getLeagues({
   league_slug = null,
   wordle_answer_id = null,
   user_id = null,
+  overrideUser = false,
   isMemberOnly = false,
   page = null,
   limit = null,
@@ -37,6 +38,7 @@ export async function getLeagues({
   wordle_answer_id?: number;
   user_id?: number;
   isMemberOnly?: boolean;
+  overrideUser?: boolean;
 } & QueryParams = {}): Promise<League[]> {
   const [where, bindvars] = SQL.autoWhere({ wordle_league_id, league_slug });
 
@@ -52,7 +54,7 @@ export async function getLeagues({
 
   const joins = [];
   const extraCols = [];
-  if (user_id) {
+  if (!overrideUser) {
     bindvars.user_id = user_id;
     if (isMemberOnly) {
       where.push('user_id is not null');
@@ -217,7 +219,7 @@ export async function generateSeries(league: League, now: Date) {
 }
 
 export async function generateAllSeries(now: Date) {
-  for (const l of await getLeagues()) {
+  for (const l of await getLeagues({ overrideUser: true })) {
     await generateSeries(l, now);
   }
 }
@@ -314,7 +316,6 @@ export async function generateAnswer(league: any, activeAfter: Date) {
 
   const prevWords = prev.map((row: any) => row.answer);
   const rando = randomWord(league.letters, league.source_word_list || defaultSourceWordList, prevWords).toLowerCase();
-  console.log(rando, 'prevWords', prevWords);
   return SQL.insert(
     'wordle_answers',
     {
@@ -351,7 +352,7 @@ export async function generateAnswers(league: League, now: Date) {
 }
 
 export async function generateAllAnswers(now: Date) {
-  for (const l of await getLeagues()) {
+  for (const l of await getLeagues({ overrideUser: true })) {
     await generateAnswers(l, now);
   }
 }
@@ -376,7 +377,6 @@ export async function getPuzzles({
   sort?: string | string[];
 }): Promise<ActivePuzzle> {
   const [where, bindvars] = SQL.autoWhere({ wordle_league_id, league_slug });
-
   if (user_id) {
     // where.push('((m.active and m.user_id=$(user_id)) or create_user_id=$(user_id))');
     where.push('((m.active and m.user_id=$(user_id)))');

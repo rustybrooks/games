@@ -19,12 +19,12 @@ export function formatDistance(d1: Date, d2: Date) {
   const signedOffset = d2.valueOf() - d1.valueOf();
   const offsetMinutes = Math.abs(signedOffset) / (60 * 1000);
 
-  if (offsetMinutes < 120) {
+  if (offsetMinutes < 59) {
     return signedOffset > 0 ? `${Math.round(offsetMinutes)} minutes ago` : `${Math.round(offsetMinutes)} minutes from now`;
   }
 
   const offsetHours = Math.round(offsetMinutes / 60);
-  if (offsetHours < 48) {
+  if (offsetHours < 23) {
     return signedOffset > 0 ? `${Math.round(offsetHours)} hours ago` : `${Math.round(offsetHours)} hours from now`;
   }
 
