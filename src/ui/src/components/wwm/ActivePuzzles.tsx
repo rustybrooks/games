@@ -78,7 +78,7 @@ export function ActivePuzzles({ active = true }: { active?: boolean }) {
   useEffect(() => {
     (async () => {
       if (user) {
-        setPuzzles((await getPuzzles(active)).map((x, i) => ({ ...x, count: i })));
+        setPuzzles((await getPuzzles(active, false)).map((x, i) => ({ ...x, count: i })));
       }
     })();
   }, [active, user]);

@@ -11,12 +11,14 @@ const genUrl = (fn = '') => `${constants.BASE_URL}/api/games/wwm/${fn}`;
 
 export async function getPuzzles(
   active = true,
+  all = true,
   league_slug: string = null,
   played: boolean = null,
   limit: number = null,
 ): Promise<ActivePuzzle[]> {
   const body: any = {
     active,
+    all,
     limit,
     played,
     sort: active ? 'active_after' : '-active_before',

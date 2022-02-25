@@ -178,6 +178,7 @@ export async function checkLeague(
   user: { [id: string]: any },
   isMemberOnly = true,
   requireSlug = true,
+  overrideUser = false,
 ): Promise<League> {
   if (requireSlug) {
     if (!league_slug || !league_slug.length) {
@@ -186,7 +187,7 @@ export async function checkLeague(
   }
 
   if (league_slug) {
-    const league = await queries.getLeague({ league_slug, user_id: user?.user_id, isMemberOnly });
+    const league = await queries.getLeague({ league_slug, user_id: user?.user_id, isMemberOnly, overrideUser });
     if (league) {
       return league;
     }

@@ -4,7 +4,7 @@
   "description": "games",
   "main": "./src/index.js",
   "dependencies": {
-    "@rustybrooks/api-framework": "^1.0.9",
+    "@rustybrooks/api-framework": "^1.0.11",
     "@rustybrooks/pgexplorer": "latest",
     "express": "latest",
     "jsonwebtoken": "latest",

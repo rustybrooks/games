@@ -413,7 +413,7 @@ export function WWMPlay() {
   const nextPuzzle = useCallback(() => {
     if (user) {
       (async () => {
-        const puzzles = await getPuzzles(true, null, false, 1);
+        const puzzles = await getPuzzles(true, false, null, false, 1);
         if (puzzles.length) {
           setPuzzle(puzzles[0]);
         }

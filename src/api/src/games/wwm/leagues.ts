@@ -27,7 +27,7 @@ export class Leagues {
 
   @apiConfig({ requireLogin: true })
   async join({ league_slug, invite_code, _user }: { league_slug: string; invite_code: string; _user: User }) {
-    const league = await queries.getLeague({ league_slug });
+    const league = await queries.getLeague({ league_slug, overrideUser: true });
     if (!league) {
       throw new HttpNotFound('League not found');
     }

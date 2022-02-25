@@ -11,19 +11,20 @@ export class Puzzles {
     active,
     played,
     sort,
+    all = false,
     limit = null,
     _user,
   }: {
     league_slug: string;
     active: boolean;
+    all: boolean;
     played: boolean;
     sort: string | string[];
     limit?: number;
     _user: User;
   }) {
     await checkLeague(league_slug, _user, false, false);
-    const x = queries.getPuzzles({ user_id: _user?.user_id, sort: sort || 'active_before', limit, active, league_slug, played });
-    return x;
+    return queries.getPuzzles({ user_id: _user?.user_id, sort: sort || 'active_before', limit, active, all, league_slug, played });
   }
 
   @apiConfig({ requireLogin: true })
@@ -128,9 +129,9 @@ export class Puzzles {
     }
 
     if (user_id) {
-      const ourStatus = await queries.wordleStatuses({ wordle_answer_id, completed: true, user_id: _user.user_id });
+      const ourStatus = await queries.wordleStatuses({ wordle_answer_id, completed: true, user_id: _user?.user_id });
       if (!ourStatus.length) {
-        if (answer.active_before >= new Date()) {
+        if (new Date() < answer.active_before) {
           throw new HttpBadRequest('You have not completed this puzzle', 'not_completed');
         }
       }
@@ -213,20 +214,17 @@ export class Puzzles {
       throw new HttpNotFound('Puzzle not found');
     }
 
-    const ourStatus = await queries.wordleStatuses({ wordle_answer_id, user_id: _user?.user_id, completed: true });
+    const ourStatus = await queries.wordleStatuses({ wordle_answer_id, user_id: _user?.user_id || -1, completed: true });
     if (!ourStatus.length) {
-      console.log(answer.active_before, new Date());
-      if (answer.active_before >= new Date()) {
+      if (new Date() < answer.active_before) {
         throw new HttpBadRequest('You have not completed this puzzle', 'not_completed');
       }
     }
 
-    const statuses = await queries.wordleStatuses({
+    return queries.wordleStatuses({
       wordle_answer_id,
       completed: true,
       sort: ['correct::char(5) desc', 'num_guesses', 'ws.end_date'],
     });
-
-    return statuses;
   }
 }

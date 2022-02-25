@@ -360,6 +360,7 @@ export async function generateAllAnswers(now: Date) {
 export async function getPuzzles({
   user_id,
   active = null,
+  all = false,
   played = null,
   wordle_league_id = null,
   league_slug = null,
@@ -369,6 +370,7 @@ export async function getPuzzles({
 }: {
   user_id: number;
   active?: boolean;
+  all?: boolean;
   played?: boolean;
   wordle_league_id?: number;
   league_slug?: string;
@@ -377,10 +379,10 @@ export async function getPuzzles({
   sort?: string | string[];
 }): Promise<ActivePuzzle> {
   const [where, bindvars] = SQL.autoWhere({ wordle_league_id, league_slug });
-  if (user_id) {
-    // where.push('((m.active and m.user_id=$(user_id)) or create_user_id=$(user_id))');
+  bindvars.user_id = user_id;
+
+  if (user_id && !all) {
     where.push('((m.active and m.user_id=$(user_id)))');
-    bindvars.user_id = user_id;
   }
 
   if (active !== null) {
@@ -413,7 +415,7 @@ export async function getPuzzles({
       from wordle_leagues l
       join wordle_league_series s using (wordle_league_id)
       join wordle_answers a using (wordle_league_series_id)
-      left join wordle_league_members m using (wordle_league_id)
+      left join wordle_league_members m on (m.wordle_league_id=l.wordle_league_id and m.user_id=$(user_id))
                 --  or ws.user_id=l.create_user_id
       left join wordle_status ws on ((ws.user_id=m.user_id) and ws.wordle_answer_id=a.wordle_answer_id)
       ${SQL.whereClause(where)}

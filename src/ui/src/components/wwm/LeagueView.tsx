@@ -405,7 +405,7 @@ export function LeaguePuzzles({ league, active }: { league: League; active: bool
 
   useEffect(() => {
     (async () => {
-      setPuzzles((await getPuzzles(active, league.league_slug)).map((x, i) => ({ ...x, count: i })));
+      setPuzzles((await getPuzzles(active, true, league.league_slug)).map((x, i) => ({ ...x, count: i })));
     })();
   }, [user]);
 
@@ -428,7 +428,7 @@ export function LeaguePuzzles({ league, active }: { league: League; active: bool
     if (!active && new Date(row.active_before) < new Date()) {
       return { label: 'Browse', callback: navBrowse, activeCallback: () => true };
     }
-    return { label: 'Play', callback: navPlay, activeCallback: () => !!user };
+    return { label: 'Play', callback: navPlay, activeCallback: () => !!user && league.is_member };
   }
 
   if (!puzzles) {
