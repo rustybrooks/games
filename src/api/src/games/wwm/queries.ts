@@ -416,7 +416,6 @@ export async function getPuzzles({
       join wordle_league_series s using (wordle_league_id)
       join wordle_answers a using (wordle_league_series_id)
       left join wordle_league_members m on (m.wordle_league_id=l.wordle_league_id and m.user_id=$(user_id))
-                --  or ws.user_id=l.create_user_id
       left join wordle_status ws on ((ws.user_id=m.user_id) and ws.wordle_answer_id=a.wordle_answer_id)
       ${SQL.whereClause(where)}
       ${SQL.orderBy(sort)}

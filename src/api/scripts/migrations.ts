@@ -4,6 +4,7 @@ import { SQL } from '../src/db';
 
 import * as users from '../src/users/queries';
 
+
 const initial = new migrations.Migration(1, 'initial version');
 ['wordle_status', 'wordle_guesses', 'wordle_answers', 'wordle_league_series', 'wordle_league_members', 'wordle_leagues', 'users'].forEach(
   t => initial.addStatement(`drop table if exists ${t}`),
@@ -50,6 +51,7 @@ initial.addStatement(`
 initial.addStatement(`
 create unique index wordle_league_series_u on wordle_league_series(wordle_league_id, start_date, end_date) 
 `);
+initial.addStatement('create index wordle_league_series_wordle_league_id on wordle_league_series(wordle_league_id)')''
 
 initial.addStatement(`
     create table wordle_league_members(
@@ -74,9 +76,10 @@ initial.addStatement(`
         active_before timestamp with time zone
     )
 `);
-initial.addStatement(`
-create unique index wordle_answers_u on wordle_answers(wordle_league_series_id, active_after)
-`);
+initial.addStatement(`create unique index wordle_answers_u on wordle_answers(wordle_league_series_id, active_after)`);
+initial.addStatement('create index worlde_answers_wordle_league_series_id on wordle_answers(wordle_league_series_id)');
+initial.addStatement('create index wordle_answers_active_before on wordle_answers(active_before)');
+
 
 initial.addStatement(`
     create table wordle_guesses(
@@ -90,6 +93,8 @@ initial.addStatement(`
         create_date timestamp with time zone not null
     )
 `);
+initial.addStatement('create index wordle_guesses_wordle_answer_id on wordle_guesses(wordle_answer_id)');
+initial.addStatement('create index wordle_guesses_create_date on wordle_guesses(create_date)');
 
 // -------------------------------------------------------
 let m = new migrations.Migration(2, 'Adding puzzle status');
@@ -111,6 +116,7 @@ m.addStatement(`
     )
 `);
 m.addStatement('create unique index wordle_status_u on wordle_status(user_id, wordle_answer_id)');
+m.addStatement('create index wordle_status_user_id_wordle_answer_id on wordle_status(user_id, wordle_answer_id)');
 
 // -------------------------------------------------------
 m = new migrations.Migration(3, 'Modifying leagues');
@@ -144,6 +150,7 @@ m.addStatement(`
         comment varchar(5000)
     )
 `);
+m.addStatement('create index wordle_comments_wordle_answer_id on wordle_comments(wordle_answer_id)')
 
 export async function bootstrapLeagues(startDate: Date) {
   const user = await users.user({ username: 'rbrooks' });
