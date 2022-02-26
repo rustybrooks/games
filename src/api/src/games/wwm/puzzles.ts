@@ -12,6 +12,7 @@ export class Puzzles {
     played,
     sort,
     all = false,
+    page = 1,
     limit = null,
     _user,
   }: {
@@ -21,10 +22,11 @@ export class Puzzles {
     played: boolean;
     sort: string | string[];
     limit?: number;
+    page?: number;
     _user: User;
   }) {
     await checkLeague(league_slug, _user, false, false);
-    return queries.getPuzzles({ user_id: _user?.user_id, sort: sort || 'active_before', limit, active, all, league_slug, played });
+    return queries.getPuzzles({ user_id: _user?.user_id, sort: sort || 'active_before', page, limit, active, all, league_slug, played });
   }
 
   @apiConfig({ requireLogin: true })
