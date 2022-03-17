@@ -13,7 +13,7 @@ export class Puzzles {
     sort,
     all = false,
     page = 1,
-    limit = null,
+    limit = 100,
     _user,
   }: {
     league_slug: string;

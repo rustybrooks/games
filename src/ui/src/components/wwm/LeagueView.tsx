@@ -180,7 +180,7 @@ function leagueFormatter(row: EnumeratedPuzzle, d: string) {
 function answerFormatter(row: EnumeratedPuzzle, a: string) {
   if (row.correct_answer === null) return '';
 
-  return <p style={{ color: row.correct ? 'green' : 'red' }}>{row.correct_answer.toUpperCase()}</p>;
+  return <span style={{ color: row.correct ? 'green' : 'red', fontSize: '0.8rem' }}>{row.correct_answer.toUpperCase()}</span>;
 }
 
 const ourheadCells: dt.HeadCell<EnumeratedPuzzle>[] = [
