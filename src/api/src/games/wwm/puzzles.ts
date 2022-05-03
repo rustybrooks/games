@@ -114,7 +114,7 @@ export class Puzzles {
     user_id,
     league_slug,
     wordle_answer_id,
-    reduce,
+    reduce = false,
     _user,
   }: {
     user_id: number;
@@ -123,6 +123,8 @@ export class Puzzles {
     reduce: boolean;
     _user: User;
   }) {
+    user_id = user_id || _user?.user_id;
+    console.log('guesses', user_id, league_slug, wordle_answer_id, reduce);
     const league = await checkLeague(league_slug, _user, false);
 
     const answer = await queries.answer({ league_slug, wordle_answer_id });
@@ -132,7 +134,7 @@ export class Puzzles {
 
     if (user_id) {
       const ourStatus = await queries.wordleStatuses({ wordle_answer_id, completed: true, user_id: _user?.user_id });
-      if (!ourStatus.length) {
+      if (!ourStatus.length && _user && user_id !== _user?.user_id) {
         if (new Date() < answer.active_before) {
           throw new HttpBadRequest('You have not completed this puzzle', 'not_completed');
         }
